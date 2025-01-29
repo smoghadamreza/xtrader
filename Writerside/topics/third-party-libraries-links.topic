@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/html-entities.dtd">
+<topic xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" is-library="true" id="third-party-libraries-links" title="third-party-libraries-links">
+    <snippet id="django-models.user">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#user-model">User</a>
+    </snippet>
+
+    <snippet id="django-models.foreign-key">
+         <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.ForeignKey">ForeignKey</a>
+    </snippet>
+
+    <snippet id="django-models.one-to-one">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#onetoonefield">OneToOneField</a>
+    </snippet>
+
+    <snippet id="django-models.cascade">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.CASCADE">CASCADE</a>
+    </snippet>
+
+    <snippet id="django-models.boolean-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#booleanfield">BooleanField</a>
+    </snippet>
+
+    <snippet id="django-models.char-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.CharField">CharField</a>
+    </snippet>
+
+    <snippet id="django-models.big-int-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#bigintegerfield">BigIntegerField</a>
+    </snippet>
+
+    <snippet id="django-models.decimal-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#decimalfield">DecimalField</a>
+    </snippet>
+
+    <snippet id="django-models.date-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.DateField">DateField</a>
+    </snippet>
+
+    <snippet id="django-models.date-time-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.DateTimeField">DateTimeField</a>
+    </snippet>
+
+    <snippet id="django-models.integer-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#integerfield">IntegerField</a>
+    </snippet>
+
+    <snippet id="django-models.text-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.TextField">TextField</a>
+    </snippet>
+
+    <snippet id="django-models.float-field">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.FloatField">FloatField</a>
+    </snippet>
+
+    <snippet id="python-docstring">
+        <a href="https://peps.python.org/pep-0257/">docstring</a>
+    </snippet>
+
+    <snippet id="python.instance-method">
+        <a href="https://docs.python.org/3/c-api/method.html">instance method</a>
+    </snippet>
+
+    <snippet id="python.class-method">
+        <a href="https://python-reference.readthedocs.io/en/latest/docs/functions/classmethod.html">class method</a>
+    </snippet>
+
+    <snippet id="django.db.models">
+        <a href="https://docs.djangoproject.com/en/5.1/topics/db/models/">Django Models</a>
+    </snippet>
+</topic>

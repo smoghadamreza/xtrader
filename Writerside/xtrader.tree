@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="xtrader"
+                 name="xtrader"
+                 start-page="starter-topic.md">
+
+    <toc-element topic="starter-topic.md"/>
+    <toc-element topic="sample-xml.topic"/>
+    <toc-element topic="django-apps.topic">
+        <toc-element topic="social-app.md">
+            <toc-element topic="social-app-models.md">
+                <toc-element topic="follow-model.md"/>
+                <toc-element topic="pro-trader-model.md"/>
+                <toc-element topic="trader-history-model.md"/>
+            </toc-element>
+        </toc-element>
+        <toc-element topic="sales-app.md">
+            <toc-element topic="sales-app-models.md">
+                <toc-element topic="payment-model.md"/>
+                <toc-element topic="subscription-model.md"/>
+                <toc-element topic="package-model.md"/>
+            </toc-element>
+        </toc-element>
+        <toc-element topic="finance-model.md">
+            <toc-element topic="finance-app-models.md">
+                <toc-element topic="trading-view-model.md"/>
+                <toc-element topic="exchange-model.md"/>
+                <toc-element topic="strategy-model.md"/>
+                <toc-element topic="watchlist-symbol-model.md"/>
+                <toc-element topic="watchlist-model.md"/>
+            </toc-element>
+        </toc-element>
+        <toc-element topic="data-app.md">
+            <toc-element topic="data-app-models.md">
+                <toc-element topic="market-watch-model.md"/>
+                <toc-element topic="ratio-model.md"/>
+                <toc-element topic="income-model.md"/>
+                <toc-element topic="balance-sheet-model.md"/>
+                <toc-element topic="stock-watch-model.md"/>
+            </toc-element>
+        </toc-element>
+        <toc-element topic="aum-app.md">
+            <toc-element topic="aum-app-models.md">
+                <toc-element topic="fund-unit-snapshot.md"/>
+                <toc-element topic="unit-transfer-model.md"/>
+                <toc-element topic="fund-investor-model.md"/>
+                <toc-element topic="fund-model.md"/>
+            </toc-element>
+        </toc-element>
+        <toc-element topic="accounts-app.md">
+            <toc-element topic="wait-for-db-command.md"/>
+            <toc-element topic="accounts-app-models.md">
+                <toc-element topic="accounts-profile-model.md"/>
+                <toc-element topic="accounts-wallet-model.md"/>
+                <toc-element topic="accounts-deposit-model.md"/>
+            </toc-element>
+        </toc-element>
+    </toc-element>
+</instance-profile>

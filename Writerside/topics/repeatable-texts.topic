@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/html-entities.dtd">
+<topic xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" is-library="true" id="repeatable-texts" title="repeatable-texts">
+    <snippet id="python-self">
+        The instance itself, signifying that this method is an <include from="third-party-libraries-links.topic" element-id="python.instance-method"/>.
+    </snippet>
+
+    <snippet id="python-cls">
+        The class object, signifying that this method is a <include from="third-party-libraries-links.topic" element-id="python.class-method"/>.
+    </snippet>
+
+    <snippet id="django-models.desc">
+        This class inherits <code>django.db.models.Model</code>. Django offers this class as a tool for defining a SQL database in python.
+        The documentation is available at
+        <include from="third-party-libraries-links.topic" element-id="django.db.models"></include>.
+
+    </snippet>
+</topic>
