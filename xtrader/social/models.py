@@ -8,9 +8,7 @@ from django.conf import settings
 from uuid import uuid4
 from finance import oms
 
-
-# Create your models here.
-class Protrader(models.Model):
+class Protrader(models.Model):  #TODO: Name should be camelCase
     trader = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     page_url = models.CharField(max_length=80, null=True, blank=True)
     page_kind = models.CharField(max_length=50, null=True, blank=True)
@@ -30,7 +28,7 @@ class Protrader(models.Model):
     def create_pro(self, ex, ex_obj, brand=None, page_kind=None, page_url=None):
         public = ex_obj.public
         private = ex_obj.private
-        return ex.get_historical_nav(public=public, private=private)
+        return ex.get_historical_nav(public=public, private=private)  #TODO ????
         # nav = ex.get_last_nav(public=public, private=private)
         nav = 0
         # nav = navs[-1]
@@ -49,14 +47,12 @@ class Protrader(models.Model):
 
     @staticmethod
     def get_history(trader):
-        from finance.oms import OMSManager
-        ex_obj, ex = OMSManager.get_exchange(None, trader=trader)
+        ex_obj, ex = oms.OMSManager.get_exchange(None, trader=trader)
         return ex.get_historical_nav(ex_obj.public, ex_obj.private)
 
     @staticmethod
     def get_records(trader):
-        from finance.oms import OMSManager
-        ex_obj, ex = OMSManager.get_exchange(None, trader=trader)
+        ex_obj, ex = oms.OMSManager.get_exchange(None, trader=trader)
         history = ex.get_historical_nav(ex_obj.public, ex_obj.private)
         records = {record['updateTime']: float(record['data']['totalAssetOfBtc']) for record in history}
         params = {"symbol": 'BTCUSDT', "interval": '1d', "limit": 50}
@@ -90,20 +86,20 @@ class Protrader(models.Model):
                 'three_months_performance': pro.three_months_performance,
                 'one_months_performance': pro.one_months_performance,
                 'total_performance': pro.total_performance,
-                'protrader_id': protrader_id,
+                'protrader_id': protrader_id,  #TODO ??????
             })
         return result
 
     def copy_order(self, new_order):
         followings = Follow.objects.filter(proTrader=self, expiry__gte=timezone.now())
         if not followings:
-            return 0
+            return 0  #TODO: why?. if it is status code, why there isn't a success status code to return after the following line?
         oms.OMSManager.copytrade(trader=self.trader, new_order=new_order, followers=followings)
 
 
 class Follow(models.Model):
     proTrader = models.ForeignKey(Protrader, null=True, blank=True, on_delete=models.CASCADE)
-    follower = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    follower =   models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     expiry = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     def subscribe(self, period=32):

@@ -7,7 +7,7 @@ from accounts.models import Profile
 
 
 # Create your models here.
-class Watchlist(models.Model):
+class Watchlist(models.Model):  #TODO: maybe create a watchlist with id=0 to represent all watch-lists and avoid so many if statements.
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=80, null=True, blank=True, default='')
     updated = models.DateTimeField(default=timezone.now, null=True, blank=True)
@@ -63,7 +63,7 @@ class Strategy(models.Model):
 
     def get_strategy_watchlist_id(self):
         try:
-            watchlist_id = self.watchlist.id
+            watchlist_id = self.watch_list.id
         except Exception as e:
             watchlist_id = 0
         return watchlist_id

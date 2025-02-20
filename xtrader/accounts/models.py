@@ -1,8 +1,7 @@
+import logging
+
 from django.db import models
 from django.utils import timezone
-# Create your models here.
-# import datetime
-# from datetime import datetime as dt
 from django.db.models import (Model,
                               OneToOneField,
                               DateField, )
@@ -17,22 +16,26 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import requests
 
+logger = logging.getLogger(__name__)
+
 
 class Profile(UserenaBaseProfile):
     user = OneToOneField(User,
-                         unique=True,
+                         unique=True,  # TODO: is unnecessary for OneToOne field. it's the default
                          verbose_name=_('user'),
                          related_name='my_profile'
                          , on_delete=models.CASCADE)
-    cellPhone = models.CharField(max_length=20, verbose_name='شماره تلفن ', null=True, blank=True)
+    cellPhone = models.CharField(max_length=20, verbose_name='شماره تلفن', null=True,
+                                 blank=True)  # TODO: should be nullable? should be unique? name doesn't match python naming convention.
     expire = models.DateField(null=True, blank=True)
     telegram_id = models.CharField(max_length=50, null=True, blank=True)
     telegram_activation_code = models.CharField(max_length=12, null=True, blank=True)
-    telegram_activation_timestamp = models.IntegerField(null=True, blank=True)
+    telegram_activation_timestamp = models.IntegerField(null=True,
+                                                        blank=True)  # TODO: better be stored as a DateTimeField.
     referral_code = models.CharField(default='', max_length=80, blank=True, null=True)
-    referred_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    referred_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)  # TODO: Cascade seems wrong.
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # TODO: should be done only in creation of object, not everytime.
         self.user.username = self.user.username.lower()
         self.user.email = self.user.email.lower()
         self.user.save()
@@ -41,7 +44,7 @@ class Profile(UserenaBaseProfile):
         super().save(*args, **kwargs)
 
     @classmethod
-    def make_referral_codes(cls):
+    def make_referral_codes(cls):  # TODO: not used.
         pros = cls.objects.all()
         for pro in pros:
             if not pro.referral_code:
@@ -49,7 +52,7 @@ class Profile(UserenaBaseProfile):
                 pro.save()
 
     @classmethod
-    def make_lowercase(cls):
+    def make_lowercase(cls):  # TODO: not used.
         pros = cls.objects.all()
         for pro in pros:
             user = pro.user
@@ -61,14 +64,14 @@ class Profile(UserenaBaseProfile):
 
     @staticmethod
     def code_generator(size=6):
-        chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
+        chars = string.ascii_lowercase + string.ascii_uppercase + string.digits  # TODO: make constant
         return ''.join(random.choice(chars) for _ in range(size))
 
     def get_code(self):
         t = int(time.time())
         if self.telegram_activation_timestamp and self.telegram_activation_timestamp > t:
             return self.telegram_activation_code
-        else:
+        else:  # TODO: not needed.
             code = Profile.code_generator()
             self.telegram_activation_timestamp = t + (5 * 60)
             self.telegram_activation_code = code
@@ -85,7 +88,7 @@ class Profile(UserenaBaseProfile):
         return self.user.last_name
 
     @classmethod
-    def mail_users(cls, subject, emails=None):
+    def mail_users(cls, subject, emails=None):  # TODO: not used.
         if not emails:
             emails = []
             pros = cls.objects.all()
@@ -96,24 +99,16 @@ class Profile(UserenaBaseProfile):
         failed_emails = []
         for email in emails:
             try:
-                # send_mail(
-                #     subject,
-                #     msg,
-                #     settings.EMAIL_HOST_USER,
-                #     [email],
-                #     fail_silently=False,
-                # )
-                # subject = 'Subject'
                 html_message = render_to_string('mail_template.html', {'context': 'values'})
                 plain_message = strip_tags(html_message)
-                # from_email = 'From <from@example.com>'
-                from_email = settings.EMAIL_HOST_USER
-                # to = 'to@example.com'
-                to = email
-                send_mail(subject, plain_message, from_email, [to], html_message=html_message, fail_silently=False)
+                send_mail(
+                    subject=subject, message=plain_message, from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[email], html_message=html_message, fail_silently=False
+                )
             except Exception as e:
+                logger.warning(f"failed to send email to {email}: {e}")
                 failed_emails.append(email)
-        print("failed:", failed_emails)
+        logger.warning(f"failed emails to: {failed_emails}")
         return failed_emails
 
 
@@ -130,12 +125,13 @@ class Wallet(models.Model):
 
     @staticmethod
     def get_gateway_base():
-        return 'https://api.cryptapi.io'
+        return 'https://api.cryptapi.io'  # TODO: Make an environment variable.
         # return 'https://sandbox.cryptapi.io'
 
     @classmethod
     def get_wallet(cls, user):
-        wallet = cls.objects.filter(user=user).first()
+        wallet = cls.objects.filter(
+            user=user).first()  # TODO: For stronger security, it should be .get instead of .filter
         income = 0
         if wallet:
             balance = wallet.balance
@@ -169,8 +165,8 @@ class Wallet(models.Model):
             self.last_change = time.time()
             self.save()
             return self.address
-        else:
-            time.sleep(1)
+        else:  # TODO: not needed.
+            time.sleep(1)  # TODO: Bad practice at large scales.
             return self.create_address(num=num + 1)
 
     def check_deposit(self):
@@ -199,7 +195,7 @@ class Wallet(models.Model):
 
 
 class Deposit(models.Model):
-    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=True, blank=True)
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=True, blank=True)  # TODO: why wallet can be null?
     address_in = models.CharField(max_length=80, default='', null=True, blank=True)
     address_out = models.CharField(max_length=80, default='', null=True, blank=True)
     txid_in = models.CharField(max_length=80, default='', null=True, blank=True)
@@ -232,7 +228,7 @@ class Deposit(models.Model):
         deposit.save()
         # if pay2ref:
         #     deposit.pay2referral(final_amount)
-        if wallet:
+        if wallet: #TODO: race condition?
             wallet.balance += amount
             wallet.last_change = time.time()
             wallet.save()

@@ -542,7 +542,7 @@ class Binance:
 
 
 class OMSManager:
-    ex_name2obj = {
+    exchange_name2obj = {
         'BINANCE': Binance,
     }
 
@@ -550,15 +550,15 @@ class OMSManager:
     def get_exchange(request, trader=None):
         if trader is None:
             trader = request.user
-        ex_obj = None
-        ex_class = None
+        exchange_obj = None
+        exchange_class = None
         exs = Exchange.objects.filter(trader=trader)
         if not exs:
-            return ex_obj, ex_class
-        ex_obj = exs.first()
-        if ex_obj.name == 'BINANCE':
-            ex_class = Binance
-        return ex_obj, ex_class
+            return exchange_obj, exchange_class
+        exchange_obj = exs.first()
+        if exchange_obj.name == 'BINANCE':
+            exchange_class = Binance
+        return exchange_obj, exchange_class
 
     @staticmethod
     def get_exchanges(request, trader=None):
@@ -618,7 +618,7 @@ class OMSManager:
     @staticmethod
     def send_followers_order(follower_ex, ratio, order, quote_price):
         new_order = order.copy()
-        ex = OMSManager.ex_name2obj[follower_ex.name]
+        ex = OMSManager.exchange_name2obj[follower_ex.name]
         assets = ex.get_portfolio(follower_ex)
         # open_orders = Binance.get_open_orders(follower_ex, order['symbol'])
         # order_side = order['side'].upper()
@@ -690,7 +690,7 @@ class OMSManager:
             elif order_action == 'CANCELED':
                 threads.append(
                     threading.Thread(
-                        target=OMSManager.ex_name2obj[follower_ex.name.upper()].cancel_all_orders,
+                        target=OMSManager.exchange_name2obj[follower_ex.name.upper()].cancel_all_orders,
                         args=(follower_ex, new_order['s'])
                     )
                 )

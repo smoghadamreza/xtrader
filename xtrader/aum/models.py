@@ -32,8 +32,8 @@ class Fund(models.Model):
         return result
 
     def get_assets(self):
-        ex_obj, ex = oms.OMSManager.get_exchange(request=None, trader=self.manager)
-        return ex.get_portfolio(ex_obj)
+        exchange_obj, exchange_class = oms.OMSManager.get_exchange(request=None, trader=self.manager)
+        return exchange_class.get_portfolio(exchange_obj)
 
     def get_cash(self, assets=None):
         if not assets:
@@ -106,9 +106,10 @@ class Fund(models.Model):
     def issue_redeem(self, investor, params):
         fund_info = self.get_fund_info()
         nav = fund_info['nav']
+        units = params.get('amount', None)
+
         result = {}
         if params['action'] == 'issue':
-            units = params['amount']
             issue_nav = fund_info['issue']
             if self.deposit >= units * issue_nav:
                 investor.units += units
@@ -123,7 +124,6 @@ class Fund(models.Model):
             else:
                 result['msg'] = 'موجودی واریزی صندوق کافی نیست'
         elif params['action'] == 'redeem':
-            units = params['amount']
             redeem_nav = fund_info['redeem']
             if investor.units >= units:
                 investor.units -= units
@@ -141,7 +141,8 @@ class Fund(models.Model):
             result['msg'] = 'عملیات مشخص نشده است'
         return result
 
-    def unit_transfer(self, investor, units, action, value, nav, fee):
+    @staticmethod
+    def unit_transfer(investor, units, action, value, nav, fee):
         UnitTransfer(investor=investor,
                      action=action, time=timezone.now(), units=units,
                      value=value, commission=fee, nav=nav
@@ -160,18 +161,18 @@ class Fund(models.Model):
         snapshots = FundUnitSnapshot.objects.filter(fund=self).order_by('-age')
         if snapshots:
             return 'already exists'
-        self.create_snapshots(
+        self._create_snapshots(
             assets=self.get_unit_assets(),
             # 'age': age,
             history=history
         )
         return 'created'
 
-    def create_snapshots(self, assets, history):
+    def _create_snapshots(self, assets, history):
         historical = {}
         for asset in assets:
             if not asset == 'USDT':
-                candles = requests.get('https://api.binance.com/api/v3/klines', params={
+                candles = requests.get('https://api.binance.com/api/v3/klines', params={  # TODO: cache to avoid request rate limit
                     'symbol': asset + 'USDT',
                     'interval': '1d',
                     'limit': 500
@@ -223,7 +224,7 @@ class Fund(models.Model):
         if str(snapshot['insert_date']) == str(insert_date.date()):
             print('snapshot exists!')
             return None
-        age = snapshot['age'] + 1
+        age = snapshot['age'] + 1  #TODO what if we miss a day?
         unit_assets = self.get_unit_assets()
         prices = oms.Binance.get_prices_for_nav(unit_assets)
         nav = sum([prices[asset] * quantity for asset, quantity in unit_assets.items()])
@@ -253,7 +254,7 @@ class Fund(models.Model):
         pnav = None
         result = []
         for snapshot in snapshots:
-            if not snapshot['age'] > age:
+            if snapshot['age'] <= age:
                 continue
             age += 1
             if pnav is None:
@@ -274,14 +275,12 @@ class Fund(models.Model):
             'symbol': 'BTCUSDT',
             'interval': '1d',
             'limit': 500
-        }).json()
+        }).json()  # TODO: cache
         btc_prices = [float(c[4]) for c in btc_candles[-len(result) - 2:-1]]
-        for idx, price in enumerate(btc_prices):
-            if idx == 0:
-                p_price = price
-                continue
-            result[idx - 1]['btc'] = price
-            result[idx - 1]['btcReturn'] = 100 * round((price / p_price) - 1, 3)
+        p_price = btc_prices[0]
+        for idx, price in enumerate(btc_prices[1:]):
+            result[idx]['btc'] = price
+            result[idx]['btcReturn'] = 100 * round((price / p_price) - 1, 3)
             p_price = price
         if mode == 'btc':
             return [[int(1000 * time.mktime(r['date'].timetuple())), r['btc']] for r in result]

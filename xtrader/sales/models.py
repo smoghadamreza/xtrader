@@ -11,7 +11,7 @@ class Package(models.Model):
     category = models.CharField(max_length=11, null=True, blank=True)
     price = models.FloatField(default=0, null=True, blank=True)
     month_price = models.FloatField(default=0, null=True, blank=True)
-    gas_fee = models.FloatField(default=0, null=True, blank=True)
+    gas_fee = models.FloatField(default=0, null=True, blank=True)  #TODO: gas_fee?
     limit = models.FloatField(default=1, null=True, blank=True)
     days = models.IntegerField(default=30, null=True, blank=True)
     active = models.BooleanField(null=True)
@@ -41,7 +41,7 @@ class Subscription(models.Model):
     expiry = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     @classmethod
-    def have_subscribe(cls, user, packages='general'):
+    def have_subscribe(cls, user, packages='general'):  #TODO: it should have strict input type and return strict boolean
         if isinstance(packages, str):
             packages = [packages]
         subscription = Subscription.objects.filter(user=user, package__category__in=packages, expiry__gte=timezone.now()).order_by(

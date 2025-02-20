@@ -82,11 +82,11 @@ class SignupFormExtra(SignupForm):
                                      self.cleaned_data['email'],
                                      self.cleaned_data['password1'])
 
-        new_user = UserenaSignup.objects.create_user(username,
-                                                     email,
-                                                     password,
-                                                     not userena_settings.USERENA_ACTIVATION_REQUIRED,
-                                                     False)
+        new_user = UserenaSignup.objects.create_user(
+            username, email, password,
+            active = not userena_settings.USERENA_ACTIVATION_REQUIRED,
+            send_email = False
+        )
 
         # Get the profile, the `save` method above creates a profile for each
         # user because it calls the manager method `create_user`.
@@ -157,14 +157,6 @@ class SignupFormExtra(SignupForm):
                 raise forms.ValidationError(_("The passwords do not match"))
 
         return self.cleaned_data
-
-
-
-
-class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        exclude = []
 
 
 class PasswordResetForm(forms.Form):

@@ -1200,8 +1200,6 @@ def new_deposit(request):
         pass
     nonce = request.GET.get('nonce', 'empty')
     params = request.body.decode()
-    # TODO: remove this below line:
-    # params = b'address_in=TNVKqq1s58t9xtYSZfPNCLffimxhVzvNid&address_out=TSTD9GhDbqXFfYJucArfgodhbbrXm85Tc7&confirmations=1&txid_in=d1146344bce0e2561394868b8769257c13a505906030ee971a8e311ec9c80cc9&txid_out=9c325839c1a9d9c1d38c7e0dad27e66861b042e408a52249efd96a45fab7bdce&fee=7&value=900&value_coin=9&value_forwarded=780&value_forwarded_coin=7.8012&coin=trc20_usdt&result=sent&pending=0'.decode()
     parsed = urlparse.urlparse('?' + params)
     params = {k: v[0] for k, v in parse_qs(parsed.query).items()}
     # request.POST

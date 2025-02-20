@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from django.db import connections
 from django.db.utils import OperationalError
 
+
 class Command(BaseCommand):
     """Django command to wait for the database"""
 
@@ -12,7 +13,7 @@ class Command(BaseCommand):
         db_up = False
         while not db_up:
             try:
-                # چک کردن همه اتصال‌های پایگاه داده
+                # Check all the database connections
                 for db_name in connections:
                     self.check(databases=[db_name])
 

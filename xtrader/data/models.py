@@ -1,5 +1,10 @@
+#TODO refactor read functions into one
+import logging
+
 from django.db import models
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 
 class StockWatch(models.Model):
@@ -107,7 +112,8 @@ class StockWatch(models.Model):
             for key in keys:
                 try:
                     d[key] = float(self.__getattribute__(key))
-                except Exception:
+                except Exception as e:
+                    logger.warning(e)
                     d[key] = self.__getattribute__(key)
             return d
         else:
@@ -130,9 +136,10 @@ class StockWatch(models.Model):
             if key[0] != '_':
                 try:
                     data[key] = float(self.__getattribute__(key))
-                except Exception:
+                except Exception as e:
+                    logger.warning(e)
                     value = self.__getattribute__(key)
-                    if value == None:
+                    if value is None:
                         data[key] = 0
                     else:
                         data[key] = str(value)
@@ -165,9 +172,10 @@ class BalanceSheet(models.Model):
             if key[0] != '_':
                 try:
                     data[key] = float(self.__getattribute__(key))
-                except Exception:
+                except Exception as e:
+                    logger.warning(e)
                     value = self.__getattribute__(key)
-                    if value == None:
+                    if value is None:
                         data[key] = 0
                     else:
                         data[key] = str(value)
