@@ -69,4 +69,8 @@
     <snippet id="django.db.models">
         <a href="https://docs.djangoproject.com/en/5.1/topics/db/models/">Django Models</a>
     </snippet>
+
+    <snippet id="django-userena-ce">
+        <a href="https://django-userena-ce.github.io/django-userena-ce/">Userena-CE</a>
+    </snippet>
 </topic>

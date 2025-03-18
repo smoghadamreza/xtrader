@@ -50,6 +50,8 @@
             </toc-element>
         </toc-element>
         <toc-element topic="accounts-app.md">
+            <toc-element topic="accounts-app-forms.md"/>
+            <toc-element topic="accounts-app-views.md"/>
             <toc-element topic="wait-for-db-command.md"/>
             <toc-element topic="accounts-app-models.md">
                 <toc-element topic="accounts-profile-model.md"/>
