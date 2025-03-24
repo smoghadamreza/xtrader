@@ -42,6 +42,7 @@
             </toc-element>
         </toc-element>
         <toc-element topic="aum-app.md">
+            <toc-element topic="aum-app-views.md"/>
             <toc-element topic="aum-app-models.md">
                 <toc-element topic="fund-unit-snapshot.md"/>
                 <toc-element topic="unit-transfer-model.md"/>
