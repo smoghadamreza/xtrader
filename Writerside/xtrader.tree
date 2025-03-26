@@ -10,6 +10,7 @@
     <toc-element topic="sample-xml.topic"/>
     <toc-element topic="django-apps.topic">
         <toc-element topic="social-app.md">
+            <toc-element topic="social-app-views.md"/>
             <toc-element topic="social-app-models.md">
                 <toc-element topic="follow-model.md"/>
                 <toc-element topic="pro-trader-model.md"/>
@@ -17,6 +18,7 @@
             </toc-element>
         </toc-element>
         <toc-element topic="sales-app.md">
+            <toc-element topic="sales-app-views.md"/>
             <toc-element topic="sales-app-models.md">
                 <toc-element topic="payment-model.md"/>
                 <toc-element topic="subscription-model.md"/>
@@ -24,6 +26,7 @@
             </toc-element>
         </toc-element>
         <toc-element topic="finance-model.md">
+            <toc-element topic="finance-app-views.md"/>
             <toc-element topic="finance-app-models.md">
                 <toc-element topic="trading-view-model.md"/>
                 <toc-element topic="exchange-model.md"/>
@@ -33,6 +36,7 @@
             </toc-element>
         </toc-element>
         <toc-element topic="data-app.md">
+            <toc-element topic="data-app-views.md"/>
             <toc-element topic="data-app-models.md">
                 <toc-element topic="market-watch-model.md"/>
                 <toc-element topic="ratio-model.md"/>
