@@ -174,4 +174,8 @@
     <snippet id="django-urls">
         <a href="https://docs.djangoproject.com/en/5.1/topics/http/urls/">link</a>
     </snippet>
+
+    <snippet id="django-db">
+        <a href="https://docs.djangoproject.com/en/1.10/ref/settings/#databases">Django DATABASES</a>
+    </snippet>
 </topic>
