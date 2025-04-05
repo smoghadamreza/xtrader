@@ -154,4 +154,24 @@
     <snippet id="python-threading">
         <a href="https://docs.python.org/3/library/threading.html"></a>
     </snippet>
+
+    <snippet id="sensitive-post-parameters-decorator">
+        We quote this decorator's docstring:
+        <tip>
+                Indicate which POST parameters used in the decorated view are sensitive,
+                so that those parameters can later be treated in a special way, for example
+                by hiding them when logging unhandled exceptions.
+        </tip>
+    </snippet>
+    
+    <snippet id="never-cache-decorator">
+        We quote this decorator's docstring:
+        <tip>
+            Decorator that adds headers to a response so that it will never be cached.
+        </tip>
+    </snippet>
+
+    <snippet id="django-urls">
+        <a href="https://docs.djangoproject.com/en/5.1/topics/http/urls/">link</a>
+    </snippet>
 </topic>

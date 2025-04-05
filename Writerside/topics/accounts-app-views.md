@@ -3,6 +3,46 @@
 <include from="repeatable-texts.topic" element-id="django-views">
 </include>
 
+## View Classes
+
+### `ExtraContextTemplateView`
+
+This class-based view extends `TemplateView` to include additional context variables. Here we quote its docstring:  
+
+> Add extra context to a simple template view  
+
+#### Behavior {id=class_behavior_1}  
+
+- Merges the `extra_context` dictionary into the template context via `get_context_data`.  
+- Handles `POST` requests by delegating to the `get` method of `TemplateView`, resulting in template re-rendering (commonly used when form submissions are invalid).  
+
+#### Context variables {id=class_context_1}  
+
+- All key-value pairs provided in the `extra_context` attribute are added to the template context.
+
+### `ProfileListView`
+
+This class-based view handles rendering the list of profiles. Here we quote its docstring:  
+
+> Lists all profiles  
+
+#### Behavior {id=class_behavior_2}  
+
+- If profile listing is disabled (via `USERENA_DISABLE_PROFILE_LIST`) and the requesting user is not staff, the view raises an `Http404` exception.  
+- Extracts the `page` number from the query parameters (defaults to `1`).  
+- Uses the template specified by `USERENA_PROFILE_LIST_TEMPLATE`.  
+- **On rendering**:  
+  - Retrieves visible profiles for the current user via `get_visible_profiles`.  
+  - Adds `page`, `paginate_by` (currently disabled), and `extra_context` to the template context.  
+  - Populates `profile_list` in the context with the retrieved profiles.  
+
+#### Context variables {id=class_context_2}  
+
+- `profile_list`: List of profile objects returned by the queryset.  
+- `page`: Current page number (from query parameters).  
+- `paginate_by`: Placeholder for pagination configuration (not active).  
+- `extra_context`: Additional context variables provided via the `extra_context` class attribute.  
+
 ## Functions
 
 ### `signup`
@@ -708,4 +748,29 @@ This function retrieves the status of the authenticated user's account, includin
 
 - The function requires the user to be authenticated. If the user is not logged in, they are redirected to the `accounts:userena_signin` URL.
 - The `status` dictionary provides a summary of the user's account status, which can be used to customize the user experience.
+
+### `SignoutView`
+
+This function handles user sign-out operations. Here we quote its docstring:  
+
+> Signs out the user and adds a success message ``You have been signed out.`` If next_page is defined you will be redirected to the URI. If  
+> not the template in template_name is used.  
+
+#### Used Decorators {id=used_decorator_23}  
+<include from="repeatable-texts.topic" element-id="userena-secure-required-decorator"></include>  
+
+#### Input parameters {id=input_param_23}  
+We quote the docstring notes on the input parameters as they seem sufficient.  
+
+- `next_page`: A string specifying the URI to redirect to. Defaults to `USERENA_REDIRECT_ON_SIGNOUT`.  
+- `template_name`: String defining the template name to use. Defaults to ``userena/signout.html``.  
+
+#### Behavior {id=behavior_23}  
+
+- If the user is authenticated and `USERENA_USE_MESSAGES` is enabled:  
+  - Adds a success message ("You have been signed out.") to the request.  
+- Triggers the `account_signout` signal with the current user as an argument.  
+- Calls the `Signout` function to terminate the user session.  
+- Returns an empty `JsonResponse` (note: overrides the commented-out template/redirect behavior).  
+
 

@@ -10,4 +10,12 @@
         <description>Created after removal of "Functionalities" from xtrader</description>
         <accepts>data-app-functionalities.html</accepts>
     </rule>
+    <rule id="6c9c6099">
+        <description>Created after removal of "Sample XML Topic" from xtrader</description>
+        <accepts>sample-xml.html</accepts>
+    </rule>
+    <rule id="1deaba21">
+        <description>Created after removal of "Auth Views" from xtrader</description>
+        <accepts>accounts-app-auth-views.html</accepts>
+    </rule>
 </rules>
