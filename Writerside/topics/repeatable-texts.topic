@@ -146,4 +146,12 @@
         </li>
         </list>
     </snippet>
+
+    <snippet id="http-request">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects">HttpRequest</a>
+    </snippet>
+    
+    <snippet id="python-threading">
+        <a href="https://docs.python.org/3/library/threading.html"></a>
+    </snippet>
 </topic>

@@ -27,7 +27,7 @@ This function handles new subscription requests.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_1}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 - Requires POST data with 'subscribe' parameter (package ID)
 
 #### Behavior {id=behavior_2}

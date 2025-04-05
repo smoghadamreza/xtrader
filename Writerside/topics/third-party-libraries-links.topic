@@ -73,4 +73,36 @@
     <snippet id="django-userena-ce">
         <a href="https://django-userena-ce.github.io/django-userena-ce/">Userena-CE</a>
     </snippet>
+
+    <snippet id="pandas-dataframe">
+        <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html">
+            <code>pandas.DataFrame</code>
+        </a>
+    </snippet>
+
+    <snippet id="pandas-series">
+        <a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html">
+            <code>pandas.Series</code>
+        </a>
+    </snippet>
+
+    <snippet id="python-json">
+        <a href="https://docs.python.org/3/library/json.html">JSON</a>
+    </snippet>
+
+    <snippet id="ta-lib">
+        <a href="https://ta-lib.org/">TA-Lib</a>
+    </snippet>
+
+    <snippet id="numpy-array">
+        <a href="https://numpy.org/doc/2.1/reference/generated/numpy.array.html">numpy array</a>
+    </snippet>
+
+    <snippet id="python-redis">
+        <a href="https://redis.io/docs/latest/integrate/redis-py/">Redis</a>
+    </snippet>
+
+    <snippet id="python-requests">
+        <a href="https://pypi.org/project/requests/">python-requests</a>
+    </snippet>
 </topic>

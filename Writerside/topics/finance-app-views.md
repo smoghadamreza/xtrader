@@ -10,7 +10,7 @@
 This function calculates technical indicators for market data.
 
 #### Input Parameters {id=input_param_1}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - interval: Time interval string
 - GET parameter 'param' with calculation specs
 
@@ -28,7 +28,7 @@ This function creates new trading watchlists.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_2}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - POST data with watchlist name
 
 #### Behavior {id=behavior_2}
@@ -45,7 +45,7 @@ This function manages watchlist retrieval.
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_3}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - Optional GET parameters for filtering
 
 #### Behavior {id=behavior_3}
@@ -62,7 +62,7 @@ This function modifies watchlist contents.
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_4}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameters for symbol operations
 
 #### Behavior {id=behavior_4}
@@ -79,7 +79,7 @@ This function stores trading strategies.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_5}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - POST parameter 'param' with strategy data
 
 #### Behavior {id=behavior_5}
@@ -102,7 +102,7 @@ This function retrieves saved strategy names.
 This function loads a specific trading strategy.
 
 #### Input Parameters {id=input_param_7}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameter 'id' with strategy ID
 
 #### Behavior {id=behavior_7}
@@ -116,7 +116,7 @@ This function loads a specific trading strategy.
 This function executes market scans.
 
 #### Input Parameters {id=input_param_8}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameter 'strategyId'
 
 #### Behavior {id=behavior_8}
@@ -132,7 +132,7 @@ This function initiates strategy notifications.
 <include from="repeatable-texts.topic" element-id="transaction-atomic-decorator"></include>
 
 #### Input Parameters {id=input_param_9}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - interval: Notification interval
 
 #### Behavior {id=behavior_9}
@@ -145,7 +145,7 @@ This function initiates strategy notifications.
 This function updates indicator values.
 
 #### Input Parameters {id=input_param_10}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameter 'param' with update data
 
 #### Behavior {id=behavior_10}
@@ -196,7 +196,7 @@ This function provides filter data.
 This function filters market data.
 
 #### Input Parameters {id=input_param_14}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameter 'filters' with criteria
 - Optional 'page' parameter
 
@@ -221,7 +221,7 @@ This function provides indicator API data.
 This function executes strategy backtesting.
 
 #### Input Parameters {id=input_param_16}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameter 'param' with test data
 
 #### Behavior {id=behavior_16}
@@ -329,7 +329,7 @@ This function processes trade orders.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_25}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - POST parameter 'order' with trade data
 
 #### Behavior {id=behavior_25}
@@ -353,7 +353,7 @@ This function retrieves portfolio data.
 This function retrieves order history.
 
 #### Input Parameters {id=input_param_27}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameter 'symbol'
 
 #### Behavior {id=behavior_27}
@@ -377,7 +377,7 @@ This function provides account status.
 This function cancels orders.
 
 #### Input Parameters {id=input_param_29}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameters:
   - symbol
   - OrderId
@@ -413,7 +413,7 @@ This function renders volume test page.
 This function processes volume tests.
 
 #### Input Parameters {id=input_param_32}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - GET parameter 'param' with test data
 
 #### Behavior {id=behavior_32}
@@ -450,7 +450,7 @@ This function stores exchange connections.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_35}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - POST parameters:
   - public
   - secret
@@ -498,7 +498,7 @@ This function processes TradingView alerts.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_38}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - token: Webhook authentication token
 
 #### Behavior {id=behavior_38}

@@ -14,7 +14,7 @@ This function renders the fund management page template for authenticated users.
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>  
 
 #### Input Parameters {id=input_param_1}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
 
 #### Behavior {id=behavior_1}
 - Requires user authentication via decorator
@@ -31,7 +31,7 @@ This function handles unit issuance/redemption requests for fund managers.
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>  
 
 #### Input Parameters {id=input_param_2}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Expects JSON payload in POST body containing:
     - `investor_id`: ID of the investor
     - Other transaction parameters
@@ -60,7 +60,7 @@ This function handles unit redemption requests for authenticated users.
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>  
 
 #### Input Parameters {id=input_param_3}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Expects POST requests only
 
 #### Behavior {id=behavior_3}
@@ -83,7 +83,7 @@ This function handles adding new investors to a fund by authenticated managers.
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>  
 
 #### Input Parameters {id=input_param_4}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Expects JSON payload in POST body containing:
     - `nationalCode`: Investor's national identification code
     - `first_name`: Investor's first name (max 20 chars)
@@ -117,7 +117,7 @@ This function retrieves and returns a list of investors for the currently authen
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_5}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Only accepts GET requests
 
 #### Behavior {id=behavior_5}
@@ -146,7 +146,7 @@ This function retrieves and returns information about the fund managed by the cu
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_6}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Only accepts GET requests
 
 #### Behavior {id=behavior_6}
@@ -173,7 +173,7 @@ This function retrieves the transaction history for the fund managed by the curr
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_7}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Only accepts GET requests
 
 #### Behavior {id=behavior_7}
@@ -199,7 +199,7 @@ This function initializes and returns fund performance data for authorized reque
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_8}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Requires GET parameter:
     - `pass`: Authorization token (must be 'XTreasury')
 
@@ -229,7 +229,7 @@ This function retrieves performance data for the fund managed by the currently a
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_9}
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects) object
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Accepts optional GET parameter:
     - `mode`: Performance data filter mode (default: 'all')
 

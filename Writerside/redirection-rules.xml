@@ -6,4 +6,8 @@
         <accepts>page.html</accepts>
     </rule>
     -->
+    <rule id="693feb93">
+        <description>Created after removal of "Functionalities" from xtrader</description>
+        <accepts>data-app-functionalities.html</accepts>
+    </rule>
 </rules>

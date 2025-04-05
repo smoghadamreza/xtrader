@@ -13,7 +13,7 @@ This function handles ProTrader account creation and retrieval.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_1}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 - POST data requires:
   - username: Trader's username
   - brand: Brand identifier
@@ -47,7 +47,7 @@ This function handles following/unfollowing ProTraders for copy trading.
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_2}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 - POST data requires:
   - protrader_brand: Brand identifier of ProTrader
   - action: Either 'follow' or 'unfollow'
@@ -75,7 +75,7 @@ This function retrieves public keys of all ProTraders' exchanges.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_3}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 
 #### Behavior {id=behavior_3}
 - Retrieves all ProTrader records
@@ -97,7 +97,7 @@ This function handles copying of trading orders from ProTraders.
 <include from="repeatable-texts.topic" element-id="transaction-atomic-decorator"></include>
 
 #### Input Parameters {id=input_param_4}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 - POST data requires:
   - id: ProTrader ID
   - order: Order details to copy
@@ -122,7 +122,7 @@ This function handles user account promotion to ProTrader status.
 <include from="repeatable-texts.topic" element-id="login-required-decorator"></include>
 
 #### Input Parameters {id=input_param_5}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 - POST data requires:
   - brand: Display name for ProTrader
   - subscription: Subscription amount
@@ -162,7 +162,7 @@ This function renders the trader profile page.
 This function retrieves profile information for a specific ProTrader.
 
 #### Input Parameters {id=input_param_7}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 - pro_id: ID of the ProTrader profile to retrieve
 
 #### Behavior {id=behavior_7}
@@ -215,7 +215,7 @@ This function handles exchange account management for authenticated users.
 <include from="repeatable-texts.topic" element-id="csrf-exempt-decorator"></include>
 
 #### Input Parameters {id=input_param_10}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 - POST data requires:
   - public: Exchange API public key
   - secret: Exchange API private key

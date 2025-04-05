@@ -21,7 +21,7 @@ This function retrieves historical market data for all symbols from Redis storag
 This function retrieves watch information for a specific stock symbol.
 
 #### Input Parameters {id=input_param_2}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 - SymbolId: The identifier of the stock symbol to look up
 
 #### Behavior {id=behavior_2}
@@ -35,7 +35,7 @@ This function retrieves watch information for a specific stock symbol.
 This function performs a search for financial symbols matching the query string.
 
 #### Input Parameters {id=input_param_3}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - query: Search string to match against symbol names
 
 #### Behavior {id=behavior_3}
@@ -49,7 +49,7 @@ This function performs a search for financial symbols matching the query string.
 This function retrieves historical market data for a specific symbol and time interval.
 
 #### Input Parameters {id=input_param_4}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 - symbol_id: Financial symbol identifier
 - interval: Time interval for historical data
 
@@ -64,7 +64,7 @@ This function retrieves historical market data for a specific symbol and time in
 This function retrieves all available symbol identifiers from the database.
 
 #### Input Parameters {id=input_param_5}
-- request: Standard Django HttpRequest
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/> 
 
 #### Behavior {id=behavior_5}
 - Queries all records from the Symbol model
@@ -77,7 +77,7 @@ This function retrieves all available symbol identifiers from the database.
 This function retrieves all available trading symbols from Redis.
 
 #### Input Parameters {id=input_param_6}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 
 #### Behavior {id=behavior_6}
 - Retrieves all symbol data from Redis hash "exchangeInfo"
@@ -89,7 +89,7 @@ This function retrieves all available trading symbols from Redis.
 This function returns available trading intervals and user's preferred interval.
 
 #### Input Parameters {id=input_param_7}
-- request: Standard Django HttpRequest object
+- request: Standard Django <include from="repeatable-texts.topic" element-id="http-request"/>  object
 
 #### Behavior {id=behavior_7}
 - For authenticated users:

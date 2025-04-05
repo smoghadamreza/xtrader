@@ -22,7 +22,7 @@ This function handles rendering the sign-up form template on `GET` requests and 
 #### Input parameters {id=input_param_1}
 We quote the docstring notes on the input parameters as they seem sufficient. 
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `signup_form`: Form that will be used to sign a user. Defaults to userena's
  [SignUpFormExtra](http://localhost:63342/xtrader/preview/accounts-app-forms.html#signupformextra).
 - `template_name`: String containing the template name that will be used to display the signup form. 
@@ -63,7 +63,7 @@ This function handles rendering the activation process based on the provided `ac
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `activation_key`: String of a SHA1 string of 40 characters long. A SHA1 is always 160 bits long, with 4 bits per character, making it 40 characters long.
 - `template_name`: String containing the template name that is used when the `activation_key` is invalid and the activation fails. Defaults to `userena/activate_fail.html`.
 - `retry_template_name`: String containing the template name that is used when the `activation_key` is expired. Defaults to `userena/activate_retry.html`.
@@ -87,7 +87,7 @@ This function checks if the account is not active and, if so, renders the activa
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `username`: String defining the username of the user that made the action.
 - `template_name`: String defining the name of the template to use. Defaults to ``userena/activate_pending.html``.
 
@@ -117,7 +117,7 @@ This function reissues a new `activation_key` for the user with an expired `acti
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `activation_key`: String of a SHA1 string of 40 characters long. A SHA1 is always 160 bits long, with 4 bits per character, making it 40 characters long.
 - `template_name`: String containing the template name that is used when a new `activation_key` has been created. Defaults to ``userena/activate_retry_success.html``.
 - `extra_context`: Dictionary containing variables which could be added to the template context. Defaults to an empty dictionary.
@@ -142,7 +142,7 @@ This function confirms an email address using a confirmation key. If the confirm
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `confirmation_key`: String with a SHA1 representing the confirmation key used to verify a new email address.
 - `template_name`: String containing the template name which should be rendered when confirmation fails. When confirmation is successful, no template is needed because the user will be redirected to `success_url`. Defaults to ``userena/email_confirm_fail.html``.
 - `success_url`: String containing the URL which is redirected to after a successful confirmation. The supplied argument must be able to be rendered by the ``reverse`` function.
@@ -169,7 +169,7 @@ This function is a simple wrapper for Django's `direct_to_template` view. It ren
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `username`: String defining the username of the user that made the action.
 - `template_name`: String defining the name of the template to use. Defaults to ``userena/signup_complete.html``.
 
@@ -198,7 +198,7 @@ This function checks if the account is disabled and, if so, renders the disabled
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `username`: String defining the username of the user that made the action.
 - `template_name`: String defining the name of the template to use. Defaults to ``userena/signup_complete.html``.
 
@@ -236,7 +236,7 @@ This function handles user sign-in using email or username with password. If the
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `auth_form`: Form to use for signing the user in. Defaults to the :class:`AuthenticationForm` supplied by userena.
 - `template_name`: String defining the name of the template to use. Defaults to ``landing.html``.
 - `redirect_field_name`: Form field name which contains the value for a redirect to the succeeding page. Defaults to ``next`` and is set in ``REDIRECT_FIELD_NAME`` setting.
@@ -278,7 +278,7 @@ This function handles user sign-in using email or username with password. If the
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `auth_form`: Form to use for signing the user in. Defaults to the :class:`AuthenticationForm` supplied by userena.
 - `template_name`: String defining the name of the template to use. Defaults to ``userena/signin_form.html``.
 - `redirect_field_name`: Form field name which contains the value for a redirect to the succeeding page. Defaults to ``next`` and is set in ``REDIRECT_FIELD_NAME`` setting.
@@ -323,7 +323,7 @@ This function allows a user to change their email address. If the form is valid,
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `username`: String of the username which specifies the current account.
 - `email_form`: Form that will be used to change the email address. Defaults to :class:`ChangeEmailForm` supplied by userena.
 - `template_name`: String containing the template to be used to display the email form. Defaults to ``userena/email_form.html``.
@@ -364,7 +364,7 @@ This function allows a user to change their password. If the form is valid, the 
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `username`: String supplying the username of the user whose password is about to be changed.
 - `template_name`: String of the name of the template that is used to display the password change form. Defaults to ``userena/password_form.html``.
 - `pass_form`: Form used to change the password. Default is the form supplied by Django itself named ``PasswordChangeForm``.
@@ -405,7 +405,7 @@ This function allows a user to edit their profile. If the form is valid, the pro
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `username`: Username of the user whose profile should be edited.
 - `edit_profile_form`: Form that is used to edit the profile. The :func:`EditProfileForm.save` method of this form will be called when the form :func:`EditProfileForm.is_valid`. Defaults to :class:`EditProfileForm` from userena.
 - `template_name`: String of the template that is used to render this view. Defaults to ``userena/profile_form.html``.
@@ -439,7 +439,7 @@ This function provides a detailed view of a user's profile. It ensures that the 
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `username`: String of the username of which the profile should be viewed.
 - `template_name`: String representing the template name that should be used to display the profile. Defaults to the value specified in `userena_settings.USERENA_PROFILE_DETAIL_TEMPLATE`.
 - `extra_context`: Dictionary of variables which should be supplied to the template. The ``profile`` key is always the current profile.
@@ -469,7 +469,7 @@ This function returns a paginated list of all public profiles. It can be disable
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `page`: Integer of the active page used for pagination. Defaults to the first page.
 - `template_name`: String defining the name of the template that is used to render the list of all users. Defaults to ``userena/profile_list.html``.
 - `paginate_by`: Integer defining the amount of displayed profiles per page. Defaults to 50 profiles per page.
@@ -512,7 +512,7 @@ This function handles user sign-up, requiring a username, email, and password. A
 
 We quote the docstring notes on the input parameters as they seem sufficient.
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 - `signup_form`: Form that will be used to sign up a user. Defaults to userena's :class:`SignupFormExtra`.
 - `template_name`: String containing the template name that will be used to display the signup form. Defaults to ``userena/signuphtml.html``.
 - `success_url`: String containing the URI which should be redirected to after a successful signup. If not supplied, will redirect to ``userena_signup_complete`` view.
@@ -547,7 +547,7 @@ template and passes the user's context to the template.
 
 #### Input Parameters {id=input_param_16}
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 
 
 #### Behavior {id=behavior_16}
@@ -565,7 +565,7 @@ This function checks if the authenticated user has a Telegram ID associated with
 
 #### Input Parameters {id=input_param_17}
 
-- `request`: The incoming [HttpRequest](https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects).
+- `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/> .
 
 #### Behavior {id=behavior_17}
 

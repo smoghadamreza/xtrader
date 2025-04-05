@@ -4,8 +4,9 @@
 
 <instance-profile id="Writerside_libraries"
                   name="Writerside_libraries" is-library="true"
-                  start-page="repeatable-texts.topic">
+                  start-page="architecture-diagrams.topic">
 
+    <toc-element topic="architecture-diagrams.topic"/>
     <toc-element topic="repeatable-texts.topic"/>
     <toc-element topic="third-party-libraries-links.topic"/>
 </instance-profile>
