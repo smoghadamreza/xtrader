@@ -22,3 +22,5 @@ __pycache__/*
 db.sqlite3
 errors.log
 /data
+
+/venv

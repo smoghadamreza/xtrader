@@ -6,7 +6,7 @@ import datetime
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils.timezone import utc
+from datetime import timezone
 import easy_thumbnails.fields
 import userena.models
 
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('mugshot', easy_thumbnails.fields.ThumbnailerImageField(blank=True, help_text='A personal image displayed in your profile.', upload_to=userena.models.upload_to_mugshot, verbose_name='mugshot')),
                 ('privacy', models.CharField(choices=[('open', 'Open'), ('registered', 'Registered'), ('closed', 'Closed')], default='registered', help_text='Designates who can view your profile.', max_length=15, verbose_name='privacy')),
                 ('cellPhone', models.CharField(blank=True, max_length=11, null=True, verbose_name='شماره تلفن ')),
-                ('expire', models.DateField(default=datetime.datetime(2020, 12, 24, 5, 28, 10, 760313, tzinfo=utc))),
+                ('expire', models.DateField(default=datetime.datetime(2020, 12, 24, 5, 28, 10, 760313, tzinfo=timezone.utc))),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='my_profile', to=settings.AUTH_USER_MODEL, verbose_name='کاربر')),
             ],
             options={
