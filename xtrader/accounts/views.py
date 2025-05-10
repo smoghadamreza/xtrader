@@ -1103,7 +1103,7 @@ def signupsample(request, signup_form=SignupFormExtra,
 
     if request.method == 'POST':
         # info = {key: value[0] for key, value in dict(request.POST).items()}
-        info = json.loads(request.body.decode())
+        info = request.POST.copy()
         info['email'] = info['email'].lower()
         info['username'] = info['username'].lower()
         form = signup_form(info, request.FILES)
