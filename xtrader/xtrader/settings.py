@@ -160,6 +160,13 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+MIGRATION_MODULES = {
+    'userena': 'xtrader.migrations.userena',
+    'guardian': 'xtrader.migrations.guardian',
+    'easy_thumbnails': 'xtrader.migrations.easy_thumbnails'
+}
+
 USE_TZ = True
 TIME_ZONE = 'Asia/Tehran'
 # Password validation

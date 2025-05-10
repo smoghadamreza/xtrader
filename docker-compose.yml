@@ -7,12 +7,14 @@ services:
       dockerfile: Dockerfile
     command: >
       sh -c "conda run -n xtrader-env python manage.py wait_for_db &&
+             conda run -n xtrader-env python manage.py makemigrations &&
              conda run -n xtrader-env python manage.py migrate &&
              conda run -n xtrader-env python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
     volumes:
       - ./xtrader:/xtrader
+      - ./xtrader/migrations:/xtrader/migrations
       - ./data/web:/vol/web
     environment:
       - SECRET_KEY=devsecretkey
