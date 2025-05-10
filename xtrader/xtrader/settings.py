@@ -111,7 +111,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'xtrader.urls'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # TODO: For now we only pring the email to the console.
+
 EMAIL_PORT = 587
 EMAIL_HOST = ''
 EMAIL_HOST_USER = ''

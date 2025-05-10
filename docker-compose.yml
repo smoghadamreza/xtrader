@@ -16,6 +16,8 @@ services:
       - ./xtrader:/xtrader
       - ./xtrader/migrations:/xtrader/migrations
       - ./data/web:/vol/web
+      - ./xtrader/media:/vol/web/media
+      - ./xtrader/static:/vol/web/static
     environment:
       - SECRET_KEY=devsecretkey
       - DEBUG=1
