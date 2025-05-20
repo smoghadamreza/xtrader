@@ -43,7 +43,7 @@ urlpatterns = [
     re_path(r"^signin/$", userena_views.signin, name="userena_signin"),
     re_path(
         r"^signout/$",
-        userena_views.SignoutView,
+        userena_views.signout,
         name="userena_signout",
     ),
     # Reset password

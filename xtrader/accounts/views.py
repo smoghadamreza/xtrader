@@ -1,10 +1,10 @@
 from django.db import transaction
 from django.urls import reverse
 from django.shortcuts import redirect, get_object_or_404, render
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.views import LogoutView as logout
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.contrib import messages
@@ -683,7 +683,7 @@ def signin(
                 else:
                     return redirect(
                         reverse(
-                            "userena_activate_pending",
+                            "accounts:userena_activate_pending",
                             kwargs={"username": user.username},
                         )
                     )
@@ -704,28 +704,24 @@ def signin(
 
 
 @secure_required
-def SignoutView(request, next_page=userena_settings.USERENA_REDIRECT_ON_SIGNOUT,
+def signout(request, next_page=userena_settings.USERENA_REDIRECT_ON_SIGNOUT,
             template_name='userena/signout.html', *args, **kwargs):
     """
     Signs out the user and adds a success message ``You have been signed
     out.`` If next_page is defined you will be redirected to the URI. If
     not the template in template_name is used.
-
-    :param next_page:
-        A string which specifies the URI to redirect to.
-
-    :param template_name:
-        String defining the name of the template to use. Defaults to
-        ``userena/signout.html``.
-
     """
-    if request.user.is_authenticated and userena_settings.USERENA_USE_MESSAGES:  # pragma: no cover
+    if request.user.is_authenticated and userena_settings.USERENA_USE_MESSAGES:
         messages.success(request, _('You have been signed out.'), fail_silently=True)
+    
+    # Send the signout signal
     userena_signals.account_signout.send(sender=None, user=request.user)
-    Signout(request)
+    
+    # Perform the actual logout
+    logout(request)
+    
+    # Return JSON response as your current implementation expects
     return JsonResponse({})
-    # return Signout(request, next_page, template_name, *args, **kwargs)
-
 
 @secure_required
 @csrf_exempt
