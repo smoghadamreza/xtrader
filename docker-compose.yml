@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     command: >
       sh -c "conda run -n xtrader-env python manage.py wait_for_db &&
+             conda run -n xtrader-env python manage.py collectstatic --noinput &&
              conda run -n xtrader-env python manage.py makemigrations &&
              conda run -n xtrader-env python manage.py migrate &&
              conda run -n xtrader-env python manage.py runserver 0.0.0.0:8000"
@@ -15,7 +16,6 @@ services:
     volumes:
       - ./xtrader:/xtrader
       - ./xtrader/migrations:/xtrader/migrations
-      - ./data/web:/vol/web
       - ./xtrader/media:/vol/web/media
       - ./xtrader/static:/vol/web/static
     environment:

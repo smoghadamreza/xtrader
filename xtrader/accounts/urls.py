@@ -55,7 +55,7 @@ urlpatterns = [
             extra_context={
                 "without_usernames": userena_settings.USERENA_WITHOUT_USERNAMES
             },
-            success_url=reverse_lazy("userena_password_reset_done"),
+            success_url=reverse_lazy("accounts:userena_password_reset_done"),  # Added namespace
         ),
         name="userena_password_reset",
     ),
