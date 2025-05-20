@@ -1,22 +1,20 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% block title %}بک تست{% endblock %}
 {% block headContent %}
 {% csrf_token %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/backtest.css' %}?v=1"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/backtest.css' %}?v=1" />
 <!--    <script src="//raw.githack.com/tahajahangir/jdate/master/jdate.min.js"></script>-->
 <script>
-        var symbol_id = "{{SymbolId}}";
+    var symbol_id = "{{SymbolId}}";
 
 
 </script>
 <style>
-    a{
+    a {
         font-family: IRANSans;
     }
-
-
 </style>
 <script type="text/javascript" src="{% static 'js/scripts.js' %}?v=3.0.1"></script>
 <script type="text/javascript" src="{% static 'js/finance.js' %}?v=1"></script>
@@ -25,7 +23,7 @@
 {% load i18n %}
 {% block bodyContent %}
 <div dir="ltr" style="height: 100%;overflow: auto;">
-<!--    <br>-->
+    <!--    <br>-->
     <div id="timeframes" style="display: none">
         <!--        <button onclick="changeTimeFrame(this)" id="1d">1d</button>-->
         <!--        <button onclick="changeTimeFrame(this)" id="4h">4h</button>-->
@@ -33,7 +31,7 @@
         <!--        <button onclick="changeTimeFrame(this)" id="30m">30m</button>-->
         <!--        <button onclick="changeTimeFrame(this)" id="15m">15m</button>-->
     </div>
-<!--    <br>-->
+    <!--    <br>-->
     <div id="container1" style="background-color: #1c1f32;">
         <div id="container" style=" min-width: 310px;min-height: 600px; width: 100%"></div>
     </div>
@@ -41,7 +39,8 @@
     <div dir="rtl">
         <!--            {#            <div class="ui right aligned segment"><h3>فیلتر ها و اندیکاتورها:</h3></div>#}-->
         <!--            {#            <br>#}-->
-        <div class="ui right aligned segment"><p style="display: inline">ساخت فیلتر: </p>
+        <div class="ui right aligned segment">
+            <p style="display: inline">ساخت فیلتر: </p>
             <select onchange="show_div(this.value)">
                 <option value="cross">قطع دادن</option>
                 <option value="ascending_main">صعودی یا نزولی بودن</option>
@@ -71,8 +70,7 @@
                         <div>
                             اندیکاتور:
                             <div class="about">
-                                <select id="shorter" dir="ltr" class="long-select"
-                                        onchange="insert_param('shorter');
+                                <select id="shorter" dir="ltr" class="long-select" onchange="insert_param('shorter');
                         ">
                                     <option value="">shorter</option>
                                 </select>
@@ -90,8 +88,7 @@
                             <!--                                {# </div> #}-->
                             اندیکاتور:
                             <div class="about">
-                                <select id="longer" dir="ltr" class="long-select"
-                                        onchange="insert_param('longer');
+                                <select id="longer" dir="ltr" class="long-select" onchange="insert_param('longer');
                         /*var w = (this.value.length + 1) * 8+4 ;if(w<70){w=130;} this.style.width = w + 'px';*/">
                                     <option value="">longer</option>
                                 </select>
@@ -110,9 +107,8 @@
                             را در هنگام خرید رو به بالا و در هنگام فروش رو به پایین قطع کند. همچنین سیگنال این فیلتر
                             برای
                             <input id="valid_cross" value=2 type="number"
-                                   onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
-                                   style="width: 6%"
-                                   required>
+                                onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
+                                style="width: 6%" required>
                             کندل معتبر باشد.
                             <br>
                             نمودار
@@ -120,8 +116,8 @@
                                 <option value="on_chart">روی قیمت</option>
                                 <option value="below_chart">جدید</option>
                             </select>
-                            <button class="positive ui button" style="float: left;"
-                                    onclick="call_add('cross')">اضافه کردن
+                            <button class="positive ui button" style="float: left;" onclick="call_add('cross')">اضافه
+                                کردن
                             </button>
 
                         </div>
@@ -131,7 +127,7 @@
                         <div>
                             اندیکاتور
                             <select id="ascending" dir="ltr" class="long-select"
-                                    onchange="insert_param('ascending'); /*var w = (this.value.length + 1) * 8+4 ;if(w<70){w=130;} this.style.width = w + 'px';*/">
+                                onchange="insert_param('ascending'); /*var w = (this.value.length + 1) * 8+4 ;if(w<70){w=130;} this.style.width = w + 'px';*/">
                                 <option value="">ascending</option>
                             </select>
                             <p style="margin-right: 3%; display: inline-block">با اعمال روی:</p>
@@ -146,10 +142,9 @@
                             <p id="ascending_param" dir="ltr" style="text-align: right"></p>
                             برای <input type="number" id="days_ascending" value="3" style="width: 6%"> کندل, در هنگام
                             خرید صعودی و در هنگام فروش نزولی باشد. همچنین سیگنال این فیلتر برای
-                            <input
-                                    type="number" id="valid_ascending"
-                                    onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
-                                    value="2" style="width: 6%"> کندل معتبر باشد.
+                            <input type="number" id="valid_ascending"
+                                onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
+                                value="2" style="width: 6%"> کندل معتبر باشد.
                             <br><br>
                             نمودار
                             <select id="ascending_chart_place">
@@ -157,7 +152,7 @@
                                 <option value="on_chart">روی قیمت</option>
                             </select>
                             <button type="submit" class="positive ui button" style="float: left;"
-                                    onclick="call_add('ascending')">اضافه کردن
+                                onclick="call_add('ascending')">اضافه کردن
                             </button>
                         </div>
                     </div>
@@ -192,9 +187,8 @@
                         </select>
                         <p id="minor_param" dir="ltr" style="text-align: right"></p>
                         بیشتر باشد. همچنین سیگنال این فیلتر برای <input type="number" id="valid_more"
-                                                                        onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
-                                                                        value="2"
-                                                                        style="width: 6%"> معتبر باشد.
+                            onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
+                            value="2" style="width: 6%"> معتبر باشد.
                         <br><br>
                         نمودار
                         <select id="more_chart_place">
@@ -203,14 +197,13 @@
                         </select>
                         </select>
                         <button type="submit" class="positive ui button" style="float: left;"
-                                onclick="call_add('more')">اضافه کردن
+                            onclick="call_add('more')">اضافه کردن
                         </button>
                     </div>
-                    <div class="ui right aligned segment" style="display: none"
-                         id="special_methods" dir="rtl">
+                    <div class="ui right aligned segment" style="display: none" id="special_methods" dir="rtl">
                         <p>تشخیص سیگنال یک اندیکاتور با روش خاص خودش: </p>
                         <select id="special" dir="ltr" class="long-select"
-                                onchange="insert_param('special');describe(this.value);">
+                            onchange="insert_param('special');describe(this.value);">
                             <option value="">
                                 special
                             </option>
@@ -230,8 +223,8 @@
                         <p id="special_param" dir="ltr" style="text-align: right"></p>
                         <p id="describe"></p>
                         سیگنال این فیلتر برای <input type="number" id="valid_special"
-                                                     onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
-                                                     value="2" style="width: 6%">
+                            onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
+                            value="2" style="width: 6%">
                         کندل
                         معتبر باشد.
                         <br><br>
@@ -241,7 +234,7 @@
                             <option value="below_chart">جدید</option>
                         </select>
                         <button type="submit" class="positive ui button" style="float: left;"
-                                onclick="call_add('special')">اضافه کردن
+                            onclick="call_add('special')">اضافه کردن
                         </button>
                     </div>
 
@@ -276,11 +269,11 @@
 
 
                     <div class="ui right aligned segment" id="TSE_Filters" style="display:none;" dir="rtl"
-                         type="number">
-                            <textarea style="color: black;" id="filters_script" type="query" dir="ltr"
-                                      placeholder="فیلتر خود را اینجا بنویسید"></textarea>
+                        type="number">
+                        <textarea style="color: black;" id="filters_script" type="query" dir="ltr"
+                            placeholder="فیلتر خود را اینجا بنویسید"></textarea>
                         <div type="submit" class="ui button" style="float: left;"
-                             onclick="filter_market(document.getElementById('filters_script').value)">اسکن بازار
+                            onclick="filter_market(document.getElementById('filters_script').value)">اسکن بازار
                         </div>
                         <br><br>
                     </div>
@@ -290,8 +283,7 @@
                         <div>
                             در هنگام خرید اندیکاتور
                             <div class="about">
-                                <select id="buying shorter" dir="ltr" class="long-select"
-                                        onchange="insert_param('buying shorter');document.getElementById('selling shorter').value=this.value;insert_param('selling shorter');
+                                <select id="buying shorter" dir="ltr" class="long-select" onchange="insert_param('buying shorter');document.getElementById('selling shorter').value=this.value;insert_param('selling shorter');
                         ">
                                     <option value="">buying shorter</option>
                                 </select>
@@ -309,7 +301,7 @@
                             اندیکاتور
                             <div class="about">
                                 <select id="buying longer" dir="ltr" class="long-select"
-                                        onchange="insert_param('buying longer');document.getElementById('selling longer').value=this.value;insert_param('selling longer');">
+                                    onchange="insert_param('buying longer');document.getElementById('selling longer').value=this.value;insert_param('selling longer');">
                                     <option value="">buying longer</option>
                                 </select>
                                 <!--                                    {# با اعمال روی: #}-->
@@ -327,7 +319,7 @@
                             و در هنگام فروش اندیکاتور
                             <div class="about">
                                 <select id="selling shorter" dir="ltr" class="long-select"
-                                        onchange="insert_param('selling shorter');">
+                                    onchange="insert_param('selling shorter');">
                                     <option value="">selling shorter</option>
                                 </select>
                             </div>
@@ -344,7 +336,7 @@
                             اندیکاتور
                             <div class="about">
                                 <select id="selling longer" class="long-select"
-                                        onchange="insert_param('selling longer');" dir="ltr">
+                                    onchange="insert_param('selling longer');" dir="ltr">
                                     <option value="">selling longer</option>
                                 </select>
                             </div>
@@ -360,9 +352,8 @@
                             را رو به پایین قطع کند.
                             <p id="selling longer_param" dir="ltr" style="text-align: right"></p>
                             همچنین سیگنال این فیلتر برای <input id="valid_advance_cross"
-                                                                onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
-                                                                value=2 type="number"
-                                                                style="width: 6%" required>
+                                onchange="let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);"
+                                value=2 type="number" style="width: 6%" required>
                             کندل معتبر باشد.
                             <br><br>
                             نمودار
@@ -371,7 +362,7 @@
                                 <option value="below_chart">جدید</option>
                             </select>
                             <button type="submit" class="positive ui button" style="float: left;"
-                                    onclick="call_add('advance_cross')">اضافه کردن
+                                onclick="call_add('advance_cross')">اضافه کردن
                             </button>
 
                         </div>
@@ -400,7 +391,7 @@
                             <option value="below_chart">جدید</option>
                         </select>
                         <button type="submit" class="positive ui button" style="float: left; font-family: IRANSans"
-                                onclick="call_add('draw')">
+                            onclick="call_add('draw')">
                             اضافه
                             کردن
                         </button>
@@ -548,7 +539,7 @@
                                     </td>
                                     <td>
                                         <input id="strategySavingStatus" style="background-color: #1c1f32; width:10rem"
-                                               disabled>
+                                            disabled>
                                     </td>
 
                                 </div>
@@ -558,7 +549,7 @@
                                     </td>
                                     <td>
                                         <select style="width:10rem" id="strategyTimeFrame"
-                                                onchange="changeTimeFrame(this.value)"></select>
+                                            onchange="changeTimeFrame(this.value)"></select>
                                     </td>
 
                                 </div>
@@ -570,8 +561,8 @@
                                         <select style="width: 10rem;" id="watchListNames" onchange="changeWatchList()">
                                             <option>پیش فرض</option>
                                         </select>
-                                        <a href="/profile/setup/?s=watchlist" title="ساخت واج‌لیست جدید"><i class="plus icon"
-                                                                                 style="color: #00ca9d"></i></a>
+                                        <a href="/profile/setup/?s=watchlist" title="ساخت واج‌لیست جدید"><i
+                                                class="plus icon" style="color: #00ca9d"></i></a>
                                         <!--                                        <i class="plus circle icon"></i>-->
                                         <!--                                        <i class="plus square icon"></i>-->
                                         <!--                                        <i class="plus square outline icon"></i>-->
@@ -592,10 +583,16 @@
                                 <!--<i class="trash alternate outline icon" style="color:rgb(227, 92, 103)"></i>-->
                             </div>
                             <div class="ui top attached tabular menu" dir="rtl" style="color:white">
-                                <button id="back_test_button" class="item" onclick="toggle(this);this.style.color = 'white';">بک تست</button>
-                                <button id="scan_button" class="item" onclick="toggle(this);this.style.color = 'white';">اسکن بازار</button>
-                                <button id="delete_all_button" class="left negative item" onclick="delete_all(['symbol_ids', 'indicators', 'back test', 'scan', 'filters'], true);this.style.color = 'white';">حذف استراتژی</button>
-                                <button id="save_button" class="item" onclick="toggle(this);save_filters('default');this.style.color = 'white';">ذخیره استراتژی</button>
+                                <button id="back_test_button" class="item"
+                                    onclick="toggle(this);this.style.color = 'white';">بک تست</button>
+                                <button id="scan_button" class="item"
+                                    onclick="toggle(this);this.style.color = 'white';">اسکن بازار</button>
+                                <button id="delete_all_button" class="left negative item"
+                                    onclick="delete_all(['symbol_ids', 'indicators', 'back test', 'scan', 'filters'], true);this.style.color = 'white';">حذف
+                                    استراتژی</button>
+                                <button id="save_button" class="item"
+                                    onclick="toggle(this);save_filters('default');this.style.color = 'white';">ذخیره
+                                    استراتژی</button>
                             </div>
                         </div>
                     </div>
@@ -608,7 +605,7 @@
                         <div id="scan result" class="ui form" align="left">
                             <div class="ui horizontal segments">
                                 <div class="ui right aligned segment" dir="rtl"
-                                     style="text-align:right;width: 50%;max-width: 50%">
+                                    style="text-align:right;width: 50%;max-width: 50%">
                                     <p class="title row">سیگنال خرید:</p>
                                     <div style="max-height: 200px;overflow:auto">
                                         <div id="scan result buy" class="ui relaxed divided list">
@@ -616,7 +613,7 @@
                                     </div>
                                 </div>
                                 <div class="ui right aligned segment" dir="rtl"
-                                     style="text-align:right;width: 50%;max-width: 50%">
+                                    style="text-align:right;width: 50%;max-width: 50%">
                                     <p class="title row">سیگنال فروش:</p>
                                     <div style="max-height: 200px;overflow:auto">
                                         <div id="scan result sell" class="ui relaxed divided list">

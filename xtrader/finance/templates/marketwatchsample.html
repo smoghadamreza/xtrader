@@ -1,70 +1,70 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% block title %}دیده بان{% endblock %}
 
 {% block headContent %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/marketwatchstyle.css' %}"/>
-    <script src="{% static 'js/marketwatch.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/marketwatchstyle.css' %}" />
+<script src="{% static 'js/marketwatch.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.js"></script>
 
 {% endblock headContent %}
 
 {% load i18n %}
 {% block bodyContent %}
 
-    <div id="nav-bar">
-        <span id="navbar__title">دیده بان</span>
+<div id="nav-bar">
+    <span id="navbar__title">دیده بان</span>
+</div>
+<div style="margin-bottom:-0.5em;">
+    <span style="float: right; direction: rtl;margin-right:0.35em;padding-top:0.5em;">
+        <div class="ui mini button btn" style="background-color : #1c1f32; color : white;" onclick="show_kind('all')">
+            همه</div>
+        <div class="ui mini button" style="background-color : #1c1f32; color : white;"
+            onclick="show_kind('stockwatch')">تابلو</div>
+        <div class="ui mini button" style="background-color : #1c1f32; color : white;"
+            onclick="show_kind('fundamental')">بنیادی</div>
+        <div class="ui mini button" style="background-color : #1c1f32; color : white;" title="اعضا ویژه">VIP</div>
+    </span>
+    <span>
+        <ul style="display:flex;margin-left:0.34em;margin-top:-0.5em;">
+            <a onclick="reset_filters()">
+                <li class="other-btns" id="refresh-btn" title="تنظیمات پیش فرض"></li>
+            </a>
+            <a onclick="change_dir()">
+                <li class="other-btns" id="align-btn" title="تغییر جهت"></li>
+            </a>
+        </ul>
+    </span>
+</div>
+<div id="filters-parent">
+    <div id="filters-place" dir="rtl">
+        <div id="stockwatch"></div>
+        <div id="fundamental"></div>
     </div>
-    <div style="margin-bottom:-0.5em;">
-        <span style="float: right; direction: rtl;margin-right:0.35em;padding-top:0.5em;">
-            <div class="ui mini button btn" style="background-color : #1c1f32; color : white;"
-                 onclick="show_kind('all')">همه</div>
-            <div class="ui mini button" style="background-color : #1c1f32; color : white;"
-                 onclick="show_kind('stockwatch')">تابلو</div>
-            <div class="ui mini button" style="background-color : #1c1f32; color : white;"
-                 onclick="show_kind('fundamental')">بنیادی</div>
-            <div class="ui mini button" style="background-color : #1c1f32; color : white;" title="اعضا ویژه">VIP</div>
-        </span>
-        <span>
-            <ul style="display:flex;margin-left:0.34em;margin-top:-0.5em;">
-                <a onclick="reset_filters()">
-                    <li class="other-btns" id="refresh-btn" title="تنظیمات پیش فرض"></li>
-                </a>
-                <a onclick="change_dir()">
-                    <li class="other-btns" id="align-btn" title="تغییر جهت"></li>
-                </a>
-            </ul>
-        </span>
-    </div>
-    <div id="filters-parent">
-        <div id="filters-place" dir="rtl">
-            <div id="stockwatch"></div>
-            <div id="fundamental"></div>
-        </div>
-    </div>
+</div>
 
 
-    <div class="divTable" style="direction: rtl;">
-        <div class="divTableBody" id="filters_scan_place">
-        </div>
+<div class="divTable" style="direction: rtl;">
+    <div class="divTableBody" id="filters_scan_place">
     </div>
-    <script type="text/javascript">
-        var filters_data;
-        $(document).ready(function () {
-            $.ajax({
-                url: '/getfilters',
-                success: function (givenfilters) {
-                    filters_data = JSON.parse(givenfilters);
-                    insertfilters(filters_data);
+</div>
+<script type="text/javascript">
+    var filters_data;
+    $(document).ready(function () {
+        $.ajax({
+            url: '/getfilters',
+            success: function (givenfilters) {
+                filters_data = JSON.parse(givenfilters);
+                insertfilters(filters_data);
+                read_filters();
+                $("select").change(function () {
                     read_filters();
-                    $("select").change(function () {
-                        read_filters();
-                    });
-                },
-                error: function (e) {
-                    console.log(e)
-                }
-            });
+                });
+            },
+            error: function (e) {
+                console.log(e)
+            }
         });
-    </script>
+    });
+</script>
 {% endblock bodyContent %}

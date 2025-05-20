@@ -1,73 +1,74 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% load humanize %}
 {% block title %}{{ title }}{% endblock %}
 
 {% block headContent %}
-    <meta charset="UTF-8">
-    <style>
-        .center {
-            margin: auto;
-            width: 80%;
-            border: 0.5px solid white;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-    </style>
+<meta charset="UTF-8">
+<style>
+    .center {
+        margin: auto;
+        width: 80%;
+        border: 0.5px solid white;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+</style>
 
 {% endblock headContent %}
 
 {% load i18n %}
 {% block bodyContent %}
+<br>
+<div class="ui container" dir="rtl">
     <br>
-    <div class="ui container" dir="rtl">
-        <br>
-        <p style="text-align: right">
-            برای استفاده از خدمات دیده‌بان و ابزار‌ها تکنیکال لطفا حساب کاربری خود را ارتقا دهید.
-        </p>
-        <br>
-        <div class="ui inverted segment" style="background: #292d48">
-            <p class="ui right floated" style="text-align: right; color:#00CA9D">انتخاب حساب کاربری</p>
-            <div class="ui clearing divider"></div>
-        </div>
-        <br>
-        <table style="width: 90%;text-align: center">
-            <tr>
-                {% for subscribe in subscribes %}
-                    <td>
-                        <div name="{{ subscribe.id }}" class="center" style="background: #1c1f32; font-size: larger"
-                             onclick="choose(this)">
-                            اشتراک {{ subscribe.name }}
-                            <br>
-{{ subscribe.price | intcomma:False }}                            تومان/{{ subscribe.value | intcomma }} ماه
-                            <br>
-                        </div>
-                    </td>
-                {% endfor %}
-            </tr>
-        </table>
-        <div class="ui inverted segment" style="background: #292d48">
-            <div class="ui clearing divider"></div>
-            <div class="ui right large button" style="width: 20%; background: #00CA9D; float: left" onclick="pay()">پرداخت</div>
+    <p style="text-align: right">
+        برای استفاده از خدمات دیده‌بان و ابزار‌ها تکنیکال لطفا حساب کاربری خود را ارتقا دهید.
+    </p>
+    <br>
+    <div class="ui inverted segment" style="background: #292d48">
+        <p class="ui right floated" style="text-align: right; color:#00CA9D">انتخاب حساب کاربری</p>
+        <div class="ui clearing divider"></div>
+    </div>
+    <br>
+    <table style="width: 90%;text-align: center">
+        <tr>
+            {% for subscribe in subscribes %}
+            <td>
+                <div name="{{ subscribe.id }}" class="center" style="background: #1c1f32; font-size: larger"
+                    onclick="choose(this)">
+                    اشتراک {{ subscribe.name }}
+                    <br>
+                    {{ subscribe.price | intcomma:False }} تومان/{{ subscribe.value | intcomma }} ماه
+                    <br>
+                </div>
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+    <div class="ui inverted segment" style="background: #292d48">
+        <div class="ui clearing divider"></div>
+        <div class="ui right large button" style="width: 20%; background: #00CA9D; float: left" onclick="pay()">پرداخت
         </div>
     </div>
-    <script>
-        var choosen;
-        function choose(obj) {
-            var options = document.getElementsByClassName('center');
-            for (var i = 0; i < options.length; i++) {
-                options[i].style.border = '0.5px solid white';
-            }
-            obj.style.border = '0.5px solid #00CA9D';
-            choosen = obj.getAttribute('name');
+</div>
+<script>
+    var choosen;
+    function choose(obj) {
+        var options = document.getElementsByClassName('center');
+        for (var i = 0; i < options.length; i++) {
+            options[i].style.border = '0.5px solid white';
         }
-        function pick_first() {
-           var options = document.getElementsByClassName('center');
-           choose(options[0]);
-        }
-        pick_first();
-        function pay(){
-            window.location = '/accounting/start/' + choosen;
-        }
-    </script>
+        obj.style.border = '0.5px solid #00CA9D';
+        choosen = obj.getAttribute('name');
+    }
+    function pick_first() {
+        var options = document.getElementsByClassName('center');
+        choose(options[0]);
+    }
+    pick_first();
+    function pay() {
+        window.location = '/accounting/start/' + choosen;
+    }
+</script>
 {% endblock bodyContent %}

@@ -1,41 +1,41 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% load i18n %}
 
 {% block headContent %}
-    <title>Bootstrap Example</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/settings.css' %}"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<title>Bootstrap Example</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/settings.css' %}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 {% endblock headContent %}
 
 {% block bodyContent %}
 
-    <div id="nav-bar">
-        <span id="navbar__title">تنظیمات</span>
+<div id="nav-bar">
+    <span id="navbar__title">تنظیمات</span>
+</div>
+
+<div class="container">
+
+    <ul class="settings-tab">
+        <li class="active main-tab"><a data-toggle="tab" href="#user-info">حساب کاربری</a></li>
+        <li><a data-toggle="tab" href="#user-edit">ویرایش</a></li>
+        <li><a data-toggle="tab" href="#user-settings">تنظیمات عمومی</a></li>
+    </ul>
+
+
+</div>
+
+<div class="tab-content">
+    <div id="user-info">
+        {% include "user-info.html" %}
     </div>
 
-    <div class="container">
-
-        <ul class="settings-tab">
-            <li class="active main-tab"><a data-toggle="tab" href="#user-info">حساب کاربری</a></li>
-            <li><a data-toggle="tab" href="#user-edit">ویرایش</a></li>
-            <li><a data-toggle="tab" href="#user-settings">تنظیمات عمومی</a></li>
-        </ul>
-
-
+    <div id="user-edit" style="display: none">
+        {% include "user-edit.html" %}
     </div>
 
-            <div class="tab-content">
-            <div id="user-info">
-                {% include "user-info.html" %}
-            </div>
-
-            <div id="user-edit" style="display: none">
-                {% include "user-edit.html" %}
-            </div>
-
-            <div id="user-settings" style="display: none">
-                {% include "user-settings.html" %}
-            </div>
-        </div>
+    <div id="user-settings" style="display: none">
+        {% include "user-settings.html" %}
+    </div>
+</div>
 {% endblock bodyContent %}
