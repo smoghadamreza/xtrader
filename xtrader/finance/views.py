@@ -258,7 +258,7 @@ def index(request):
 
 
 @login_required(login_url='accounts:userena_signin')
-def stockwatch(request, SymbolId):
+def stockwatch(request, SymbolId=None):
     if not SymbolId:
         return redirect('/spot/BTCUSDT')
     return redirect('/spot/' + SymbolId)
@@ -271,10 +271,20 @@ def stockwatch(request, SymbolId):
 
 @login_required(login_url='accounts:userena_signin')
 def spot(request, symbol_id):
-    try:
-        result = oms.Binance.get_symbol_info(symbol_id)
-    except Exception as e:
-        return redirect('/spot/BTCUSDT')
+    # Validate symbol_id first
+    if not symbol_id or symbol_id.upper() != 'BTCUSDT':
+        try:
+            result = oms.Binance.get_symbol_info(symbol_id)
+        except Exception as e:
+            # Only redirect if the current symbol isn't BTCUSDT
+            if symbol_id != 'BTCUSDT':
+                return redirect('/spot/BTCUSDT')
+            else:
+                # If BTCUSDT fails, show an error page
+                return render(request, 'error.html', {'message': 'Default symbol not available'})
+    
+    # If we get here, either symbol_id is BTCUSDT or it passed validation
+    result = oms.Binance.get_symbol_info(symbol_id)
     stockWatchDict = {'SymbolId': symbol_id, 'title': result['baseAsset'], **get_user(request)}
     return render(request, 'stockwatch1.html', stockWatchDict)
 
