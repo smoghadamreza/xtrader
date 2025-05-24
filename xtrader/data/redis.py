@@ -3,9 +3,9 @@ import requests
 import time
 from django.conf import settings
 import json
-# from data import testdate, dates
 
-r = redis.StrictRedis(host='localhost', port=6379, db=settings.REDIS_DB)
+
+r = redis.Redis(host='redis', port=6379, db=settings.REDIS_DB)
 needed_keys = ['date', 'open', 'high', 'low', 'close', 'volume']
 intervals = settings.INTERVALS
 
@@ -29,8 +29,10 @@ def hset(name, key, value):
 
 
 def hget(name, key):
-    return json.loads(r.hget(name=name, key=key).decode())
-
+    value = r.hget(name=name, key=key)
+    if value is None:
+        return {}
+    return json.loads(value.decode())
 
 def delete(names):
     return r.delete(*names)

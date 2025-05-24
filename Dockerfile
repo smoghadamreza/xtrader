@@ -24,6 +24,7 @@ RUN apt-get update && \
     postgresql-client \
     wget \
     vim \
+    redis-tools  \
     less && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

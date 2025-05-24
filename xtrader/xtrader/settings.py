@@ -86,14 +86,6 @@ INSTALLED_APPS = [
     'bootstrap3',
     'aum',
 ]
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],  # Use service name and container port
-        },
-    },
-}
 SITE_ID = 1
 REDIS_DB = 0
 # settings.py
@@ -143,7 +135,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.environ.get('REDIS_URL', 'redis://localhost:6379'))],
+            "hosts": [("redis", 6379)],
         },
     },
 }
