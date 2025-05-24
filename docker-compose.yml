@@ -11,6 +11,7 @@ services:
              conda run -n xtrader-env python manage.py collectstatic --noinput &&
              conda run -n xtrader-env python manage.py makemigrations &&
              conda run -n xtrader-env python manage.py migrate &&
+             conda run -n xtrader-env python manage.py graph_models -a -g -o ../Writerside/images/ERD.png &&
              conda run -n xtrader-env python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000

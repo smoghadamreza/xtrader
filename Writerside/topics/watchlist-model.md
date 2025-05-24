@@ -1,6 +1,8 @@
 # WatchList
 
-This model represents a user's watchlist, which contains a #TODO.
+This model represents a user's watchlist, which contains a collection of financial instruments 
+(in %product% those are cryptocurrencies) that the user wants to monitor for potential trading 
+opportunities or market movements.
 
 ## What does it inherit?
 

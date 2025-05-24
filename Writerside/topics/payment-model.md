@@ -35,7 +35,7 @@ The `Payment` class represents a purchase of  [](subscription-model.md).
         <td>amount</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.float-field"/></td>
         <td>N/A</td>
-        <td>The amount of the payment in Rials #TODO. Defaults to <code>0</code>.</td>
+        <td>The amount of the payment in USD. Defaults to <code>0</code>.</td>
     </tr>
     <tr>
         <td>reason</td>

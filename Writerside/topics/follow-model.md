@@ -2,7 +2,7 @@
 
 The `Follow` class represents a one-way relationship from a `User` to a [](pro-trader-model.md). For a better intuition you
 can think of it as the same relation in popular social medias like `Instagram`. A `User` can view and inspect 
-activities of the `ProTrader`. #TODO
+activities of the `ProTrader` they follow, including potentially copying their trades or subscribing to their signals.
 
 ## What does it inherit?
 
@@ -53,7 +53,7 @@ activities of the `ProTrader`. #TODO
   - **output**: The status of the `subscribe` function. If `True` the function have succeeded completely, and if `False`
      some issue have occurred along the way like insufficient fund in the `User`'s [](accounts-wallet-model.md). 
 
-### copytrade  #TODO: very unreadable function.
+### copytrade
   - **usage**: A `User` can subscribe to the [](pro-trader-model.md) that he/she is following. By doing so The subscription fee plus
     %product% service fee will be deducted from the `User`'s [](accounts-wallet-model.md) and added to the corresponding [](accounts-wallet-model.md)s.
   - **signature**: `copytrade(user, brand, action)`

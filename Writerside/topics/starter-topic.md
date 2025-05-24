@@ -1,79 +1,44 @@
-# About xtrader
+# XTrader: Secure Crypto Trading for Iranian Users
 
-<!--Writerside adds this topic when you create a new documentation project.
-You can use it as a sandbox to play with Writerside features, and remove it from the TOC when you don't need it anymore.-->
+XTrader is a comprehensive trading platform designed to empower Iranian cryptocurrency traders
+by providing secure, unrestricted access to binance.com despite regional restrictions and sanctions. 
+Our platform combines advanced trading tools with a unique proxy infrastructure that masks users' geographical
+locations, allowing them to trade on Binance without fear of account bans or sanctions-related disruptions.
 
-## Introduction
-This document is written to explain %instance% app at a high-level of understanding and a low-level and detailed as well.
+## Key Features
 
-![Create new topic options](new_topic_options.png){ width=290 }{border-effect=line}
+### Secure Binance Access
+- Bypasses geo-restrictions using proprietary proxy technology
+- Protects user identities and prevents account bans
+- Maintains full trading functionality while complying with local regulations
 
-## Write content
-%product% supports two types of markup: Markdown and XML.
-When you create a new help article, you can choose between two topic types, but this doesn't mean you have to stick to a single format.
-You can author content in Markdown and extend it with semantic attributes or inject entire XML elements.
+### Trading Ecosystem
+- **Finance App**: Automated trading via exchange APIs and TradingView alerts
+- **Social App**: Follow and copy verified ProTraders with transparent performance history
+- **Data App**: Comprehensive market analytics and financial metrics tracking
 
-## Inject XML
-For example, this is how you inject a procedure:
+### Asset Management
+- **AUM App**: Track investments and portfolio performance
+- **Accounts App**: Secure wallet management and deposit tracking
+- **Sales App**: Subscription-based access to premium features
 
-<procedure title="Inject a procedure" id="inject-a-procedure">
-    <step>
-        <p>Start typing and select a procedure type from the completion suggestions:</p>
-        <img src="completion_procedure.png" alt="completion suggestions for procedure" border-effect="line"/>
-    </step>
-    <step>
-        <p>Press <shortcut>Tab</shortcut> or <shortcut>Enter</shortcut> to insert the markup.</p>
-    </step>
-</procedure>
+## Technical Architecture
+Built on Django, XTrader integrates multiple specialized apps:
+1. **Social**: Community-driven trading with follower relationships
+2. **Finance**: Automated strategy execution and exchange connectivity
+3. **Data**: Financial market analysis and instrument tracking
+4. **AUM**: Investment portfolio management
+5. **Accounts**: User profile and financial record management
+6. **Sales**: Subscription and payment processing
 
-## Add interactive elements
+XTrader provides Iranian traders with a complete, secure solution for global 
+cryptocurrency markets, combining technical innovation with community features for all experience levels.
 
-### Tabs
-To add switchable content, you can make use of tabs (inject them by starting to type `tab` on a new line):
+## Entity Relation Diagram 
 
-<tabs>
-    <tab title="Markdown">
-        <code-block lang="plain text">![Alt Text](new_topic_options.png){ width=450 }</code-block>
-    </tab>
-    <tab title="Semantic markup">
-        <code-block lang="xml">
-            <![CDATA[<img src="new_topic_options.png" alt="Alt text" width="450px"/>]]></code-block>
-    </tab>
-</tabs>
+The ERD of the project is visible in the following image. The image is automatically generated via the `conda run -n xtrader-env python manage.py graph_models -a -g -o ../Writerside/images/ERD.png`
+command which is located in `docker-compose.yml`.
 
-### Collapsible blocks
-Apart from injecting entire XML elements, you can use attributes to configure the behavior of certain elements.
-For example, you can collapse a chapter that contains non-essential information:
+For a better look at the ERD, open the image in new tab. The image is in high resolution and can be zoomed on.
 
-#### Supplementary info {collapsible="true"}
-Content under a collapsible header will be collapsed by default,
-but you can modify the behavior by adding the following attribute:
-`default-state="expanded"`
-
-### Convert selection to XML
-If you need to extend an element with more functions, you can convert selected content from Markdown to semantic markup.
-For example, if you want to merge cells in a table, it's much easier to convert it to XML than do this in Markdown.
-Position the caret anywhere in the table and press <shortcut>Alt+Enter</shortcut>:
-
-<img src="convert_table_to_xml.png" alt="Convert table to XML" width="706" border-effect="line"/>
-
-## Feedback and support
-Please report any issues, usability improvements, or feature requests to our
-<a href="https://youtrack.jetbrains.com/newIssue?project=WRS">YouTrack project</a>
-(you will need to register).
-
-You are welcome to join our
-<a href="https://jb.gg/WRS_Slack">public Slack workspace</a>.
-Before you do, please read our [Code of conduct](https://www.jetbrains.com/help/writerside/writerside-code-of-conduct.html).
-We assume that you’ve read and acknowledged it before joining.
-
-You can also always email us at [writerside@jetbrains.com](mailto:writerside@jetbrains.com).
-
-<seealso>
-    <category ref="wrs">
-        <a href="https://www.jetbrains.com/help/writerside/markup-reference.html">Markup reference</a>
-        <a href="https://www.jetbrains.com/help/writerside/manage-table-of-contents.html">Reorder topics in the TOC</a>
-        <a href="https://www.jetbrains.com/help/writerside/local-build.html">Build and publish</a>
-        <a href="https://www.jetbrains.com/help/writerside/configure-search.html">Configure Search</a>
-    </category>
-</seealso>
+![XTrader-ERD](ERD.png)

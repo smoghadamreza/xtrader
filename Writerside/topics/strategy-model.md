@@ -1,6 +1,8 @@
 # Strategy
 
-This model represents a trading strategy defined by a user.
+This model represents a complete trading strategy configuration, including its parameters, 
+watchlist association, and time intervals. It serves as the core entity for storing and 
+managing user-defined trading approaches in the system.
 
 ## What does it inherit?
 

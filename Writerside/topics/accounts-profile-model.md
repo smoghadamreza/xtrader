@@ -41,7 +41,7 @@ which according to their GitHub webpage do the following:
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td> Each profile might have a cell phone number. Multiple profiles may have the same cell phone number.</td>
+        <td>Each profile might have a cell phone number. Multiple profiles may have the same cell phone number.</td>
     </tr>
     <tr>
         <td>expire</td>
@@ -49,7 +49,7 @@ which according to their GitHub webpage do the following:
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Profiles might have an expiry date. We check that in #TODO.</td>
+        <td>Profiles might have an expiry date. We check that in the profile validation process before account activation.</td>
     </tr>
     <tr>
         <td>telegram_id</td>
@@ -57,7 +57,7 @@ which according to their GitHub webpage do the following:
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>A user may (#TODO) activate its panel via Telegram social media. Thus, we need this to send the activation code.</td>
+        <td>A user may optionally activate its panel via Telegram social media. Thus, we need this to send the activation code to their Telegram account.</td>
     </tr>
     <tr>
         <td>telegram_activation_code</td>
@@ -65,7 +65,7 @@ which according to their GitHub webpage do the following:
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>We compare this with what user has submitted in #TODO.</td>
+        <td>We compare this with what user has submitted in the Telegram activation form to verify their identity.</td>
     </tr>
     <tr>
         <td>telegram_activation_timestamp</td>
@@ -73,7 +73,7 @@ which according to their GitHub webpage do the following:
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Stores the time when <code>telegram_activation_code</code> is updated.</td>
+        <td>Stores the time when <code>telegram_activation_code</code> is updated (Unix timestamp format).</td>
     </tr>
     <tr>
         <td>referral_code</td>
@@ -81,7 +81,7 @@ which according to their GitHub webpage do the following:
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Users may suggest %product% to each other. We track these suggestions via <b>suggester</b> <code>referral_code</code>.</td>
+        <td>Users may suggest %product% to each other. We track these suggestions via <b>suggester</b> <code>referral_code</code> which is generated when a user joins through a referral link.</td>
     </tr>
     <tr>
         <td>referred_by</td>
@@ -90,10 +90,9 @@ which according to their GitHub webpage do the following:
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.cascade"/></td>
-        <td>If a <code>Profile</code> is created because of a referral, we store the referrer <code>User</code> in this field.</td>
+        <td>If a <code>Profile</code> is created because of a referral, we store the referrer <code>User</code> in this field to track successful referrals and calculate referral bonuses.</td>
     </tr>
 </table>
-
 
 
 ## Methods
@@ -146,8 +145,8 @@ which according to their GitHub webpage do the following:
   - **output**: A `str` that contains the result code.
 
 ### mail_users
-  - **usage**: By using #TODO template, it mails all active users in a subset of users and informs them about #TODO. If any of the 
-    emails fail, it logs the failed attempts.
+  - **usage**: It mails all active users in a subset of users and informs them about domain change from `XTreasury` to
+    `RamzeServat`. If any of the emails fail, it logs the failed attempts.
   - **signature**: `mail_users(cls, subject:str, emails=List<str>) -> List<str>`
   - **parameters**: 
     + **cls**: <include from="repeatable-texts.topic" element-id="python-cls" />

@@ -36,7 +36,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td> Contains the amount of money the wallet has.</td>
+        <td>Contains the current available amount of money in the wallet (in base currency units).</td>
     </tr>
     <tr>
         <td>income</td>
@@ -44,7 +44,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Stores the amount of money the `balance` increases over #TODO intervals.</td>
+        <td>Stores the amount of passive income the <code>balance</code> increases over monthly intervals (e.g., interest or dividends).</td>
     </tr>
     <tr>
         <td>address</td>
@@ -52,7 +52,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Stores wallet's address over the internet.</td>
+        <td>Stores the wallet's unique blockchain address or payment gateway identifier.</td>
     </tr>
     <tr>
         <td>nonce</td>
@@ -60,7 +60,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO.</td>
+        <td>Cryptographic nonce used for transaction security and preventing replay attacks.</td>
     </tr>
     <tr>
         <td>last_change</td>
@@ -68,7 +68,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Stores timestamp of the last time this database row was updated.</td>
+        <td>Stores Unix timestamp of the last time this wallet record was updated.</td>
     </tr>
 </table>
 
@@ -87,15 +87,13 @@ The documentation is available at <include from="third-party-libraries-links.top
   - **output**: A `dict` containing `address`, `income`, and `balance` fields of the found wallet.
 
 ### create_address
-  - **usage**: It is a recursive function for creating an address on USDT website #TODO. The recursive part is for 
-    implementing a retry mechanism. It retries 3 times until it succeeds. It saves the address on `self`. Every address 
-    is uniquely created by randomly creating `nonce` for this wallet, and it is also uniquely identifiable.
+  - **usage**: It is a recursive function for creating a new USDT (Tether) deposit address through the official Omni Layer API. The recursive part implements a retry mechanism that attempts address creation up to 3 times before failing. Each successfully created address is saved to the wallet instance and is uniquely generated using a randomly created nonce value.
   - **signature**: `create_address(self, num: int) -> str`
   - **parameters**: 
      + **self**: <include from="repeatable-texts.topic" element-id="python-self" />
-     + **num**: Shows number of retires that already happened.
-  - **output**: A string containing the address created on USDT website #TODO.
-
+     + **num**: The current attempt count (starts at 0 and increments with each retry).
+  - **output**: A string containing the newly generated USDT deposit address in the standard Bitcoin address format, 
+or raises an exception if all retries fail.
 ### check_deposits
   - **usage**: It contacts the USDT via unique address created by `nonce` field and acquire all the deposits on that website.
     It adds all the non-existing deposits to the `Deposit` database.

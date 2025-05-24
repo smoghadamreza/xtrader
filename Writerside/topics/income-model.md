@@ -1,7 +1,7 @@
 # Income
 
 This doc is a thorough explanation of the model `Income` which is located in `data/models.py`.
-This django model is for storing #TODO.
+This django model is for storing a user's income on a certain `symbol_id`.
 
 ## What does it inherit?
 
@@ -27,7 +27,7 @@ The documentation is available at <include from="third-party-libraries-links.top
             (<a href="stock-watch-model.md"/>)</td>
         <td>:x:</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.cascade"/></td>
-        <td>#TODO
+        <td>corresponding `StockWatch` object.
         </td>
     </tr>
     <tr>
@@ -35,56 +35,56 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td><include from="third-party-libraries-links.topic" element-id="django-models.char-field"/></td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td> #TODO.</td>
+        <td> The corresponding symbol which we evaluate income on.</td>
     </tr>
     <tr>
         <td>InstrumentName</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.char-field"/></td>
         <td>:x:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>The symbol name.</td>
     </tr>
     <tr>
         <td>total_income</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.integer-field"/></td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>The total income which we evaluated.</td>
     </tr>
     <tr>
         <td>gross_profit</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.integer-field"/></td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO.</td>
+        <td>Profit after subtracting cost of goods sold (COGS) from total revenue.</td>
     </tr>
     <tr>
         <td>operating_income_or_loss</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.integer-field"/></td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Income from core business operations excluding taxes and interest.</td>
     </tr>
     <tr>
         <td>interest_expense</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.integer-field"/></td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Cost of borrowed funds or debt interest payments.</td>
     </tr>
     <tr>
         <td>income_before_tax</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.integer-field"/></td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Total earnings before income taxes are deducted.</td>
     </tr>
     <tr>
         <td>net_income</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.integer-field"/></td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Final profit after all expenses, taxes, and interest have been deducted.</td>
     </tr>
 </table>
 

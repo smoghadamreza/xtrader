@@ -1,7 +1,7 @@
 # MarketWatch
 
 This doc is a thorough explanation of the model `MarketWatch` which is located in `data/models.py`.
-This django model is for storing #TODO.
+This django model is for storing comprehensive financial market data and analysis for tracked instruments.
 
 ## What does it inherit?
 
@@ -26,7 +26,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td><include from="third-party-libraries-links.topic" element-id="django-models.foreign-key"/>
             (<a href="stock-watch-model.md"/>)</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.cascade"/></td>
-        <td>#TODO
+        <td>References the StockWatch object containing market data and trading information for this financial analysis.
         </td>
     </tr>
     <tr>
@@ -34,7 +34,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td><include from="third-party-libraries-links.topic" element-id="django-models.foreign-key"/>
             (<a href="balance-sheet-model.md"/>)</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.cascade"/></td>
-        <td>#TODO
+        <td>Links to the BalanceSheet object containing the company's assets, liabilities, and equity position.
         </td>
     </tr>
     <tr>
@@ -42,7 +42,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td><include from="third-party-libraries-links.topic" element-id="django-models.foreign-key"/>
             (<a href="ratio-model.md"/>)</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.cascade"/></td>
-        <td>#TODO
+        <td>Connects to financial ratios (liquidity, profitability, leverage) calculated from balance sheet and income data.
         </td>
     </tr>
     <tr>
@@ -50,7 +50,7 @@ The documentation is available at <include from="third-party-libraries-links.top
         <td><include from="third-party-libraries-links.topic" element-id="django-models.foreign-key"/>
             (<a href="income-model.md"/>)</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.cascade"/></td>
-        <td>#TODO
+        <td>References the Income statement containing revenue, expenses, and profitability metrics.
         </td>
     </tr>
 </table>

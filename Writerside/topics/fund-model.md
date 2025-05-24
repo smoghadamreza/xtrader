@@ -1,7 +1,7 @@
 # Fund
 
 This doc is a thorough explanation of the model `Fund` which is located in `aum/models.py`.
-This django model is for storing a #TODO
+This django model is for storing a mutual fund or investment portfolio's management data including assets, fees, and performance metrics.
 
 ## What does it inherit?
 
@@ -25,7 +25,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.cascade"/></td>
-        <td>#TODO</td>
+        <td>References the User account responsible for managing this fund. Multiple funds can be managed by the same user.</td>
     </tr>
     <tr>
         <td>issue_fee</td>
@@ -33,7 +33,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Percentage fee charged when investors purchase new fund units (typically 0.5-2% of investment amount).</td>
     </tr>
     <tr>
         <td>redeem_fee</td>
@@ -41,7 +41,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Percentage fee charged when investors sell fund units back to the fund (typically 0-1.5% of redemption amount).</td>
     </tr>
     <tr>
         <td>fee</td>
@@ -49,7 +49,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Annual management fee percentage charged against total assets under management (typically 0.1-2% per annum).</td>
     </tr>
     <tr>
         <td>aum</td>
@@ -57,7 +57,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Assets Under Management - total market value of all investments in the fund (in base currency).</td>
     </tr>
     <tr>
         <td>last_update</td>
@@ -65,7 +65,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Unix timestamp of when the fund's NAV and AUM were last calculated and updated.</td>
     </tr>
     <tr>
         <td>brand</td>
@@ -73,7 +73,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Brand name or marketing identifier for the fund (e.g., 'Global Growth Fund').</td>
     </tr>
     <tr>
         <td>deposit</td>
@@ -81,7 +81,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Total amount of new capital deposited into the fund during current reporting period.</td>
     </tr>
     <tr>
         <td>withdraw</td>
@@ -89,7 +89,7 @@ This django model is for storing a #TODO
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Total amount of capital withdrawn from the fund during current reporting period.</td>
     </tr>
 </table>
 
@@ -98,30 +98,27 @@ This django model is for storing a #TODO
 ## Methods
 
 ### get_units_count
-  - **usage**: Calculates and returns sum of `FundInvestor.units` for all the instances of `FundInvestor` #Todo
-    that their `fund` field is equal to this object.
+  - **usage**: Calculates and returns sum of `FundInvestor.units` for all the instances of `FundInvestor` that are associated with this fund through the `fund` foreign key relationship.
   - **signature**: `get_units_count(self) -> int`
   - **parameters**: 
     + **self**: <include from="repeatable-texts.topic" element-id="python-self" />
   - **output**: Sum of all `units` that corresponds to this `Fund`. The `unit`s are stored on `FundInvestor` model.
 
 ### get_assets
-  - **usage**: Gets one of `Exchange`s of this instance `manager` from `OMSManager` #TODO and by using that `Exchange`, 
-    gets `portfolio` of this `manager` and returns its assets.
+  - **usage**: Gets one of `Exchange`s of this instance `manager` from `OMSManager` and retrieves the manager's portfolio holdings, returning a formatted list of assets with their current market values.
   - **signature**: `get_assets(self) -> List<Exchange>`
   - **parameters**: 
     + **self**: <include from="repeatable-texts.topic" element-id="python-self" />
   - **output**: A list of `dict` with custom fields where each would represent an asset. 
 
 ### get_cash 
-  - **usage**:  #TODO Calculates the cash value of the given asset or all asset of this instance `manager`. 
-   Returns the possible unit of cash. Updates this entry accordingly on the table.
+  - **usage**: Calculates the liquid cash value of specified assets (or all assets if none specified) in the fund's portfolio, converting holdings to their cash equivalents at current market rates. Updates the fund's cash position in the database.
   - **signature**: `get_cash(self, assets: List<dict>}) -> int`
   - **parameters**: 
     + **self**: <include from="repeatable-texts.topic" element-id="python-self" />
     + **assets**: A list of dictionary which represent an assets. Determines which assets cash value should be calculated. 
       If it is `None`, all the assets will be evaluated.
-  - **output**: Sum of all `units` that corresponds to this `Fund`. The `unit`s are stored on `FundInvestor` model.
+  - **output**: Total cash value of the specified assets in base currency units.
 
 ### get_fund_info
   - **usage**: Returns all the info needed for review of this fund, including outputs of `get_units_count` and `get_cash`.
@@ -131,32 +128,31 @@ This django model is for storing a #TODO
   - **output**: A `dict` with all the necessary information to view this `Fund`.
 
 ### get_transactions
-  - **usage**: Gets all the deposits and withdraws from `oms.Binance` #TODO and returns a subset of their fields as a transaction 
-    in a sorted by time manner. In the meanwhile, if we see a deposit that has not been updated into this `Fund` object, we update
-    this transaction into the `Fund` as well.
+  - **usage**: Gets all the deposits and withdrawals from `oms.Binance` exchange API, returns them as formatted transactions sorted chronologically, and synchronizes any new deposits with the fund's records.
   - **signature**: `get_transactions(self) -> List<dict>`
   - **parameters**: 
     + **self**: <include from="repeatable-texts.topic" element-id="python-self" />
   - **output**: A list of `dict` with custom fields where each would represent a transaction. 
 
 ### issue_redeem
-  - **usage**: #TODO
-  - **signature**: `issue_redeem(self, investor: #TODO, params: dict) -> dict`
+  - **usage**: Handles both issuance of new fund units to investors and redemption of existing units, applying the appropriate fees and updating investor balances accordingly.
+  - **signature**: `issue_redeem(self, investor: FundInvestor, params: dict) -> dict`
   - **parameters**: 
     + **self**: <include from="repeatable-texts.topic" element-id="python-self" />
-    + **investor**: #TODO
-    + **params**: A `dict` for finding proper action between redeem and issue.
-  - **output**: A `dict` to show proper message in response to user action.
+    + **investor**: The [](fund-investor-model.md) object.
+    + **params**: A `dict` containing 'action' (issue/redeem), 'amount', and other transaction details.
+  - **output**: A `dict` containing transaction status and details.
 
 ### get_unit_assets
   - **usage**: Creates a `dict` where keys are assets and each value represent unit worth of an asset.
-  - **signature**: `issue_redeem(self, investor: #TODO, params: dict) -> dict`
+  - **signature**: `issue_redeem(self, investor: FundInvestor, params: dict) -> dict`
   - **parameters**: 
+    + **investor**: The [](fund-investor-model.md) object.
     + **self**: <include from="repeatable-texts.topic" element-id="python-self" />
   - **output**: A `dict` to show unit worth of each asset.
 
 ### create_snapshot
-  - **usage**: Creates a snapshot of the `Fund`'s assets overall value from given offset until now. It is saved on `FundUnitSnapshot`. #TODO
+  - **usage**: Creates a snapshot of the `Fund`'s assets overall value from given offset until now. It is saved on `FundUnitSnapshot` model for historical performance tracking and reporting.
   - **signature**: `create_snapshots(self, assets: dict, history: int) -> None`
   - **parameters**: 
     + **self**: <include from="repeatable-texts.topic" element-id="python-self" />
@@ -187,8 +183,7 @@ This django model is for storing a #TODO
 ### *Trivial Methods*
 
 #### unit_transfer
-Creates a `UnitTransfer` object. #Todo.
+Creates a `UnitTransfer` object to record transfers of fund units between investors or accounts.
 
 ### init_fund_performance
 Calls `create_snapshot` if the wanted snapshot already doesn't exist. Returns proper message.
-

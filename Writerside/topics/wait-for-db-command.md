@@ -8,7 +8,7 @@ It waits for all db connections to be up and running and then
 finishes.
 
 ## When does it run?
-  In ```run.sh``` file which is the entrypoint for starting the project.   #TODO: add reference.
+  In ```run.sh``` file which is the entrypoint for starting the project. Also we run it in `docker-compose.yml` commands.
   
 ## Where is it?
 

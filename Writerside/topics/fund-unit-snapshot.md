@@ -42,7 +42,7 @@ overall observation of the `Fund` to the user.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>The number of units/amount held of this asset in the fund.</td>
     </tr>
     <tr>
         <td>value</td>
@@ -50,7 +50,7 @@ overall observation of the `Fund` to the user.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>The monetary value of this asset holding in base currency.</td>
     </tr>
     <tr>
         <td>nav</td>
@@ -58,7 +58,7 @@ overall observation of the `Fund` to the user.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Net Asset Value per unit of this asset at snapshot time.</td>
     </tr>
     <tr>
         <td>ratio</td>
@@ -66,7 +66,7 @@ overall observation of the `Fund` to the user.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Percentage allocation of this asset in the fund's total portfolio.</td>
     </tr>
     <tr>
         <td>insert_date</td>
@@ -74,7 +74,7 @@ overall observation of the `Fund` to the user.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Date when this snapshot was recorded (YYYY-MM-DD format).</td>
     </tr>
     <tr>
         <td>age</td>
@@ -82,6 +82,6 @@ overall observation of the `Fund` to the user.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Days since this asset was first added to the fund's portfolio.</td>
     </tr>
 </table>

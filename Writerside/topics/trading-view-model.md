@@ -1,6 +1,7 @@
 # TradingView
 
-This model represents a trading strategy defined by a user.
+This model represents a user's `TradingView` webhook configuration, enabling integration between `TradingView` 
+alerts and the trading platform. It manages webhook URLs, trading activation status, and notification preferences.
 
 ## What does it inherit?
 
@@ -53,7 +54,7 @@ The documentation is available at <include from="third-party-libraries-links.top
 ## Methods
 
 ### create_hook  
-  - **usage**: Generates a unique webhook code using `Profile.code_generator`. #TODO If the generated code already exists in the database, it recursively calls itself to generate a new one.  
+  - **usage**: Generates a unique webhook code using `Profile.code_generator`. If the generated code already exists in the database, it recursively calls itself to generate a new one.  
   - **signature**: `create_hook() -> str`  
   - **output**: Returns a unique webhook code as a string.  
 > **Note**: This method ensures that the generated webhook code is unique by checking its existence in the `TradingView` model's `webhook` field. If a duplicate is found, it regenerates the code.

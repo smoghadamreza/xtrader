@@ -42,7 +42,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>The address where deposit should be deducted from. #TODO</td>
+        <td>The address where deposit should be deducted from.</td>
     </tr>
     <tr>
         <td>txid_in</td>
@@ -50,7 +50,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Transaction (tx) id for in(?) #TODO</td>
+        <td>Transaction ID for incoming deposit (blockchain transaction hash).</td>
     </tr>
     <tr>
         <td>txid_out</td>
@@ -58,7 +58,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Transaction (tx) id for out(?) #TODO</td>
+        <td>Transaction ID for outgoing transfer (blockchain transaction hash).</td>
     </tr>
     <tr>
         <td>init_amount</td>
@@ -66,7 +66,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Initial balance of wallet before transaction. #TODO</td>
+        <td>Wallet balance before the transaction was processed (in base currency units).</td>
     </tr>
     <tr>
         <td>final_amount</td>
@@ -74,7 +74,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Final balance of wallet after transaction. #TODO</td>
+        <td>Wallet balance after the transaction was processed (in base currency units).</td>
     </tr>
     <tr>
         <td>result</td>
@@ -82,7 +82,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Whether transaction succeeded or not. #TODO</td>
+        <td>Transaction status (e.g., 'pending', 'completed', 'failed', 'reverted').</td>
     </tr>
     <tr>
         <td>coin</td>
@@ -90,7 +90,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>The coin text itself. #TODO</td>
+        <td>Cryptocurrency symbol/ticker (e.g., 'BTC', 'ETH', 'USDT').</td>
     </tr>
     <tr>
         <td>network</td>
@@ -98,7 +98,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>network #TODO</td>
+        <td>Blockchain network identifier (e.g., 'mainnet', 'testnet', 'bsc', 'erc20').</td>
     </tr>
     <tr>
         <td>tx_time</td>
@@ -106,7 +106,7 @@ with there.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Stores timestamp of the transaction time.</td>
+        <td>Stores timestamp of the transaction time (Unix epoch in milliseconds).</td>
     </tr>
 </table>
 

@@ -1,6 +1,7 @@
 # Exchange
 
-This model represents a trading strategy defined by a user.
+This model represents a user's connected cryptocurrency exchange account, 
+storing API credentials and platform information to enable trading functionality.
 
 ## What does it inherit?
 

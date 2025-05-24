@@ -2,6 +2,7 @@
 
 This doc is a thorough explanation of the model `UnitTransfer` which is located in `aum/models.py`.
 This django model is for storing all transfer actions on all `Fund` entries.
+
 ## What does it inherit?
 
 <include from="repeatable-texts.topic" element-id="django-models.desc"></include>
@@ -56,7 +57,7 @@ This django model is for storing all transfer actions on all `Fund` entries.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Net Asset Value per unit at the time of transfer (used to calculate the transfer value).</td>
     </tr>
     <tr>
         <td>value</td>
@@ -64,7 +65,7 @@ This django model is for storing all transfer actions on all `Fund` entries.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>#TODO</td>
+        <td>Monetary value of the transfer (units × NAV).</td>
     </tr>
     <tr>
         <td>commission</td>
@@ -72,6 +73,6 @@ This django model is for storing all transfer actions on all `Fund` entries.
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>NA</td>
-        <td>Each transfer, has a commission fee for #TODO. This field is for storing the commission fee amount.</td>
+        <td>Each transfer has a commission fee for the fund manager. This field is for storing the commission fee amount (typically calculated as a percentage of the transfer value).</td>
     </tr>
 </table>

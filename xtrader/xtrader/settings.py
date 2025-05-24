@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_extensions',
     # 'mabna',
     # 'show',
     # 'api',
@@ -253,3 +254,8 @@ LOGGING = {
 
 ANONYMOUS_USER_NAME = "AnonymousUser"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}

@@ -1,7 +1,7 @@
 # Package
 
 The `Package` class represents a package or subscription plan in our system.
-It can be bought by our users. #TODO
+It can be bought by our users.
 
 ## What does it inherit?
 
