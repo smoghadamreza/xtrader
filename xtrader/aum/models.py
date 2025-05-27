@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from finance import oms
 import time
 from datetime import timedelta
-import requests
 from django.utils import timezone
 from django.db import connections
+
+from proxy.wrapper import requests_wrapper
 
 
 # Create your models here.
@@ -171,11 +172,13 @@ class Fund(models.Model):
         historical = {}
         for asset in assets:
             if not asset == 'USDT':
-                candles = requests.get('https://api.binance.com/api/v3/klines', params={
+                url = 'https://api.binance.com/api/v3/klines'
+                params = {
                     'symbol': asset + 'USDT',
                     'interval': '1d',
                     'limit': 500
-                }).json()
+                }
+                candles = requests_wrapper(url=url, params=params, function_name=Fund.create_snapshots.__name__)
                 historical[asset] = candles[-history - 5:-1]
             # else:
             #     historical[asset] = [1] * history
@@ -270,11 +273,13 @@ class Fund(models.Model):
         result = result[-history:]
         if mode == 'fund':
             return [[int(1000 * time.mktime(r['date'].timetuple())), r['nav']] for r in result]
-        btc_candles = requests.get('https://api.binance.com/api/v3/klines', params={
+        url = 'https://api.binance.com/api/v3/klines'
+        params = {
             'symbol': 'BTCUSDT',
             'interval': '1d',
             'limit': 500
-        }).json()
+        }
+        btc_candles = requests_wrapper(url=url, params=params, function_name=Fund.get_fund_performance.__name__)
         btc_prices = [float(c[4]) for c in btc_candles[-len(result) - 2:-1]]
         for idx, price in enumerate(btc_prices):
             if idx == 0:

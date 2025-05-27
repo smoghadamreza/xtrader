@@ -1,5 +1,6 @@
 from django.conf import settings
-import requests
+
+from proxy.wrapper import requests_wrapper
 
 
 def send_telegram_message(msg, user_id):
@@ -11,4 +12,4 @@ def send_telegram_message(msg, user_id):
         'parse_mode': 'Markdown',
     }
     url = 'https://api.telegram.org/bot' + bot_token + '/sendMessage'
-    return requests.get(url=url, params=params).json()
+    return requests_wrapper(url=url, params=params, function_name=send_telegram_message.__name__)

@@ -1,4 +1,3 @@
-import requests
 from django.db import connections
 from finance.models import Exchange, TradingView
 # from social.models import Follow
@@ -11,6 +10,8 @@ import urllib
 import hmac
 import json
 from data import redis
+
+from proxy.wrapper import requests_wrapper
 
 
 class Binance:
@@ -26,15 +27,20 @@ class Binance:
     #         info[symbol['symbol']] = symbol
     @staticmethod
     def get_candles(params):
-        return requests.get(Binance.spot_base + "/api/v3/klines", params=params).json()
+        url = Binance.spot_base + "/api/v3/klines"
+        return requests_wrapper(url=url, params=params, function_name=Binance.get_candles.__name__)
 
     @staticmethod
     def get_ticker(symbol_id):
-        return requests.get(Binance.spot_base + '/api/v3/ticker/24hr', params={'symbol': symbol_id}).json()
+        url = Binance.spot_base + '/api/v3/ticker/24hr'
+        params = {'symbol': symbol_id}
+        return requests_wrapper(url=url, params=params, function_name=Binance.get_ticker.__name__)
 
     @staticmethod
     def get_bookTicker(symbol_id):
-        return requests.get(Binance.spot_base + '/api/v3/ticker/bookTicker', params={'symbol': symbol_id}).json()
+        url = Binance.spot_base + '/api/v3/ticker/bookTicker'
+        params = {'symbol': symbol_id}
+        return requests_wrapper(url=url, params=params, function_name=Binance.get_bookTicker.__name__)
 
     @staticmethod
     def get_depth(symbol_id, limit=10):
@@ -47,7 +53,10 @@ class Binance:
                 return depth
         except Exception as e:
             pass
-        depth = requests.get(Binance.spot_base + '/api/v3/depth', params={'symbol': symbol_id, 'limit': limit}).json()
+        url = Binance.spot_base + '/api/v3/depth'
+        params = {'symbol': symbol_id, 'limit': limit}
+
+        depth = requests_wrapper(url=url, params=params, function_name=Binance.get_depth.__name__)
         depth['lastUpdateTime'] = current_time
         redis.hset('Depth', symbol_id, json.dumps(depth))
         return depth
@@ -58,7 +67,10 @@ class Binance:
 
     @staticmethod
     def set_symbols():
-        exchange_info = requests.get('https://api.binance.com/api/v3/exchangeInfo').json()
+        exchange_info = requests_wrapper(
+            url='https://api.binance.com/api/v3/exchangeInfo',
+            function_name=Binance.set_symbols.__name__
+        )
         # print("serverTime:", exchange_info['serverTime'])
         for symbol in exchange_info['symbols']:
             # self.symbols.append(symbol['symbol'])
@@ -115,8 +127,7 @@ class Binance:
     def get(endpoint, params={}, public=None, private=None):
         base_url = 'https://api.binance.com'
         url = base_url + endpoint + '?' + Binance.sign(params=params, private=private)
-        response = requests.get(url=url, headers=Binance.get_header(public))
-        return response.json()
+        return requests_wrapper(url=url, header=Binance.get_header(public), function_name=Binance.get.__name__)
 
     @staticmethod
     def get_open_orders(ex, symbol):
@@ -153,10 +164,12 @@ class Binance:
         else:
             order['type'] = 'MARKET'
 
-        response = requests.post(
-            url='https://api.binance.com/api/v3/order{}?'.format(additional_endpoint) + Binance.sign(params=order,
-                                                                                                     private=ex.private),
-            headers=Binance.get_header(ex.public)).json()
+        response = requests_wrapper(
+            url='https://api.binance.com/api/v3/order{}?'.format(additional_endpoint) + Binance.sign(params=order, private=ex.private),
+            headers=Binance.get_header(ex.public),
+            method="POST",
+            function_name=Binance.send_order.__name__
+        )
         # print(response)
         result = {'error': True}
         if 'msg' not in response:
@@ -195,7 +208,9 @@ class Binance:
             # result = client.cancel_order(symbol=symbol, orderId=int(order_id))
             params = {'symbol': symbol, 'orderId': int(order_id)}
             url = 'https://api.binance.com/api/v3/order?' + Binance.sign(params=params, private=ex.private)
-            result = requests.delete(url=url, headers=Binance.get_header(ex.public)).json()
+            result = requests_wrapper(
+                url=url, headers=Binance.get_header(ex.public),
+                method="DELETE", function_name=Binance.cancel_order.__name__)
             # followers = Follow.objects.filter(proTrader__trader=ex.trader)
             # if followers:
             #     assets = Binance.get_portfolio(ex)
@@ -211,10 +226,13 @@ class Binance:
         base_url = 'https://api.binance.com'
         url = base_url + '/api/v3/openOrders' + '?' + Binance.sign(params={'symbol': symbol.upper()},
                                                                    private=ex.private)
-        response = requests.delete(url=url, headers=Binance.get_header(ex.public))
+        response = requests_wrapper(
+            url=url, headers=Binance.get_header(ex.public),
+            method="DELETE", function_name=Binance.cancel_all_orders.__name__
+        )
         for conn in connections.all():
             conn.close()
-        return response.json()
+        return response
 
     @staticmethod
     def get_balance(ex):
@@ -431,11 +449,15 @@ class Binance:
             #     symbol = asset
             else:
                 symbol = asset + 'USDT'
-            candles = requests.get('https://api.binance.com/api/v3/klines', params={
-                'symbol': symbol,
-                'interval': '1d',
-                'limit': 1000
-            }).json()
+            candles = requests_wrapper(
+                url='https://api.binance.com/api/v3/klines',
+                params={
+                    'symbol': symbol,
+                    'interval': '1d',
+                    'limit': 1000
+                },
+                function_name=Binance.get_prices.__name__
+                )
             for candle in candles:
                 t = candle[0]
                 if t not in data:
@@ -467,7 +489,7 @@ class Binance:
                 return ticker['price']
             raise Exception('lastprice expired ' + symbol)
         except Exception as e:
-            tickers = requests.get('https://www.binance.com/api/v3/ticker/price').json()
+            tickers = requests_wrapper(url='https://www.binance.com/api/v3/ticker/price', function_name=Binance.get_last_price.__name__)
             found = False
             for ticker in tickers:
                 redis.hset('LASTPRICE', ticker['symbol'],
@@ -477,7 +499,10 @@ class Binance:
                     last_price = float(ticker['price'])
             if not found:
                 try:
-                    ticker = requests.get('https://www.binance.com/api/v3/ticker/price?symbol={}'.format(symbol)).json()
+                    ticker = requests_wrapper(
+                        url='https://www.binance.com/api/v3/ticker/price?symbol={}'.format(symbol),
+                        function_name=Binance.get_last_price.__name__
+                    )
                     redis.hset('LASTPRICE', ticker['symbol'],
                                json.dumps({'price': float(ticker['price']), 'time': int(time.time())}))
                     last_price = float(ticker['price'])
@@ -713,9 +738,12 @@ class OMSManager:
             'type': 'STOP_LOSS_LIMIT',
             'timeInForce': 'GTC',
         }
-        return requests.post(
+        return requests_wrapper(
             url='https://api.binance.com/api/v3/order?' + Binance.sign(params=order, private=private),
-            headers=Binance.get_header(public)).json()
+            headers=Binance.get_header(public),
+            method="POST",
+            function_name=OMSManager.stop_limit_order.__name__
+        )
 
     @staticmethod
     def oco_order(price, sprice, slprice, side='SELL', quantity=0.001):
@@ -731,10 +759,11 @@ class OMSManager:
             'quantity': quantity,
             'stopLimitTimeInForce': 'GTC',
         }
-        return requests.post(
+        return requests_wrapper(
             url='https://api.binance.com/api/v3/order/oco?' + Binance.sign(params=order, private=private),
-            headers=Binance.get_header(public)
-        ).json()
+            headers=Binance.get_header(public),
+            method="POST",
+            function_name=OMSManager.oco_order.__name__)
 
     @staticmethod
     def verify_and_create_exchange(trader, name, public, private, exchange):

@@ -8,7 +8,6 @@ from finance import strategy, scan, marketwatch
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseNotFound
 from accounts.forms import AuthenticationForm
-import requests as r
 from data.backup import filters_data
 # Create your views here.
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -18,7 +17,6 @@ from django.contrib.auth.models import User
 from accounts.models import Profile
 from datetime import datetime
 from finance.models import TradingView, Watchlist, WatchlistSymbol
-import requests
 from sales.models import Subscription
 from django.conf import settings
 import time

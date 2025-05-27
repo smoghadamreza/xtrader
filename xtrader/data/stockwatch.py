@@ -5,7 +5,6 @@
 from data.models import StockWatch
 # from data.crawl import epss
 from finance import oms
-import requests as r
 from data import backup, redis, manage_data
 import json
 import time

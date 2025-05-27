@@ -13,7 +13,6 @@ from finance.models import Exchange
 from finance import oms
 from accounts.models import Profile
 # from datetime import datetime
-# import requests
 # from django.conf import settings
 # import time
 

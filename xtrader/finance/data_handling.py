@@ -4,7 +4,6 @@ from finance.indicator import Indicator
 import json
 import pandas as pd
 import numpy as np
-import requests
 
 
 def give_result_more(data, mt=None, get_json=True, interval=None):

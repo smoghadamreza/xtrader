@@ -1,8 +1,9 @@
 import redis
-import requests
 import time
 from django.conf import settings
 import json
+
+from proxy.wrapper import requests_wrapper
 
 
 r = redis.Redis(host='redis', port=6379, db=settings.REDIS_DB)
@@ -44,9 +45,10 @@ def keys():
 
 def set_history(name, interval):
     history_name = get_history_name(name, interval)
+    url = "https://api.binance.com/api/v3/klines"
     params = {"symbol": name, "interval": interval, "limit": settings.CANDLES_HISTORY_LIMIT}
     print("getting:", history_name)
-    data = requests.get("https://api.binance.com/api/v3/klines", params=params).json()
+    data = requests_wrapper(url=url, params=params, function_name=set_history.__name__)
     print(data)
     data_dict = {'date': [], 'open': [], 'high': [], 'low': [], 'close': [], 'volume': []}
     for d in data[:-1]:

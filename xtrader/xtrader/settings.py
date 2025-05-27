@@ -233,9 +233,21 @@ except ImportError:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {name} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+        },
+        'external_requests_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/external_requests.log',  # Adjust path as needed
+            'formatter': 'verbose',
         },
         # 'file': {
         #     'level': 'ERROR',
@@ -248,6 +260,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': LOG_LEVEL,
             'propagate': True,
+        },
+        'external_requests': {
+            'handlers': ['external_requests_file'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }

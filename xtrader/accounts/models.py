@@ -15,7 +15,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-import requests
+from proxy.wrapper import requests_wrapper
 
 
 class Profile(UserenaBaseProfile):
@@ -160,7 +160,8 @@ class Wallet(models.Model):
             'priority': 'economic',
             'post': 1,
         }
-        response = requests.get(Wallet.get_gateway_base() + '/trc20/usdt/create', params=params).json()
+        url = Wallet.get_gateway_base() + '/trc20/usdt/create'
+        response = requests_wrapper(url=url, params=params, function_name=Wallet.create_address.__name__)
         if 'status' in response and response['status'] == 'success':
             # ans = {'status': 'success', 'address_in': 'THGbqa65vheLfGGYiA3p69hpLMLK3d9HPk',
             #        'address_out': 'TSTD9GhDbqXFfYJucArfgodhbbrXm85Tc7',
@@ -177,7 +178,8 @@ class Wallet(models.Model):
         params = {
             'callback': settings.SITE_ADDRESS + '/accounts/newDeposit/' + '?nonce={}'.format(self.nonce),
         }
-        logs = requests.get(Wallet.get_gateway_base() + '/trc20/usdt/logs', params=params).json()
+        url = Wallet.get_gateway_base() + '/trc20/usdt/logs'
+        logs = requests_wrapper(url=url, params=params, function_name=Wallet.check_deposit.__name__)
         new_deposit = False
         for callback in logs['callbacks']:
             depo = Deposit.objects.filter(txid_in=callback['txid_in']).first()
