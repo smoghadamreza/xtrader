@@ -12,5 +12,4 @@ urlpatterns = [
     re_path(r'^trader', views.trader, name='trader'),
     re_path(r'^getProfile/(?P<pro_id>\w+)', views.get_profile, name='getProfile'),
     re_path(r'^league', views.league, name='league'),
-    # re_path(r'^accountStatus', views.account_status, name='accountStatus'),
 ]

@@ -25,8 +25,6 @@ def buy_volume_decrease(index=0, initial=10000000, symbol_id='IRO1KAVR0001', tak
     invest = vol * buy
     margin -= invest
     trades_history = [{'price': buy, 'vol': vol, 'action': 'شروع خرید', 'profit': margin - initial, 'day': index}]
-    # print('bought at price {} and volume {} at i= {}'.format(buy, vol, index))
-    # total_lost = 0
     for i, price in enumerate(close[index + 1:]):
         if price < stoploss * buy:
             vol = calc_vol(trades_history, price, takeprofit)
@@ -35,21 +33,16 @@ def buy_volume_decrease(index=0, initial=10000000, symbol_id='IRO1KAVR0001', tak
             vol_sum += vol
             margin -= invest
             buy_dates.append(date[i + index])
-            # print('bought at price {} and volume {} at i= {}'.format(price, vol, i + index))
             trades_history.append(
                 {'price': buy, 'vol': vol, 'action': 'خرید مجدد', 'profit': margin - initial, 'day': i + index})
             if margin < 0:
                 print('call margin')
                 pass
-                # return {'profit': margin - initial, 'action': 'call margin'}
             continue
         if high[i + index] > (takeprofit + 1) * buy:
             margin += high[i + index] * vol_sum
             trades_history.append(
                 {'price': high[i + index], 'vol': vol_sum, 'action': 'فروش و خروج', 'profit': margin - initial, 'day': i + index})
-            # print(
-            #     'take profit activated at price {} and your margin is {} at i= {}'.format(high[i + index], margin,
-            #                                                                               i + index))
             return {'history': trades_history, 'status': 'worked', 'finishdate': date[i + index], 'dates': buy_dates}
     return {'history': trades_history, 'status': 'running', 'dates': buy_dates}
 

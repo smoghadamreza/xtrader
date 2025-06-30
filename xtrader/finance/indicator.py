@@ -73,7 +73,6 @@ class Indicator:
         senkouB = ((ll + hh) / 2)
         outdf['Senkou Span B'] = senkouB.shift(bl)
 
-        # variable = {'function_name': 'close', 'shift': 52}
         ls = pd.DataFrame(self.inputs['close'])
         ls.index = outdf.index
         ls = pd.DataFrame(ls.shift(-bl), copy=True)
@@ -110,7 +109,6 @@ class Indicator:
                 outdf = pd.concat([outdf, pd.DataFrame(output, index=self.df.index)], axis=1)
 
             outdf.columns = fun.output_names
-            # outdf = outdf.apply(lambda x: round(x, 2))
         return outdf
 
 

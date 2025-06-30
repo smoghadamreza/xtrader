@@ -70,7 +70,6 @@ class Check:
 
     def find_the_last_day(self):
         for delta in range(10):
-            # sample = self.now - timedelta(delta)
             if StockWatch.objects.filter(LastTradeDate=self.strdate()).exists():
                 return self.strdate()
         return None

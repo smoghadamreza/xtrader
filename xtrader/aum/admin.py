@@ -27,7 +27,6 @@ class UnitTransferAdmin(admin.ModelAdmin):
         return obj.investor.fund
 
 
-# Register your models here.
 admin.site.register(Fund, FundAdmin)
 admin.site.register(FundInvestor, FundInvestorAdmin)
 admin.site.register(UnitTransfer, UnitTransferAdmin)

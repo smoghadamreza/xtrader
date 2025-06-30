@@ -6,7 +6,6 @@ from uuid import uuid4
 from accounts.models import Profile
 
 
-# Create your models here.
 class Watchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=80, null=True, blank=True, default='')
@@ -51,7 +50,6 @@ class Strategy(models.Model):
             interval=self.interval,
             symbols=self.get_strategy_watchlist_symbols(),
             # TODO: include backtest config
-            # config=eval(self.config),
         )
         for filter in eval(self.filters):
             strategy_dict['filters'].append(eval(filter))
@@ -85,7 +83,6 @@ class TradingView(models.Model):
 
     @staticmethod
     def create_hook():
-        # hook = str(uuid4())
         hook = Profile.code_generator(12)
         if TradingView.objects.filter(webhook=hook):
             return TradingView.create_hook()

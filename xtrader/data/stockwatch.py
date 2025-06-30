@@ -3,7 +3,6 @@
 		read from APIs, add to data base, updateing, and api for reading from data base
 """
 from data.models import StockWatch
-# from data.crawl import epss
 from finance import oms
 import requests as r
 from data import backup, redis, manage_data
@@ -28,40 +27,12 @@ def createStockWatchTables(num=0):
 
 
 def stockWatchInfo(symbol_id, eps=True):
-    # depth = redis.hget(name=symbol_id, key='depth')
-    # ticker = redis.hget(name="SPOT", key=symbol_id)
     depth = oms.Binance.get_depth(symbol_id, limit=10)
     current_time = int(time.time() * 1000)
-    # print(current_time, ticker['E'], current_time - ticker['E'])
-    # if current_time - 10000 > ticker['E']:
-        # manage_data.run_stream()
-        # print(symbol_id, "depth", "not updated")
-        # pass
     symbol = redis.hget('exchangeInfo', symbol_id)
-    # data = {
-    #     'InstrumentName': symbol_id,
-    #     'CompanyName': symbol['baseAsset'],
-    #     'FirstTradePrice': float(ticker['h']),
-    #     'LastTradePrice': float(ticker['c']),
-    #     'PreviousDayPrice': float(ticker['l']),
-    #     'ClosingPrice': float(ticker['w'][:len(str(float(ticker['c'])))]),
-    #     'pd1': float(ticker['b']),
-    #     'po1': float(ticker['a']),
-    #     'depth': []
-    # }
-    # bids = depth['bids'][:10]
-    # bids = [float(ticker['b']), float(ticker['B'])]
-    # asks = depth['asks'][:10]
-    # asks = [float(ticker['a']), float(ticker['A'])]
     data = {
         'InstrumentName': symbol_id,
         'CompanyName': symbol['baseAsset'],
-        # 'FirstTradePrice': float(ticker['highPrice']),
-        # 'LastTradePrice': float(ticker['lastPrice']),
-        # 'PreviousDayPrice': float(ticker['lowPrice']),
-        # 'ClosingPrice': float(ticker['lastPrice']),
-        # 'pd1': float(ticker['bidPrice']),
-        # 'po1': float(ticker['askPrice']),
         'depth': []
     }
     for i in range(10):
@@ -73,11 +44,6 @@ def stockWatchInfo(symbol_id, eps=True):
                 'aq': float(depth['asks'][i][1]),
             }
             data['depth'].append(level)
-    # for i in range(15):
-    #     data['bp'+str(i)] = depth['bids'][i][0]
-    #     data['bq'+str(i)] = depth['bids'][i][1]
-    #     data['ap'+str(i)] = depth['asks'][i][0]
-    #     data['aq'+str(i)] = depth['asks'][i][1]
     return data
 
 

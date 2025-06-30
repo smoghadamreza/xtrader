@@ -77,13 +77,11 @@ def scan_thread(username, strategy_name, strategy_id, telegram_id, interval, wat
 
 def scan_market(user_name, strategy_id, former=True):
     filters, interval, symbol_ids = find_strategy_filters(user_name, strategy_id)
-    # symbol_ids = find_symbol_ids()
     scan_result = {'buy': [], 'sell': []}
     for id_index, symbol_id in enumerate(symbol_ids):
         first_kind_dict, second_kind_dict, final_dict = {}, {}, {}
         first, second, bad_symbol = False, False, False
         for index, strategy_filter in enumerate(filters):
-            # print('filter: {}, for symbol: {}'.format(index, id_index))
             strategy_filter['symbol_id'] = symbol_id
             try:
                 result = calculate_filter_result(strategy_filter, interval=interval)
@@ -121,7 +119,6 @@ def find_strategy_filters(user_name, strategy_id):
 
 
 def find_symbol_ids():
-    # symbol_ids = StockWatch.objects.filter().values('SymbolId')
     symbol_ids = StockWatch.objects.all().values('SymbolId')
     return [symbol_id['SymbolId'] for symbol_id in symbol_ids]
 
@@ -133,11 +130,7 @@ def calculate_filter_result(strategy_filter, interval):
 
 def create_dict(symbol_id):
     return {'symbol_id': symbol_id}
-    # return StockWatch.objects.get(SymbolId=symbol_id).as_json()
 
-
-# notification.py:
-# from finance.notification import scan_market as s
 
 def check_first_kind(results):
     magic_number = len(results)

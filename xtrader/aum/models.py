@@ -8,12 +8,10 @@ from django.utils import timezone
 from django.db import connections
 
 
-# Create your models here.
 class Fund(models.Model):
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     issue_fee = models.FloatField(default=0.01, blank=True, null=True)
     redeem_fee = models.FloatField(default=0.01, blank=True, null=True)
-    # units = models.FloatField(default=0, blank=True, null=True)
     fee = models.FloatField(default=0, blank=True, null=True)
     aum = models.FloatField(default=0, blank=True, null=True)
     last_update = models.FloatField(default=0, blank=True, null=True)
@@ -46,7 +44,6 @@ class Fund(models.Model):
         other_assets = self.fee + self.deposit + self.withdraw
         usdt -= other_assets
         self.aum = oms.OMSManager.get_nav(assets=assets) - other_assets
-        # self.last_update = datetime.now()
         self.save()
         return usdt
 
@@ -162,7 +159,6 @@ class Fund(models.Model):
             return 'already exists'
         self.create_snapshots(
             assets=self.get_unit_assets(),
-            # 'age': age,
             history=history
         )
         return 'created'
@@ -177,8 +173,6 @@ class Fund(models.Model):
                     'limit': 500
                 }).json()
                 historical[asset] = candles[-history - 5:-1]
-            # else:
-            #     historical[asset] = [1] * history
         age = 0
         while age <= history:
             age += 1
@@ -190,7 +184,6 @@ class Fund(models.Model):
                     value = price * quantity
                     portfo[asset] = {
                         'value': value,
-                        # 'timestamp': age_timestamp,
                     }
                     portfo['nav'] += value
                     portfo['date'] = timezone.datetime.fromtimestamp(age_timestamp).date()
@@ -199,12 +192,9 @@ class Fund(models.Model):
                 if not asset == 'USDT':
                     portfo[asset]['ratio'] = portfo[asset]['value'] / portfo['nav']
                 else:
-                    # usdt_date = timezone.datetime.today() - timedelta(days=age-2)
                     portfo[asset] = {
                         'ratio': quantity / portfo['nav'],
                         'value': quantity,
-                        # 'timestamp': usdt_date.timestamp(),
-                        # 'date': usdt_date.date()
                     }
                 if 'date' not in portfo:
                     usdt_date = timezone.datetime.today() - timedelta(days=age - 2)
@@ -214,12 +204,10 @@ class Fund(models.Model):
                                  ratio=portfo[asset]['ratio'],
                                  insert_date=portfo['date'],
                                  age=portfo['age'], nav=portfo['nav']).save()
-            # print(portfo)
 
     def fund_daily_snapshot(self):
         snapshot = FundUnitSnapshot.objects.filter(fund=self).order_by('-age').values('age', 'insert_date').first()
         insert_date = timezone.datetime.today()
-        # print(snapshot['insert_date'], insert_date.date())
         if str(snapshot['insert_date']) == str(insert_date.date()):
             print('snapshot exists!')
             return None

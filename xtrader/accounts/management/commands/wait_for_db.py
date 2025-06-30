@@ -12,7 +12,7 @@ class Command(BaseCommand):
         db_up = False
         while not db_up:
             try:
-                # چک کردن همه اتصال‌های پایگاه داده
+                # Check all database connections
                 for db_name in connections:
                     self.check(databases=[db_name])
 

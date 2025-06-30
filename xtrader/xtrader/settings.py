@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/1.10/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
-# import asgi_redis
 import os
 from django.conf import settings
 import sys
@@ -19,11 +18,7 @@ from pathlib import Path
 
 settings_dir = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = Path(__file__).resolve().parent.parent
-# TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'mytemplates'),
-#                  os.path.join(PROJECT_ROOT, 'templates/'),)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -57,8 +52,6 @@ USERENA_REDIRECT_ON_SIGNOUT = getattr(settings,
 USERENA_SIGNIN_REDIRECT_URL = getattr(settings,
                                       'USERENA_SIGNIN_REDIRECT_URL',
                                       '/robots')
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
 
@@ -69,11 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',
-    # 'mabna',
-    # 'show',
-    # 'api',
     'accounts',
-    # 'chat',
     'main',
     'django.contrib.sites',
     'finance',
@@ -89,8 +78,7 @@ INSTALLED_APPS = [
 ]
 SITE_ID = 1
 REDIS_DB = 0
-# settings.py
-INTERVALS = [1, 5, 10, 30, 60]  # Example list of intervals
+INTERVALS = [1, 5, 10, 30, 60]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -103,7 +91,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'xtrader.urls'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # TODO: For now we only print the email to the console.
 
 EMAIL_PORT = 587
@@ -142,8 +129,6 @@ CHANNEL_LAYERS = {
 }
 
 
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -163,8 +148,6 @@ MIGRATION_MODULES = {
 
 USE_TZ = True
 TIME_ZONE = 'Asia/Tehran'
-# Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -181,11 +164,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.10/topics/i18n/
-
-# LANGUAGE_CODE = 'fa-ir'
-
 USE_I18N = True
 
 USE_L10N = True
@@ -196,11 +174,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.10/howto/static-files/
-# PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-# STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 STATICFILES_DIRS = (
@@ -208,7 +181,6 @@ STATICFILES_DIRS = (
 )
 MEDIA_ROOT = '/vol/web/media'
 STATIC_ROOT = '/vol/web/static'
-#MEDIA_URL = 'media/'
 
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
@@ -218,12 +190,6 @@ USDT_WALLET = ''
 REFERRAL_BOUNCE = .3
 ADMIN_TEL_ID = 121366977
 COPYTRADEFEE = 0.4
-# from django.utils.translation import ugettext_lazy as _
-
-# LANGUAGES = (
-#     ('en', _('English')),
-#     ('fa', _('Farsi')),
-# )
 LOG_LEVEL = 'INFO'
 try:
     from .localsetting import *
@@ -237,11 +203,6 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
-        # 'file': {
-        #     'level': 'ERROR',
-        #     'class': 'logging.FileHandler',
-        #     'filename': 'errors.log',
-        # },
     },
     'loggers': {
         'django': {

@@ -2,10 +2,6 @@ from .models import Strategy, Watchlist
 from sales.models import Subscription
 
 
-# from api.models import Stock
-# from django.contrib.auth.models import User
-# import json
-
 
 def add_strategy_to_db(data, user):
     watchlist_id = data['watchlistId']
@@ -21,7 +17,6 @@ def add_strategy_to_db(data, user):
         interval=data['interval'],
     )
     strategy_id = data['id']
-    # st = Strategy.objects.filter(trader=strategy['trader'], id=strategy['name'])
     st = Strategy.objects.filter(trader=strategy['trader'], id=strategy_id).first()
     result = 'save'
     if st:
@@ -49,15 +44,12 @@ def add_strategy_to_db(data, user):
 
 
 def load_strategy_names(user):
-    # trader = User.objects.get_by_natural_key(username=user_name)
     strategies = Strategy.objects.filter(trader=user).values('name', 'id')
     return [{'id': strategy['id'], 'name': strategy['name']} for strategy in strategies]
 
 
 def load_strategy_from_db(user, strategy_id):
-    # trader = User.objects.get_by_natural_key(username=user_name)
     strategy = Strategy.objects.filter(trader=user, id=strategy_id).first()
-    # filters, symbol_ids = strategy.filters, strategy.watch_list
     filters = strategy.filters if strategy else '[]'
     interval = strategy.interval if strategy else '4h'
     watchlist_id = 0

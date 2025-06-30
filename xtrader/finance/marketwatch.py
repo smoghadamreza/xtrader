@@ -32,8 +32,8 @@ trans = {
     '(pe)': 'PricePerEarning',
 
     '(z)': 'NumberOfSharesOrBonds',
+    
     # industry group
-    # 'cs':'??'
     '(bvol)': 'BaseQuantity',
     '(tvol)': 'TotalNumberOfSharesTraded',
     '(tno)': 'TotalNumberOfTrades',
@@ -49,7 +49,7 @@ trans = {
     '(ct).Sell_N_Volume': 'SellFirmVolume',
 
     '(mv)': 'InstrumentMarketValue',
-    # '': '',
+
     # logical:
     '&&': 'AND',
     '& &': 'AND',
@@ -60,9 +60,7 @@ trans = {
 
 def query(query_text):
     date = Check().last_market()
-    # print(query_text)
     query_text = translate(query_text)
-    # print('translated text: {}'.format(query_text))
     query_text = 'SELECT * FROM api_MarketWatch WHERE {} ORDER BY TotalNumberOfSharesTraded DESC'.format(query_text)
     results = MarketWatch.objects.raw(query_text)
     r = []
@@ -73,7 +71,6 @@ def query(query_text):
 
 
 def translate(query_text):
-    # print('translating: {}'.format(query_text))
     for key in trans:
         query_text = query_text.replace(key, trans[key])
     return query_text

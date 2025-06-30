@@ -22,7 +22,6 @@ class WatchlistSymbolsAdmin(admin.ModelAdmin):
     list_display = ('watchlist', 'symbol', 'updated')
 
 
-# Register your models here.
 admin.site.register(Strategy, StrategyAdmin)
 admin.site.register(Exchange, ExchangeAdmin)
 admin.site.register(TradingView, TradingViewAdmin)

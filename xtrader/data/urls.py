@@ -2,7 +2,6 @@ from django.urls import re_path
 from data import views
 
 urlpatterns = [
-    # re_path(r'^add', views.add_new_symbol, name='add'),
     re_path(r'^symbols', views.get_symbols, name='get_symbols'),
     re_path(r'^allSymbols', views.get_all_symbols, name='allSymbols'),
     re_path(r'^intervals/$', views.get_intervals, name='getIntervals'),

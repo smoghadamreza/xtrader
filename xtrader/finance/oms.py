@@ -1,7 +1,6 @@
 import requests
 from django.db import connections
 from finance.models import Exchange, TradingView
-# from social.models import Follow
 from django.conf import settings
 from datetime import datetime, timedelta
 import threading
@@ -16,14 +15,6 @@ from data import redis
 class Binance:
     spot_base = 'https://api.binance.com'
 
-    # try:
-    #     data = requests.get('https://api.binance.com/api/v3/exchangeInfo').json()
-    # except Exception as e:
-    #     data = {'symbols': []}
-    # info = {}
-    # for symbol in data['symbols']:
-    #     if symbol['quoteAsset'] == 'USDT':
-    #         info[symbol['symbol']] = symbol
     @staticmethod
     def get_candles(params):
         return requests.get(Binance.spot_base + "/api/v3/klines", params=params).json()
@@ -38,7 +29,6 @@ class Binance:
 
     @staticmethod
     def get_depth(symbol_id, limit=10):
-        # print(current_time, ticker['E'], current_time - ticker['E'])
         current_time = int(time.time() * 1000)
         try:
             depth = redis.hget('Depth', symbol_id)
@@ -59,9 +49,7 @@ class Binance:
     @staticmethod
     def set_symbols():
         exchange_info = requests.get('https://api.binance.com/api/v3/exchangeInfo').json()
-        # print("serverTime:", exchange_info['serverTime'])
         for symbol in exchange_info['symbols']:
-            # self.symbols.append(symbol['symbol'])
             redis.hset('exchangeInfo', symbol['symbol'], json.dumps(symbol))
 
     @staticmethod
@@ -105,8 +93,6 @@ class Binance:
 
     @staticmethod
     def get_orders(ex, symbol):
-        # client = Client(ex.public, ex.private)
-        # orders = client.get_all_orders(symbol=symbol)
         orders = Binance.get('/api/v3/allOrders', params={'symbol': symbol}, public=ex.public, private=ex.private)
         nonzero = [order for order in orders if float(order['price']) > 0 or order['type'] == 'MARKET'][::-1]
         return nonzero[:15]
@@ -157,7 +143,6 @@ class Binance:
             url='https://api.binance.com/api/v3/order{}?'.format(additional_endpoint) + Binance.sign(params=order,
                                                                                                      private=ex.private),
             headers=Binance.get_header(ex.public)).json()
-        # print(response)
         result = {'error': True}
         if 'msg' not in response:
             result['error'] = False
@@ -169,38 +154,14 @@ class Binance:
             result['msg'] = 'تعداد یا قیمت اشتباه وارد شده است'
         else:
             result['msg'] = 'لطفا دوباره تلاش کنید کد' + str(response['code'])
-        # try:
-        #     # result = client.order_limit(**order) if order['type'] == 'LIMIT' else client.order_market(**order)
-        #     result = requests.post(url='https://api.binance.com/api/v3/order?'+Binance.sign(params=order, private=ex.private), headers=Binance.get_header(ex.public)).json()
-        #     print(result)
-        #     result['error'] = False
-        # except Exception as e:
-        #     if e.code == -2010:
-        #         result['msg'] = 'موجودی حساب کافی نیست'
-        #     elif e.code == -1013:
-        #         result['msg'] = 'تعداد یا قیمت اشتباه وارد شده است'
-        #     elif e.code == -1111:
-        #         result['msg'] = 'تعداد یا قیمت اشتباه وارد شده است'
-        #     else:
-        #         result['msg'] = 'لطفا دوباره تلاش کنید کد' + str(e.code)
-        # if not result['error'] and followers:
-        #     OMSManager.copytrade(protrader_ex=ex, data=order, ex_name='BINANCE', action='order', followers=followers,
-        #                          assets=assets, open_orders=open_orders)
         return result
 
     @staticmethod
     def cancel_order(ex, symbol, order_id):
-        # client = Client(ex.public, ex.private)
         try:
-            # result = client.cancel_order(symbol=symbol, orderId=int(order_id))
             params = {'symbol': symbol, 'orderId': int(order_id)}
             url = 'https://api.binance.com/api/v3/order?' + Binance.sign(params=params, private=ex.private)
             result = requests.delete(url=url, headers=Binance.get_header(ex.public)).json()
-            # followers = Follow.objects.filter(proTrader__trader=ex.trader)
-            # if followers:
-            #     assets = Binance.get_portfolio(ex)
-            #     OMSManager.copytrade(protrader_ex=ex, data={'symbol': symbol}, ex_name='BINANCE', action='cancel',
-            #                          followers=followers, assets=assets)
             return result
         except Exception as e:
             print(e)
@@ -240,12 +201,6 @@ class Binance:
     def verify(public, private):
         account = Binance.get('/api/v3/account', params={}, public=public, private=private)
         return "permissions" in account and "SPOT" in account['permissions']
-        # try:
-        #     client = Client(public, private)
-        #     info = client.get_account()
-        #     return True
-        # except Exception as e:
-        #     return False
 
     @staticmethod
     def get_daily_snapshots(public, private, limit=30, startTime=None, endTime=None):
@@ -273,7 +228,6 @@ class Binance:
                 'endTime': int(end_day.timestamp() * 1000)
             }
             data = Binance.get_deposits(params, public, private)
-            # print(data)
             for deposit in data['depositList']:
                 txId = deposit['txId']
                 if txId not in txIds:
@@ -299,7 +253,6 @@ class Binance:
                 'endTime': int(end_day.timestamp() * 1000)
             }
             data = Binance.get_withdraws(params, public, private)
-            # print(data)
             for withdraw in data['withdrawList']:
                 w_id = withdraw['id']
                 if w_id not in w_ids:
@@ -314,22 +267,16 @@ class Binance:
 
     @staticmethod
     def get_historical_trades(symbol, public, private):
-        # first_day = datetime.now() - timedelta(days=settings.PERFORMANCE_HISTORY_DAYS)
         from_id = 1
-        # step = 89
         trades = []
         t_ids = []
         trades_list = [None]
         while trades_list:
-            # end_day = first_day + timedelta(days=step)
             params = {
                 'symbol': symbol.upper(),
                 'fromId': from_id,
-                # 'startTime':int(first_day.timestamp()*1000),
-                # 'endTime': int(end_day.timestamp() * 1000)
             }
             trades_list = Binance.get_trades(params, public, private)
-            # print(from_id, symbol, trades_list)
             for trade in trades_list:
                 t_id = trade['id']
                 if t_id not in t_ids:
@@ -337,37 +284,7 @@ class Binance:
                     trades.append(trade)
                     if t_id > from_id:
                         from_id = t_id + 1
-            # first_day += timedelta(days=step)
         return trades
-
-    # @staticmethod
-    # def get_full_history(public, private):
-    #     history = {
-    #         'deposits': Binance.get_historical_deposits(public=public, private=private),
-    #         'withdraws': Binance.get_historical_withdraws(public=public, private=private),
-    #     }
-    #     history = {'trades': {}}
-    #
-    #     def fetch_history(kind, public, private, symbol=None):
-    #         if kind == 'deposits':
-    #             history[kind] = Binance.get_historical_deposits(public=public, private=private)
-    #         elif kind == 'withdraws':
-    #             history[kind] = Binance.get_historical_withdraws(public=public, private=private)
-    #         elif kind == 'trades':
-    #             history[kind][symbol] = Binance.get_historical_trades(symbol=symbol, public=public, private=private)
-    #
-    #     threads = [
-    #         threading.Thread(target=fetch_history, args=('withdraws', public, private)),
-    #         threading.Thread(target=fetch_history, args=('deposits', public, private)),
-    #     ]
-    #     symbols = ['BTCUSDT', 'ETHUSDT']
-    #     for symbol in symbols:
-    #         threads.append(threading.Thread(target=fetch_history, args=('trades', public, private, symbol)))
-    #     for t in threads:
-    #         t.start()
-    #     for t in threads:
-    #         t.join()
-    #     return history
 
     @staticmethod
     def get_historical_nav(public, private):
@@ -375,51 +292,13 @@ class Binance:
         endTime = int(time.time() * 1000)
         for _ in range(2):
             snapshots = Binance.get_daily_snapshots(public=public, private=private, endTime=endTime)
-            # print(snapshots)
-            # print("start:", snapshots['snapshotVos'][0]['updateTime'], "finish:", snapshots['snapshotVos'][-1]['updateTime'])
             history = snapshots['snapshotVos'] + history
             endTime = snapshots['snapshotVos'][0]['updateTime'] - 25 * 60 * 60 * 1000
-            # time.sleep(5)
         return history
-        # history = Binance.get_full_history(public=public, private=private)
-        # actions = Binance.get_actions(history)
-        # assets, snapshots = Binance.get_portfo_snapshots(actions)
-        # # prices = Binance.get_prices(assets)
-        # days = sorted(prices)
-        # portfo = {}
-        # nav_history = []
-        # for idx, day in enumerate(days[:-1]):
-        #     if idx == 0:
-        #         continue
-        #     for snap in snapshots:
-        #         if days[idx] <= snap['time'] < days[idx + 1]:
-        #             portfo = snap['assets']
-        #     if portfo:
-        #         nav = portfo.get('USDT', 0)
-        #         for asset in assets:
-        #             amount = portfo.get(asset)
-        #             if amount:
-        #                 nav += amount * prices[day][asset]
-        #         nav_history.append([day, nav])
-        # return nav_history
 
     @staticmethod
     def get_last_nav(public, private):
         return 0
-        # result = Binance.get_daily_snapshots(public=public, private=private)
-        # if not result['code'] == 200:
-        #     return 0
-        # asset_btc = result['snapshotVos'][-1]['data']['totalAssetOfBtc']
-        # # assets = list(set([asset['asset'] for asset in balances]))
-        # prices = Binance.get_prices(['BTC'])
-        # last_day = max(prices)
-        # nav = prices[last_day]['BTC'] * float(asset_btc)
-        # # for asset in balances:
-        # #     if asset['asset'] == 'USDT':
-        # #         nav += asset['free'] + asset['locked']
-        # #     else:
-        # #         nav += prices[last_day][asset['asset']] * (asset['free'] + asset['locked'])
-        # return nav
 
     @staticmethod
     def get_prices(assets):
@@ -427,8 +306,6 @@ class Binance:
         for asset in assets:
             if asset == 'USDT':
                 continue
-            # elif asset[-2:] == 'UP' or asset[-4:] == 'DOWN':
-            #     symbol = asset
             else:
                 symbol = asset + 'USDT'
             candles = requests.get('https://api.binance.com/api/v3/klines', params={
@@ -460,7 +337,6 @@ class Binance:
 
     @staticmethod
     def get_last_price(symbol):
-        # print("last price", symbol)
         try:
             ticker = redis.hget('LASTPRICE', symbol)
             if ticker['time'] > int(time.time()) - 30:
@@ -491,18 +367,15 @@ class Binance:
         portfo = {'assets': {}}
         assets = []
         for action in actions:
-            # print(action)
             if action['action'] == 'deposit':
                 asset = action['asset']
                 amount = action['amount']
                 portfo['assets'][asset] = portfo['assets'].get(asset, 0) + amount
                 assets.append(asset)
-                # print(action['actionTime'],'deposit', action['amount'], action['asset'])
             elif action['action'] == 'withdraw':
                 asset = action['asset']
                 amount = action['amount']
                 portfo['assets'][asset] -= amount
-                # print(action['actionTime'],'withdraw', action['amount'], action['asset'])
             elif action['action'] == 'trade':
                 asset = action['symbol'][:-4]
                 amount = float(action['qty'])
@@ -514,7 +387,6 @@ class Binance:
                 else:
                     portfo['assets'][asset] = max(portfo['assets'][asset] - amount, 0)
                     portfo['assets']['USDT'] = portfo['assets'].get('USDT', 0) + value
-                # print(action['actionTime'], 'trade', 'buy' if action['isBuyer'] else 'sell', action['symbol'], action['qty'], 'value', action['quoteQty'])
             portfo['action'] = action['action']
             portfo['time'] = action['actionTime']
             portfo_history.append(json.dumps(portfo))
@@ -595,61 +467,20 @@ class OMSManager:
             order_value = order_qty * order_price * quote_price
         return round(order_value / nav, 3)
 
-        # order_side = new_order['side']
-        # base_asset = new_order['base']
-        # open_orders_values = [
-        #     abs(float(open_order['origQty']) - float(open_order['executedQty'])) * float(open_order['price'])
-        #     for open_order in open_orders if open_order['side'] == order_side]
-        # open_orders_value = sum(open_orders_values) if open_orders_values else 0
-        # asset_amount = 0
-        # for asset in assets:
-        #     if asset['symbol'] == base_asset:
-        #         asset_amount += (asset['free'] + asset['locked']) * order_price
-        #         break
-        # ratio = None
-        # if order_side == 'SELL':
-        #     if nav:
-        #         ratio = (max(asset_amount - open_orders_value - (order_qty * order_price), 0)) / nav
-        # elif order_side == 'BUY':
-        #     if nav:
-        #         ratio = (asset_amount + (order_qty * order_price)) / nav
-        # return round(ratio, 3)
-
     @staticmethod
     def send_followers_order(follower_ex, ratio, order, quote_price):
         new_order = order.copy()
         ex = OMSManager.ex_name2obj[follower_ex.name]
         assets = ex.get_portfolio(follower_ex)
-        # open_orders = Binance.get_open_orders(follower_ex, order['symbol'])
-        # order_side = order['side'].upper()
-        # open_orders_values = [
-        #     abs(float(open_order['origQty']) - float(open_order['executedQty'])) * float(open_order['price'])
-        #     for open_order in open_orders if open_order['side'] == order_side]
-        # open_orders_value = sum(open_orders_values) if open_orders_values else 0
-
         nav = OMSManager.get_nav(assets)
-        # asset_order = order['base']
-        # asset_value = 0
-        # for asset in assets:
-        #     if asset['symbol'] == asset_order:
-        #         asset_value += (asset['free'] + asset['locked']) * order['price']
-        #         break
-        # value = 0
-        # if order_side == 'SELL':
-        #     if nav:
-        #         value = max(asset_value - open_orders_value - (nav * ratio), 0)
-        # elif order_side == 'BUY':
-        #     if nav:
-        #         value = max((nav * ratio) - asset_value, 0)
+
         value = max(nav * ratio, 0)
         quantity = value / (order['price'] * quote_price)
-        # round(order['quantity'], Binance.info[order['symbol']]['baseAssetPrecision'] - 2)
         if quantity * new_order['price'] * quote_price >= 10:
             new_order['quantity'] = quantity
             ex.send_order(follower_ex, new_order)
         for conn in connections.all():
             conn.close()
-            # if not result['error']:
 
     @staticmethod
     def copytrade(trader, new_order, followers=[], open_orders=[]):

@@ -12,5 +12,4 @@ urlpatterns = [
     re_path(r'^getFund', views.get_fund, name='getFund'),
     re_path(r'^initFundPerformance', views.init_fund_performance, name='initFundPerformance'),
     re_path(r'^fundPerformance', views.get_fund_performance, name='getFundPerformance'),
-    # re_path(r'^scan_market', views.scan_market, name='scan market'),
 ]

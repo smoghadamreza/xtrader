@@ -42,7 +42,6 @@ def password_reset(request,
             form.save(**opts)
             data = form.cleaned_data
             return JsonResponse(data)
-            # return HttpResponseRedirect(post_reset_redirect)
         return JsonResponse({"msg": "missing email or invalid email"}, status=400)
     else:
         form = password_reset_form()
@@ -87,7 +86,6 @@ def password_reset_confirm(request, uidb64=None, token=None,
 
     if user is not None and token_generator.check_token(user, token):
         validlink = True
-        # title = _('Enter new password')
         title = 'Enter new password'
         if request.method == 'POST':
             info = json.loads(request.body.decode())
@@ -102,7 +100,6 @@ def password_reset_confirm(request, uidb64=None, token=None,
     else:
         validlink = False
         form = None
-        # title = _('Password reset unsuccessful')
         title = 'بازیابی رمزعبور انجام نشد'
     context = {
         'form': form,

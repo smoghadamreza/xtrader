@@ -56,8 +56,6 @@ def give_result_more(data, mt=None, get_json=True, interval=None):
 
     indicators['type'] = 'second'
     indicators['result'] = more.to_json(orient='values')
-    # add_to_db(data['id'],more)
-    # print(more.head(10))
     if not get_json:
         return indicators
     return json.dumps(indicators)
@@ -78,8 +76,6 @@ def give_result_special(data, mt=None, get_json=True, interval=None):
 
     indicator_special_org = bt.shifter(mt.indicator_calculator(**special),
                                        int(data['indicators']['special']['settings']['shift']))
-    # indicator_ascending = indicator_ascending_org[data['indicators']['ascending']['output']['name']]
-    # indicator_ascending = pd.DataFrame(indicator_ascending)
 
     outputs = data['indicators']['special']['outputs']
     indicators = {'special': {}}
@@ -92,7 +88,6 @@ def give_result_special(data, mt=None, get_json=True, interval=None):
 
     indicators['result'] = result.to_json(orient='values')
     indicators['type'] = 'first'
-    # add_to_db(data['id'],result)
     if not get_json:
         return indicators
     return json.dumps(indicators)
@@ -122,7 +117,6 @@ def give_result_ascending(data, mt=None, get_json=True, interval=None):
     for output in outputs:
         indicators['ascending'][output] = indicator.add_time(pd.DataFrame(indicator_ascending_org[output])).to_json(
             orient='values')
-    # print('monoto called!')
     result = bt.monotono(indicator_ascending, days)
     result = bt.set_valid_time(result, valid)
     indicators['type'] = 'first'
@@ -146,13 +140,6 @@ def give_result_draw(data, mt=None, get_json=True, interval=None):
 
     indicator_draw_org = bt.shifter(mt.indicator_calculator(**draw),
                                     int(data['indicators']['draw']['settings']['shift']))
-    # print(data['stock_name'])
-    # print(draw)
-    # print(calc_filter.delay(data['stock_name'],draw).get())
-    # print(type(calc_filter.delay(data['stock_name'],draw).get()))
-    # indicator_draw_org = bt.shifter(calc_filter.delay(data['stock_name'],draw).get(),
-    #                                 int(data['indicators']['draw']['settings']['shift']))
-    #
     outputs = data['indicators']['draw']['outputs']
     indicators = {'draw': {}}
     for output in outputs:
@@ -160,7 +147,7 @@ def give_result_draw(data, mt=None, get_json=True, interval=None):
             orient='values')
 
     indicators['type'] = 'default'
-    # return indicators
+
     if not get_json:
         return indicators
     return json.dumps(indicators)
@@ -171,7 +158,6 @@ def give_result_candlestick(data, mt=None, get_json=True, interval=None):
         mt = Indicator(name=data['symbol_id'], interval=interval)
     valid = int(data['valid'])
     candlestick = {'function_name': data['indicators']['candlestick']['name']}
-    # ascending['price'] = data['apply_to']
     if 'params' in data['indicators']['candlestick']:
         params = data['indicators']['candlestick']['params']
         for param in params:
@@ -181,19 +167,6 @@ def give_result_candlestick(data, mt=None, get_json=True, interval=None):
                                            int(data['indicators']['candlestick']['settings']['shift']))
     indicator_candlestick = indicator_candlestick_org[data['indicators']['candlestick']['output']['name']]
     indicator_candlestick = pd.DataFrame(indicator_candlestick)
-
-    # for i in indicator_candlestick.index:
-    #     if indicator_candlestick['integer'][i] not in [0,200,-200]:
-    #         print('fuck: ',indicator_candlestick['integer'][i])
-
-    # indicator_candlestick_display = []
-    # high = mt.indicator_calculator(**{'function_name':'high'})
-    # low = mt.indicator_calculator(**{'function_name':'low'})
-    # for i in indicator_candlestick.index:
-    #     if indicator_candlestick['integer'][i] != 0:
-    #         indicator_candlestick_display +=[[i,1.05*high['real'][i],0.95*low['real'][i]]]
-    # df = pd.DataFrame(indicator_candlestick_display)
-    # indicators['test'] = df.to_json(orient='values')
 
     indicators = {'candlestick': {}}
     outputs = data['indicators']['candlestick']['outputs']
@@ -230,7 +203,6 @@ def give_result_cross(data, mt=None, get_json=True, interval=None):
 
     indicator_shorter_org = bt.shifter(mt.indicator_calculator(**shorter),
                                        int(data['indicators']['shorter']['settings']['shift']))
-    # print(indicator_shorter_org)
     indicator_shorter = indicator_shorter_org[data['indicators']['shorter']['output']['name']]
     indicator_shorter = pd.DataFrame(indicator_shorter)
 
@@ -262,7 +234,6 @@ def give_result_cross(data, mt=None, get_json=True, interval=None):
 
     indicators['type'] = 'first'
     indicators['result'] = cross.to_json(orient='values')
-    # add_to_db(data['id'],cross)
     if not get_json:
         return indicators
     return json.dumps(indicators)
@@ -367,19 +338,15 @@ def give_result_advance_cross(data, mt=None, get_json=True, interval=None):
 
 def add_to_db(id, data):
     pass
-    # db = bt.Database_Signal('hadi')
-    # db.write_to_db(data, id)
 
 
 def give_result_backtest(name, res, config, interval=None):
-    # print(config)
     mt = Indicator(name=name, interval=interval)
     price = {'function_name': 'close'}
     price = mt.indicator_calculator(**price)
     for setting in ['stop loss', 'take profit']:
         config[setting]['apply'] = mt.indicator_calculator(**{'function_name': config[setting]['apply']})
     res = pd.DataFrame(data=res)
-    # result = bt.BackTest(price, res, config).back_test()
     result = bt.testresult(price, res, config)
     return json.dumps(result)
 
@@ -398,7 +365,6 @@ def give_update_indicators(data):
     length = 10 * (int(length) + 2)
     tail = {'price': price, 'length': length}
     mt = Indicator(name=data['symbol_id'], tail=tail)
-    # mt = Indicator(name=data['symbol_id'])
     indicator_draw_org = mt.indicator_calculator(**draw)
     outputs = data['outputs']
     indicators = {}
@@ -406,7 +372,6 @@ def give_update_indicators(data):
         indicators[outputs[output]['id']] = indicator.add_time(
             pd.DataFrame(indicator_draw_org[output].tail(1))).to_json(
             orient='values')
-    # print(indicators)
     return json.dumps(indicators)
 
 

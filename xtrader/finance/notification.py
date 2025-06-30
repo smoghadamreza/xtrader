@@ -4,7 +4,6 @@ import requests
 
 def send_telegram_message(msg, user_id):
     bot_token = settings.XTREASURY_BOT
-    # user_id = 121366977
     params = {
         'chat_id': str(user_id),
         'text': msg,

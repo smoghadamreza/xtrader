@@ -9,7 +9,6 @@ def sendemail(firstname='hossein', lastname='yazdi', email='iran581@gmail.com'):
     msg = EmailMultiAlternatives(subject, text_content, from_email, [email])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
-#
 
 import openpyxl
 

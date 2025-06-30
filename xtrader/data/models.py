@@ -30,8 +30,6 @@ class StockWatch(models.Model):
     zo3 = models.IntegerField(blank=True, null=True)
     qo3 = models.BigIntegerField(blank=True, null=True)
 
-    # BidAsk = models.
-
     BuyGroupCount = models.IntegerField(blank=True, null=True)
     BuyGroupVolume = models.BigIntegerField(blank=True, null=True)
     BuyGroupVolumePercentage = models.FloatField(blank=True, null=True)

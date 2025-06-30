@@ -12,13 +12,8 @@ from social.models import Protrader, Follow
 from finance.models import Exchange
 from finance import oms
 from accounts.models import Profile
-# from datetime import datetime
-# import requests
-# from django.conf import settings
-# import time
 
 
-# Create your views here.
 @csrf_exempt
 def protraders(request):
     if request.method == 'POST':

@@ -1,4 +1,3 @@
-# encoding:utf-8
 from __future__ import unicode_literals
 
 from userena.forms import (SignupForm, SignupFormOnlyEmail,
@@ -50,7 +49,6 @@ class SignupFormExtra(SignupForm):
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict,
                                                            render_value=False),
                                 label=_("رمز عبور"), required=True)
-    # error_messages={'required': 'assd'}
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict,
                                                            render_value=False),
                                 label=_("تکرار رمز "), required=True)
@@ -59,8 +57,6 @@ class SignupFormExtra(SignupForm):
                                 widget=forms.TextInput(attrs=attrs_dict),
                                 label=_("نام کاربری (انگلیسی)"),
                                 )
-
-    # field_order = ['first_name', 'last_name', 'new_password2']
 
     def __init__(self, *args, **kw):
         """
@@ -78,7 +74,6 @@ class SignupFormExtra(SignupForm):
         field.
 
         """
-        # First save the parent form and get the user.
         username, email, password = (self.cleaned_data['username'],
                                      self.cleaned_data['email'],
                                      self.cleaned_data['password1'])
@@ -97,17 +92,15 @@ class SignupFormExtra(SignupForm):
         new_user.first_name = self.cleaned_data['first_name']
         new_user.last_name = self.cleaned_data['last_name']
         # TODO: user activation by email
-        # print(new_user.activation_key)
-        # new_user.is_active = True
         new_user.save()
         p = new_user.my_profile
         p.cellPhone = self.cleaned_data['cellPhone']
         p.save()
         # TODO: Send activation email
         new_user.userena_signup.send_activation_email()
-        return new_user
+
         # Userena expects to get the new user from this form, so return the new
-        # user.
+        return new_user
 
     def clean_username(self):
         """
@@ -268,7 +261,6 @@ class AuthenticationForm(forms.Form):
         password = self.cleaned_data.get('password')
 
         if identification and password:
-            # from
             user = authenticate(identification=identification, password=password)
             from django.contrib.auth.models import User
             from django.db.models import Q
@@ -277,9 +269,6 @@ class AuthenticationForm(forms.Form):
                 raise forms.ValidationError(_("username and password do not match"))
             if not user.is_active:
                 raise forms.ValidationError(_("your account is not activated"))
-                # raise ValidationError("اشتراک کاربر " + username + " غیر فعال شده است.")
-            # if user is None:
-            #     raise forms.ValidationError(_("فرم زیر را کامل کنید ، به حروف کوچک و بزرگ حساس است "))
         return self.cleaned_data
 
 
@@ -363,7 +352,6 @@ class SetPasswordForm(forms.Form):
     password
     """
     error_messages = {
-        # 'password_mismatch': _("The two password fields didn't match."),
         'password_mismatch': _("رمزعبور و تکرار آن همخوانی ندارند"),
     }
     help_texts = [
@@ -376,14 +364,11 @@ class SetPasswordForm(forms.Form):
 
     new_password1 = forms.CharField(
         label=_("رمز عبور جدید"),
-        # label=_("New password"),
         widget=forms.PasswordInput,
         strip=False,
-        # help_text=password_validation.password_validators_help_text_html(),
         help_text='<br>' + help_text,
     )
     new_password2 = forms.CharField(
-        # label=_("New password confirmation"),
         label=_("تکرار رمز عبور جدید"),
         strip=False,
         widget=forms.PasswordInput,

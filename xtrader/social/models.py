@@ -9,7 +9,6 @@ from uuid import uuid4
 from finance import oms
 
 
-# Create your models here.
 class Protrader(models.Model):
     trader = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     page_url = models.CharField(max_length=80, null=True, blank=True)
@@ -31,21 +30,6 @@ class Protrader(models.Model):
         public = ex_obj.public
         private = ex_obj.private
         return ex.get_historical_nav(public=public, private=private)
-        # nav = ex.get_last_nav(public=public, private=private)
-        nav = 0
-        # nav = navs[-1]
-        # self.age = len(navs)
-        self.age = 100
-        self.nav = nav
-        # self.one_year_performance = ((navs[-365][1] / self.nav) - 1) if self.age > 365 else None
-        # self.six_months_performance = ((navs[-180][1] / self.nav) - 1) if self.age > 180 else None
-        # self.three_months_performance = ((navs[-90][1] / self.nav) - 1) if self.age > 90 else None
-        # self.one_months_performance = ((navs[-30][1] / self.nav) - 1) if self.age > 30 else None
-        # self.total_performance = (navs[0][1] / self.nav) - 1
-        self.brand = brand
-        self.page_kind = page_kind
-        self.page_url = page_url
-        self.save()
 
     @staticmethod
     def get_history(trader):

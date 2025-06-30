@@ -51,7 +51,6 @@ class ProfileListView(ListView):
     """ Lists all profiles """
     context_object_name = 'profile_list'
     page = 1
-    # paginate_by = 50
     template_name = userena_settings.USERENA_PROFILE_LIST_TEMPLATE
     extra_context = None
 
@@ -236,19 +235,13 @@ def activate(request, activation_key,
                 else:
                     redirect_to = reverse('accounts:userena_profile_detail',
                                           kwargs={'username': user.username})
-                # return redirect(redirect_to)
                 return JsonResponse({})
             else:
                 if not extra_context: extra_context = dict()
-                # return ExtraContextTemplateView.as_view(template_name=template_name,
-                #                                         extra_context=extra_context)(
-                #     request)
                 return JsonResponse({"msg": "invalid link"}, status=400)
         else:
             if not extra_context: extra_context = dict()
             extra_context['activation_key'] = activation_key
-            # return ExtraContextTemplateView.as_view(template_name=retry_template_name,
-            #                                         extra_context=extra_context)(request)
             return JsonResponse({"msg": "link expired, you should retry"})
     except UserenaSignup.DoesNotExist:
         if not extra_context: extra_context = dict()
@@ -334,12 +327,9 @@ def activate_retry(request, activation_key,
             new_key = UserenaSignup.objects.reissue_activation(activation_key)
             if new_key:
                 if not extra_context: extra_context = dict()
-                # return ExtraContextTemplateView.as_view(template_name=template_name,
-                #                                         extra_context=extra_context)(request)
                 return JsonResponse({})
     except UserenaSignup.DoesNotExist:
         pass
-    # return redirect(reverse('userena_activate', args=(activation_key,)))
     return JsonResponse({"msg": "activation link has not expired!"}, status=400)
 
 
@@ -523,7 +513,6 @@ def landing(request, auth_form=AuthenticationForm,
     if request.method == 'POST':
         info = {key: value[0] for key, value in dict(request.POST).items()}
         info['identification'] = info['identification'].lower()
-        # info['username'] = info['username'].lower()
         form = auth_form(info, request.FILES)
         if form.is_valid():
             identification, password, remember_me = (form.cleaned_data['identification'].lower(),
@@ -544,16 +533,11 @@ def landing(request, auth_form=AuthenticationForm,
 
                 # send a signal that a user has signed in
                 userena_signals.account_signin.send(sender=None, user=user)
-                # Whereto now?
+
                 redirect_to = redirect_signin_function(
                     request.GET.get(redirect_field_name,
                                     '/robots/'), user)
                 return HttpResponseRedirect(redirect_to)
-                # redirect_to = redirect_signin_function(
-                #     request.GET.get(redirect_field_name,
-                #                     request.POST.get(redirect_field_name)), user)
-                # return HttpResponseRedirect(redirect_to)
-                # return HttpResponseRedirect('/stockwatch/')
             else:
                 return redirect(reverse('accounts:userena_disabled',
                                         kwargs={'username': user.username}))
@@ -567,7 +551,6 @@ def landing(request, auth_form=AuthenticationForm,
             form.errors):
         errors['type'] = 'pass'
 
-    # form
     extra_context.update({
         'form': form,
         'errors': errors,
@@ -659,7 +642,7 @@ def signin(
 
                 # send a signal that a user has signed in
                 userena_signals.account_signin.send(sender=None, user=user)
-                # Whereto now?
+
                 redirect_to = redirect_signin_function(
                     request.GET.get(
                         redirect_field_name,
@@ -1094,11 +1077,7 @@ def signupsample(request, signup_form=SignupFormExtra,
 
     form = signup_form()
 
-    # for field in form:
-    #     print(field)
-
     if request.method == 'POST':
-        # info = {key: value[0] for key, value in dict(request.POST).items()}
         info = request.POST.copy()
         info['email'] = info['email'].lower()
         info['username'] = info['username'].lower()
@@ -1115,11 +1094,6 @@ def signupsample(request, signup_form=SignupFormExtra,
                 new_user_profile = Profile.objects.get(user=user)
                 new_user_profile.referred_by = referred_by.user
                 new_user_profile.save()
-            # print('ok')
-            # auth_user = authenticate(identification=user.email,
-            #                          check_password=False)
-            # login(request, auth_user)
-            # success_url = '/backtest'
             if success_url:
                 redirect_to = success_url
             else:
@@ -1135,7 +1109,6 @@ def signupsample(request, signup_form=SignupFormExtra,
                 user = authenticate(identification=user.email, check_password=False)
                 login(request, user)
 
-            # return redirect(redirect_to)
             data = form.cleaned_data
             return JsonResponse(data)
         else:
@@ -1196,14 +1169,8 @@ def new_deposit(request):
         pass
     nonce = request.GET.get('nonce', 'empty')
     params = request.body.decode()
-    # TODO: remove this below line:
-    # params = b'address_in=TNVKqq1s58t9xtYSZfPNCLffimxhVzvNid&address_out=TSTD9GhDbqXFfYJucArfgodhbbrXm85Tc7&confirmations=1&txid_in=d1146344bce0e2561394868b8769257c13a505906030ee971a8e311ec9c80cc9&txid_out=9c325839c1a9d9c1d38c7e0dad27e66861b042e408a52249efd96a45fab7bdce&fee=7&value=900&value_coin=9&value_forwarded=780&value_forwarded_coin=7.8012&coin=trc20_usdt&result=sent&pending=0'.decode()
     parsed = urlparse.urlparse('?' + params)
     params = {k: v[0] for k, v in parse_qs(parsed.query).items()}
-    # request.POST
-    # a = {'address_in': ['TNVKqq1s58t9xtYSZfPNCLffimxhVzvNid'], 'address_out': ['TSTD9GhDbqXFfYJucArfgodhbbrXm85Tc7'], 'confirmations': ['1'], 'txid_in': ['d1146344bce0e2561394868b8769257c13a505906030ee971a8e311ec9c80cc9'], 'txid_out': ['9c325839c1a9d9c1d38c7e0dad27e66861b042e408a52249efd96a45fab7bdce'], 'fee': ['7'], 'value': ['900'], 'value_coin': ['9'], 'value_forwarded': ['780'], 'value_forwarded_coin': ['7.8012'], 'coin': ['trc20_usdt'], 'result': ['sent'], 'pending': ['0']}
-    # request.body
-    # b = b'address_in=TNVKqq1s58t9xtYSZfPNCLffimxhVzvNid&address_out=TSTD9GhDbqXFfYJucArfgodhbbrXm85Tc7&confirmations=1&txid_in=d1146344bce0e2561394868b8769257c13a505906030ee971a8e311ec9c80cc9&txid_out=9c325839c1a9d9c1d38c7e0dad27e66861b042e408a52249efd96a45fab7bdce&fee=7&value=900&value_coin=9&value_forwarded=780&value_forwarded_coin=7.8012&coin=trc20_usdt&result=sent&pending=0'
     result = Deposit.create(nonce=nonce, params=params)
     msg = 'sold: {} usdt, final: {}'.format(params['value_coin'], params['value_forwarded_coin'])
     if result:

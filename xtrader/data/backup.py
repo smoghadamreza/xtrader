@@ -2,29 +2,6 @@
 	put backups here as a variable:
 """
 
-# balanceSheet = {
-#     'وجه نقد': 'cash', 'حساب دریافتنی': 'Net Receivables',
-#     'سرمایه گذاری کوتاه مدت': 'Short Term Investments', 'موجودی کالا': 'Inventory',
-#     'دارایی جاری': 'Total Current Assets', 'سرمایه گذاری بلند مدت': 'LongTermInvestments',
-#     'دارایی ثابت': 'Property Plant And Equipment', 'دارایی نامشهود': 'intangible assets',
-#     'دارایی': 'Total Assets', 'حساب پرداختنی': 'Accounts Payable',
-#     'بدهی جاری': 'Total Current Liabilities', 'بدهی': 'Total Liabilities', 'سرمایه': 'capital',
-#     'سود انباشته': 'Retained Earnings', 'حقوق صاحبان سهام': 'Equity', 'پیش  پرداخت': 'PrePayment',
-# }
-# income = {'فروش': 'Total income',
-#           'سود ناخالص': 'GrossProfit',
-#           'سود عملیاتی': 'OperatingIncomeOrLoss',
-#           'هزینه مالی': 'InterestExpense',
-#           'سود قبل مالیات': 'IncomeBeforeTax',
-#           'سود خالص': 'NetIncome'}
-# Ratio = {'جاری': 'Current Ratio', 'آنی': 'Quick Ratio', 'نقد': 'Cash Ratio', 'بدهی(درصد)': 'D/A',
-#          'بدهی به ح ص س': 'D/E', 'گردش دارای(بار)': 'S/A',
-#          'دوره گردش موجودی ': 'Inventory Turnover Ratio',
-#          'دوره گردش حساب پرداختنی (روز)': 'Accounts  Payable Turnover Ratio', 'حاشیه سود خالص (درصد)': 'Profit Margin',
-#          'حاشیه سود ناخالص (درصد)': 'Gross Profit Margin', 'سود عملیاتی به سود ناخالص(درصد)': 'EBIT/GrossProfit',
-#          'هزینه بهره به سود عملیاتی (درصد)': 'r/EBIT', 'بازده دارایی (درصد)': 'ROA', 'بازده ح ص س (درصد)': 'ROE'}
-#
-
 # never delete all_ids:
 all_ids = ['IRO1PARK0001', 'IRO7GHUP0001', 'IRO1FNAR0001', 'IRO7VIRP0001', 'IRO3BGHZ0001', 'IRO1PPAM0001',
            'IRO1LMIR0001', 'IRO1ALBZ0001', 'IRO7KTAP0001', 'IRO3KSPZ0001', 'IRO1NSPS0001', 'IRO1MKBT0001',
@@ -184,28 +161,24 @@ filters_data = [
                     {'ratio__cash_ratio': 'نسبت نقد'}
                 ]
             },
-            ################################
             {
                 "benchmark": [0, 18, 25, 50, 75, 100, 200, 300],
                 "target": [
                     {'ratio__roe': 'ROE'}
                 ]
             },
-            ################################
             {
                 "benchmark": [20, 40, 50, 60, 80],
                 'target': [
                     {'ratio__da': 'D/A'}
                 ]
             },
-            ################################
             {
                 "benchmark": [0, 18, 25, 50, 75, 90],
                 "target": [
                     {'ratio__profit_margin': 'حاشيه سود خالص'}
                 ]
             },
-            ################################
             {
                 'benchmark': [0.1, 0, 5, 1, 1.25, 1.5, 1, 2],
                 'target': [
@@ -213,7 +186,6 @@ filters_data = [
                 ]
             },
 
-            ################################
             {
                 "benchmark": [0, 18, 25, 50, 75, 100, 200, 300],
                 "target": [
@@ -221,42 +193,36 @@ filters_data = [
                 ]
             },
 
-            ################################
             {
                 'benchmark': [0.25, 0.5, 1, 2, 4,],
                 'target': [
                     {'ratio__de': 'D/E'}
                 ]
             },
-            ################################
             {
                 "benchmark": [0, 18, 25, 50, 75, 90],
                 "target": [
                     {'ratio__gross_profit_margin': 'حاشيه سود ناخالص'}
                 ]
             },
-            ################################
             {
                 'benchmark': [0.1, 0, 5, 1, 1.25, 1.5, 1, 2],
                 'target': [
                     {'ratio__current_ratio': 'نسبت جاري'}
                 ]
             },
-            ################################
             {
                 'benchmark': [10, 30, 50, 70, 90],
                 'target': [
                     {'ratio__ebit_gross_profit': 'سود عملیاتی به سود ناخالص'}
                 ]
             },
-            ################################
             {
                 'benchmark': [10, 30, 50, 70, 90],
                 'target': [
                     {'ratio__r_ebit': 'هزینه بهره به سود عملیاتی'}
                 ]
             },
-            ################################
             {
                 'benchmark': [10*1000000, 30*1000000, 50*1000000, 100*1000000, 200*1000000],
                 'target': [
@@ -269,7 +235,6 @@ filters_data = [
         'kind': 'stockwatch',
         'filters': [
             {
-                ################################
                 'benchmark': [25, 50, 75],
                 'target': [
 
@@ -277,7 +242,6 @@ filters_data = [
 
                 ]
             },
-            ################################
             {
                 'benchmark': [25, 50, 75],
                 'target': [
@@ -285,14 +249,12 @@ filters_data = [
                     {'stockWatch__SellIndividualVolumePercentage': 'درصد حجم فروش حقیقی'}
                 ]
             },
-            ################################
             {
                 'benchmark': [1000000, 5000000, 10000000],
                 'target': [
                     {'stockWatch__TotalNumberOfSharesTraded': 'حجم معاملات'}
                 ]
             },
-            ################################
 
             {
                 'benchmark': [10, 100000, 500000, 1000000, 5000000],
@@ -300,28 +262,24 @@ filters_data = [
                     {'stockWatch__BaseQuantity': 'حجم مبنا'},
                 ]
             },
-            ################################
             {
                 'benchmark': [25, 50, 75],
                 'target': [
                     {'stockWatch__BuyFirmVolumePercentage': 'درصد حجم خرید حقوقی'}
                 ]
             },
-            ################################
             {
                 'benchmark': [25, 50, 75],
                 'target': [
                     {'stockWatch__SellFirmVolumePercentage': 'درصد حجم فروش حقوقی'}
                 ]
             },
-            ################################
             {
                 'benchmark': [-2000, -1000, 0, 200, 500, 1000, 2000],
                 'target': [
                     {'stockWatch__Eps': 'EPS'}
                 ]
             },
-            ################################
             {
                 'benchmark': [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 20, 40, 80, 100],
                 'target': [
@@ -329,7 +287,6 @@ filters_data = [
                 ]
             },
 
-            ################################
             {
                 'benchmark': [-4, -3, -2, -1, 0, 1, 2, 3, 4],
                 'target': [
@@ -337,21 +294,18 @@ filters_data = [
                 ]
             },
 
-            ################################
             {
                 'benchmark': [-4, -3, -2, -1, 0, 1, 2, 3, 4],
                 'target': [
                     {'stockWatch__ReferencePriceVariationPercent': 'درصد تغییر آخرین معامله'}
                 ]
             },
-            ################################
             {
                 'benchmark': [0, 100, 200, 500, 1000, 2000],
                 'target': [
                     {'stockWatch__TotalNumberOfTrades': 'تعداد معاملات'}
                 ]
             },
-            ################################
             {
                 'benchmark': [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 20, 40, 80, 100],
                 'target': [

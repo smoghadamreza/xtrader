@@ -7,12 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 
-# from accounts.models import Membership , Subscribe ,Profile
-# from .models import Payment
-# from finance.views import get_user
-# from django.contrib.auth.decorators import login_required
-#
-# # Create your views here.
 def get_packages(request):
     packages = Package.objects.filter(active=True).order_by('month_price')
     result = [pack.info() for pack in packages]

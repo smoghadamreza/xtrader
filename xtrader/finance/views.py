@@ -4,13 +4,11 @@ from django.db import transaction
 from aum.models import Fund
 import json
 from finance import strategy, scan, marketwatch
-# from finance import data_handling as dh, indicator
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseNotFound
 from accounts.forms import AuthenticationForm
 import requests as r
 from data.backup import filters_data
-# Create your views here.
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import inspect
 from django.shortcuts import render, redirect
@@ -91,7 +89,6 @@ def get_watch_lists(request):
                 'symbols': WatchlistSymbol.get_symbols(watchlist_id),
                 's': 200
             })
-    # return JsonResponse({'watchlists': [], 'm': 'واچ لیست یافت نشد', 's': 403})
 
 
 @login_required(login_url='accounts:userena_signin')
@@ -143,7 +140,6 @@ def scan_market(request):
     if not strategy_id:
         return JsonResponse({}, status=500)
     scan_result = scan.scan_market(request.user, strategy_id)
-    # scan_result = scan.scan_market(request.user, strategy_id, interval=interval)
     return JsonResponse(json.dumps(scan_result), safe=False)
 
 
@@ -173,19 +169,11 @@ def market_watch(request):
         return render(request, 'payment.html', {'subscribes': 0, **get_user(request)})
     else:
         return render(request, 'marketwatch.html', get_user(request))
-        # subscribtions = Subscribe.objects.all()
-        # return render(request, 'payment.html', {'subscribes': subscribtions, **get_user(request)})
 
 
 @login_required(login_url='accounts:userena_signin')
 def display(request):
     return render(request, 'back.html', {'SymbolId': 'BTCUSDT', **get_user(request=request)})
-    # profile = Profile.objects.get(user=User.objects.get_by_natural_key(request.user))
-    # if profile.expire >= datetime.today().date():
-    #     return render(request, 'back.html', {'SymbolId': 'BTCUSDT', **get_user(request=request)})
-    # else:
-    #     subscribtions = Subscribe.objects.all()
-    #     return render(request, 'payment.html', {'subscribes': subscribtions, **get_user(request)})
 
 
 def getfilters(request):
@@ -250,11 +238,7 @@ def index(request):
     referred_by = Profile.objects.filter(referral_code=referral_code).first()
     if referral_code and referred_by:
         request.session['ref_id'] = referred_by.id
-    # login_status = True if not request.user.username else False
-    return render(request, 'newindex.html',
-                  # {'form': AuthenticationForm, 'login_status': login_status, 'username': request.user.username}
-                  )
-    # return render(request, 'index.html')
+    return render(request, 'newindex.html')
 
 
 @login_required(login_url='accounts:userena_signin')
@@ -262,11 +246,6 @@ def stockwatch(request, SymbolId=None):
     if not SymbolId:
         return redirect('/spot/BTCUSDT')
     return redirect('/spot/' + SymbolId)
-    # return redirect('/stockwatch/BTCUSDT')
-    # from data.models import StockWatch as st
-    # stock = st.objects.filter(SymbolId=SymbolId).first()
-    # stockWatchDict = {'SymbolId': stock.SymbolId, 'title': stock.InstrumentName, **get_user(request)}
-    # return render(request, 'stockwatch1.html', stockWatchDict)
 
 
 @login_required(login_url='accounts:userena_signin')
@@ -334,7 +313,6 @@ def get_orders(request):
 def account_status(request):
     ex_obj, ex = oms.OMSManager.get_exchange(request)
     balance = ex.get_balance(ex_obj)
-    # account = {'WithdrawableMoneyRemain': 2089426.0, 'BlokedValue': 0.0, 'WithdrawableBlockedMoney': 0.0, 'CreditMoney': 0.0, 'CreditBlockedMoney': 0.0, 'TotalAsset': 2619560.0, 'NonWithdrawableMoneyRemain': 0.0, 'CreditMoneyRemain': 0.0, 'PercentageProfit': 26.0, 'Profit': 109384.0, 'BuyingPower': 2089426.0, 'NonWithdrawableBlockedMoney': 0.0}
     account = {'BuyingPower': balance['BuyingPower']}
     return JsonResponse(account)
 
@@ -359,7 +337,6 @@ def test_volume(request):
 def manage_volume(request):
     data = json.loads(request.GET['param'])
     result = volume.run_test(data)
-    # print(result['history'])
     return render(request, 'volumetest.html', result)
 
 

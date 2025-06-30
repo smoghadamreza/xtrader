@@ -1,6 +1,4 @@
-# from xtrader import localsetting as local
 import json
-# from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import HttpResponse
 from data.models import StockWatch as Symbol
@@ -28,9 +26,6 @@ def history(request):
 
 
 def stockwatch(request, SymbolId):
-    # stock = Symbol.objects.filter(SymbolId=SymbolId).first()
-    # return HttpResponse(json.dumps(stock.read()))
-
     stock = stockwatchModel.stockWatchInfo(SymbolId, eps=True)
     return HttpResponse(json.dumps(stock))
 
@@ -52,19 +47,6 @@ def symbol_search(request, query):
         ))
     return HttpResponse(json.dumps({'items': result}, ensure_ascii=False).encode("utf8"),
                         content_type="application/json; charset=utf-8")
-    # symbols = Symbol.objects.filter(InstrumentName__istartswith=query)
-    # # | Symbol.objects.filter(mabna_english_name__icontains=query) \
-    # # | Symbol.objects.filter(name__icontain=query)
-    # symbol_max_results = 10
-    # if symbols.count() < symbol_max_results:
-    #     symbols = symbols | Symbol.objects.filter(InstrumentName__icontains=query)
-    # results = [ob.as_json() for ob in symbols]
-    # mydict = dict(
-    #     items=results,
-    # )
-    # return HttpResponse(json.dumps(mydict, ensure_ascii=False).encode("utf8"),
-    #                     content_type="application/json; charset=utf-8")
-
 
 def get_data(request, symbol_id, interval):
     data_dict = redis.load_history(symbol_id, interval=interval)
@@ -79,13 +61,6 @@ def get_data(request, symbol_id, interval):
     stock_history = df.to_json(orient='values')
     stock_information['items'] = stock_history
 
-    # stock_information = dict(
-    #     per_name="بیت کوین",
-    #     measurement_name=,
-    #     name="bitcoin",
-    #     items=df.to_json(orient='values')
-    # )
-    # stock_information['items'] = json.dumps(data_dict)
     return JsonResponse(json.dumps(stock_information), safe=False)
 
 

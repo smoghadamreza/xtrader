@@ -55,7 +55,6 @@ def set_valid_time(df, time=0):
         if df.iloc[i, 0] == 0:
             for j in range(min(time, i)):
                 if df.iloc[i - j - 1, 0] != 0:
-                    # outdf.set_value(df.index[i], outdf.columns[0], df.iloc[i - j - 1, 0])
                     outdf.at[df.index[i], outdf.columns[0]] = df.iloc[i - j - 1, 0]
                     break
     return outdf
@@ -205,7 +204,6 @@ class BackTest:
                 self.result[self.trade_num]['buy']['initaial deposit'] = self.capital
                 self.result[self.trade_num]['buy']['waiting candles'] = 'Start'
         elif kind == 'nothing':
-            # print('wrong kind: ', kind)
             pass
 
     def change_other_things(self, kind, i):
@@ -251,7 +249,6 @@ class BackTest:
 
     def check_last_trade(self):
         if len(self.result[self.trade_num - 1]) == 1:
-            # print('not sold')
             i = len(self.trades) - 1
             details = self.sell(i, 'Not Sold Yet')
             self.order(details, 'sell')
@@ -320,7 +317,6 @@ def testresult(price, trades, config):
     price = pd.DataFrame(change_df(price), copy=True)
     trades = pd.DataFrame(change_df(trades), copy=True)
     index = price.index
-    # print(index)
     index = [str(i) for i in np.asarray(index)]
     takeProfitPrice.index = index
     stopLossPrice.index = index
@@ -361,7 +357,6 @@ def testresult(price, trades, config):
             days_in_trade = i
             position = 1
             trade_num += 1
-        # print(trade_num, result)
         if position == 1 and trades['0'][index[i]] == -1 and result[trade_num - 1]['buy']['date'] != str(i):
             asset = 100 * (((1 - selling_commision) * price['0'][index[i]]) - asset) / asset
             asset = np.round(100 * asset) / 100
@@ -424,15 +419,12 @@ def testresult(price, trades, config):
                 days_in_trade = 0
                 position = 0
                 asset = 0
-    # print(trade_num)
     if trade_num != 1 and len(result[trade_num - 1]) == 1:
-        # print('not sold')
         i = len(trades) - 1
         asset = 100 * ((0.99 * price['0'][index[i]]) - asset) / asset
         asset = np.round(100 * asset) / 100
         avg_returns = avg_returns + [asset]
         days_in_trade = i - days_in_trade + 1
-        # avg_days_in_tarde = avg_days_in_tarde + [days_in_trade]
         days_waiting_for_new_trade = i
         capital = np.round(capital * ((100 + asset) / 100))
         result[trade_num - 1]['sell'] = {
@@ -467,12 +459,3 @@ def testresult(price, trades, config):
         return backtest_result
     else:
         return 'f'
-
-
-# def Trade(startegies_results):
-#     names = list(startegies_results.columns.values)
-#     value = len(names)
-#     s = startegies_results.sum(axis=1)
-#     s = s.apply(lambda x: 0 if (x > -value and x < value) else x)
-#     s = s.replace([value, -value], [1, -1])
-#     return s

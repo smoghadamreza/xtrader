@@ -52,7 +52,6 @@ class marketwatch_admin(admin.ModelAdmin):
     )
 
 
-# Register your models here.
 admin.site.register(StockWatch, stockwatch_admin)
 admin.site.register(Ratio, ratio_admin)
 admin.site.register(Income, income_admin)

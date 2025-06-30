@@ -1,8 +1,5 @@
 from django.db import models
 from django.utils import timezone
-# Create your models here.
-# import datetime
-# from datetime import datetime as dt
 from django.db.models import (Model,
                               OneToOneField,
                               DateField, )
@@ -96,19 +93,9 @@ class Profile(UserenaBaseProfile):
         failed_emails = []
         for email in emails:
             try:
-                # send_mail(
-                #     subject,
-                #     msg,
-                #     settings.EMAIL_HOST_USER,
-                #     [email],
-                #     fail_silently=False,
-                # )
-                # subject = 'Subject'
                 html_message = render_to_string('mail_template.html', {'context': 'values'})
                 plain_message = strip_tags(html_message)
-                # from_email = 'From <from@example.com>'
                 from_email = settings.EMAIL_HOST_USER
-                # to = 'to@example.com'
                 to = email
                 send_mail(subject, plain_message, from_email, [to], html_message=html_message, fail_silently=False)
             except Exception as e:
@@ -131,7 +118,6 @@ class Wallet(models.Model):
     @staticmethod
     def get_gateway_base():
         return 'https://api.cryptapi.io'
-        # return 'https://sandbox.cryptapi.io'
 
     @classmethod
     def get_wallet(cls, user):
@@ -162,9 +148,6 @@ class Wallet(models.Model):
         }
         response = requests.get(Wallet.get_gateway_base() + '/trc20/usdt/create', params=params).json()
         if 'status' in response and response['status'] == 'success':
-            # ans = {'status': 'success', 'address_in': 'THGbqa65vheLfGGYiA3p69hpLMLK3d9HPk',
-            #        'address_out': 'TSTD9GhDbqXFfYJucArfgodhbbrXm85Tc7',
-            #        'callback_url': 'http://myservice.com/payment/callback/', 'priority': 'default'}
             self.address = response['address_in']
             self.last_change = time.time()
             self.save()
@@ -211,8 +194,6 @@ class Deposit(models.Model):
     network = models.CharField(max_length=10, default='', null=True, blank=True)
     tx_time = models.IntegerField(default=time.time, null=True, blank=True)
 
-    # action = models.CharField(max_length=10, default='', null=True, blank=True)
-
     @classmethod
     def create(cls, nonce, params, wallet=None):
         address_in = params['address_in']
@@ -230,8 +211,6 @@ class Deposit(models.Model):
                       result=params['result'], coin=coin, network=network
                       )
         deposit.save()
-        # if pay2ref:
-        #     deposit.pay2referral(final_amount)
         if wallet:
             wallet.balance += amount
             wallet.last_change = time.time()
@@ -253,23 +232,5 @@ class Deposit(models.Model):
             })
         return result
 
-    # def pay2referral(self, amount):
-    #     user = self.wallet.user
-    #     profile = Profile.objects.filter(user=user).first()
-    #     if not profile or not profile.referred_by:
-    #         return None
-    #     referred_by_wallet = Wallet.objects.filter(user=profile.referred_by).first()
-    #     if not referred_by_wallet:
-    #         return None
-    #     ref_bounce = str(round(amount * settings.REFERRAL_BOUNCE, 2))
-    #     Deposit.create(nonce=referred_by_wallet.nonce, wallet=referred_by_wallet, pay2ref=False,
-    #                    params={
-    #                        'address_in': '',
-    #                        'address_out': '',
-    #                        'txid_in': self.txid_out,
-    #                        'txid_out': '',
-    #                        'value_coin': ref_bounce,
-    #                        'value_forwarded_coin': ref_bounce,
-    #                        'coin': 'trc20_usdt',
-    #                        'result': 'referral',
-    #                    })
+    def pay2referral(self, amount):
+        pass
