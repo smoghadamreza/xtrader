@@ -359,7 +359,7 @@ class EditProfileForm(forms.ModelForm):
         model = get_profile_model()
         exclude = ["user", "privacy", "mugshot"]
 
-    def save(self, force_insert=False, force_update=False, commit=True):
+    def save(self, commit=True):
         profile = super(EditProfileForm, self).save(commit=commit)
         # Save first and last name
         user = profile.user
@@ -451,13 +451,18 @@ class SetPasswordForm(forms.Form):
 
     def clean_new_password2(self):
         password1 = self.cleaned_data.get("new_password1")
-        password2 = self.cleaned_data.get("new_password2")
+        password2 = self.cleaned_data.get("new_password2", "")
         if password1 and password2:
             if password1 != password2:
                 raise forms.ValidationError(
                     self.error_messages["password_mismatch"],
                     code="password_mismatch",
                 )
+        else:
+            raise forms.ValidationError(
+                self.error_messages["passwords can't be empty"],
+                code="invalid",
+            )
         password_validation.validate_password(password2, self.user)
         return password2
 
