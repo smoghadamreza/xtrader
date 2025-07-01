@@ -5,8 +5,13 @@ import warnings
 from urllib.parse import parse_qs
 
 from django.contrib import messages
-from django.contrib.auth import (REDIRECT_FIELD_NAME, authenticate,
-                                 get_user_model, login, logout)
+from django.contrib.auth import (
+    REDIRECT_FIELD_NAME,
+    authenticate,
+    get_user_model,
+    login,
+    logout,
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import PermissionDenied
@@ -25,9 +30,13 @@ from userena.decorators import secure_required
 from userena.models import UserenaSignup
 from userena.utils import get_profile_model, get_user_profile, signin_redirect
 
-from accounts.forms import (AuthenticationForm, ChangeEmailForm,
-                            EditProfileForm, SignupFormExtra,
-                            SignupFormOnlyEmail)
+from accounts.forms import (
+    AuthenticationForm,
+    ChangeEmailForm,
+    EditProfileForm,
+    SignupFormExtra,
+    SignupFormOnlyEmail,
+)
 from accounts.models import Deposit, Profile, Wallet
 from finance import notification
 from finance.models import Exchange
@@ -35,7 +44,7 @@ from social.models import Follow
 
 
 class ExtraContextTemplateView(TemplateView):
-    """Add extra context to a simple template view"""
+    """Add extra context to a simple template view."""
 
     extra_context = None
 
@@ -53,7 +62,7 @@ class ExtraContextTemplateView(TemplateView):
 
 
 class ProfileListView(ListView):
-    """Lists all profiles"""
+    """Lists all profiles."""
 
     context_object_name = "profile_list"
     page = 1
@@ -100,8 +109,7 @@ def signup(
     success_url=None,
     extra_context=None,
 ):
-    """
-    Signup of an account.
+    """Signup of an account.
 
     Signup requiring a username, email and password. After signup a user gets
     an email with an activation link used to activate their account. After
@@ -129,7 +137,6 @@ def signup(
 
     ``form``
         Form supplied by ``signup_form``.
-
     """
     # If signup is disabled, return 403
     if userena_settings.USERENA_DISABLE_SIGNUP:
@@ -207,8 +214,7 @@ def activate(
     success_url=None,
     extra_context=None,
 ):
-    """
-    Activate a user with an activation key.
+    """Activate a user with an activation key.
 
     The key is a SHA1 string. When the SHA1 is found with an
     :class:`UserenaSignup`, the :class:`User` of that account will be
@@ -243,7 +249,6 @@ def activate(
     :param extra_context:
         Dictionary containing variables which could be added to the template
         context. Default to an empty dictionary.
-
     """
     try:
         if (
@@ -292,11 +297,10 @@ def activate_pending(
     template_name="userena/activate_pending.html",
     extra_context=None,
 ):
-    """
-    Checks if the account is not active, if so, returns the
-    activation pending template.  This view is meant to take
-    precedent over the ``disabled_account`` view unless we know that the
-    account was disabled after completion.
+    """Checks if the account is not active, if so, returns the activation
+    pending template.  This view is meant to take precedent over the
+    ``disabled_account`` view unless we know that the account was disabled
+    after completion.
 
     :param username:
         String defining the username of the user that made the action.
@@ -311,7 +315,6 @@ def activate_pending(
         A dictionary containing extra variables that should be passed to the
         rendered template. The ``account`` key is always the ``User``
         that completed the action.
-
     """
     user = get_object_or_404(
         get_user_model(), username__iexact=username, is_active=False
@@ -340,8 +343,7 @@ def activate_retry(
     template_name="userena/activate_retry_success.html",
     extra_context=None,
 ):
-    """
-    Reissue a new ``activation_key`` for the user with the expired
+    """Reissue a new ``activation_key`` for the user with the expired
     ``activation_key``.
 
     If ``activation_key`` does not exists, or ``USERENA_ACTIVATION_RETRY`` is
@@ -361,7 +363,6 @@ def activate_retry(
     :param extra_context:
         Dictionary containing variables which could be added to the template
         context. Default to an empty dictionary.
-
     """
     if not userena_settings.USERENA_ACTIVATION_RETRY:
         return redirect(reverse("userena_activate", args=(activation_key,)))
@@ -387,8 +388,7 @@ def email_confirm(
     success_url=None,
     extra_context=None,
 ):
-    """
-    Confirms an email address with a confirmation key.
+    """Confirms an email address with a confirmation key.
 
     Confirms a new email address by running :func:`User.objects.confirm_email`
     method. If the method returns an :class:`User` the user will have his new
@@ -413,7 +413,6 @@ def email_confirm(
     :param extra_context:
         Dictionary of variables that are passed on to the template supplied by
         ``template_name``.
-
     """
     user = UserenaSignup.objects.confirm_email(confirmation_key)
     if user:
@@ -443,8 +442,7 @@ def email_confirm(
 def direct_to_user_template(
     request, username, template_name, extra_context=None
 ):
-    """
-    Simple wrapper for Django's :func:`direct_to_template` view.
+    """Simple wrapper for Django's :func:`direct_to_template` view.
 
     This view is used when you want to show a template to a specific user. A
     wrapper for :func:`direct_to_template` where the template also has
@@ -469,7 +467,6 @@ def direct_to_user_template(
 
     ``viewed_user``
         The currently :class:`User` that is viewed.
-
     """
 
     user = get_object_or_404(get_user_model(), username__iexact=username)
@@ -484,9 +481,8 @@ def direct_to_user_template(
 
 
 def disabled_account(request, username, template_name, extra_context=None):
-    """
-    Checks if the account is disabled, if so, returns
-    the disabled account template.
+    """Checks if the account is disabled, if so, returns the disabled account
+    template.
 
     :param username:
         String defining the username of the user that made the action.
@@ -509,7 +505,6 @@ def disabled_account(request, username, template_name, extra_context=None):
 
     ``profile``
         Profile of the viewed user.
-
     """
     user = get_object_or_404(get_user_model(), username__iexact=username)
 
@@ -534,8 +529,7 @@ def landing(
     redirect_signin_function=signin_redirect,
     extra_context=None,
 ):
-    """
-    Signin using email or username with password.
+    """Signin using email or username with password.
 
     Signs a user in by combining email/username with password. If the
     combination is correct and the user :func:`is_active` the
@@ -572,7 +566,6 @@ def landing(
 
     ``form``
         Form used for authentication supplied by ``auth_form``.
-
     """
     form = auth_form()
     username = request.user.username
@@ -661,8 +654,7 @@ def signin(
     redirect_signin_function=signin_redirect,
     extra_context=None,
 ):
-    """
-    Signin using email or username with password.
+    """Signin using email or username with password.
 
     Signs a user in by combining email/username with password. If the
     combination is correct and the user :func:`is_active` the
@@ -699,7 +691,6 @@ def signin(
 
     ``form``
         Form used for authentication supplied by ``auth_form``.
-
     """
     form = auth_form()
 
@@ -784,10 +775,10 @@ def signout(
     *args,
     **kwargs
 ):
-    """
-    Signs out the user and adds a success message ``You have been signed
-    out.`` If next_page is defined you will be redirected to the URI. If
-    not the template in template_name is used.
+    """Signs out the user and adds a success message ``You have been signed
+    out.`` If next_page is defined you will be redirected to the URI.
+
+    If not the template in template_name is used.
     """
     if request.user.is_authenticated and userena_settings.USERENA_USE_MESSAGES:
         messages.success(
@@ -817,8 +808,7 @@ def email_change(
     success_url=None,
     extra_context=None,
 ):
-    """
-    Change email address
+    """Change email address.
 
     :param username:
         String of the username which specifies the current account.
@@ -854,7 +844,6 @@ def email_change(
 
     Need to have per-object permissions, which enables users with the correct
     permissions to alter the email address of others.
-
     """
     user = get_object_or_404(get_user_model(), username__iexact=username)
     prev_email = user.email
@@ -938,7 +927,6 @@ def password_change(
 
     ``form``
         Form used to change the password.
-
     """
     user = get_object_or_404(get_user_model(), username__iexact=username)
 
@@ -984,8 +972,7 @@ def profile_edit(
     extra_context=None,
     **kwargs
 ):
-    """
-    Edit profile.
+    """Edit profile.
 
     Edits a profile selected by the supplied username. First checks
     permissions if the user is allowed to edit this profile, if denied will
@@ -1024,7 +1011,6 @@ def profile_edit(
 
     ``profile``
         Instance of the ``Profile`` that is edited.
-
     """
     user = get_object_or_404(get_user_model(), username__iexact=username)
 
@@ -1076,8 +1062,7 @@ def profile_detail(
     extra_context=None,
     **kwargs
 ):
-    """
-    Detailed view of an user.
+    """Detailed view of an user.
 
     :param username:
         String of the username of which the profile should be viewed.
@@ -1094,7 +1079,6 @@ def profile_detail(
 
     ``profile``
         Instance of the currently viewed ``Profile``.
-
     """
     user = get_object_or_404(get_user_model(), username__iexact=username)
     profile = get_user_profile(user=user)
@@ -1117,8 +1101,7 @@ def profile_list(
     extra_context=None,
     **kwargs
 ):  # pragma: no cover
-    """
-    Returns a list of all profiles that are public.
+    """Returns a list of all profiles that are public.
 
     It's possible to disable this by changing ``USERENA_DISABLE_PROFILE_LIST``
     to ``True`` in your settings.
@@ -1154,7 +1137,6 @@ def profile_list(
 
     ``page_obj``
         An instance of ``django.core.paginator.Page``.
-
     """
     warnings.warn(
         "views.profile_list is deprecated. Use ProfileListView instead",
@@ -1197,8 +1179,7 @@ def signupsample(
     success_url=None,
     extra_context=None,
 ):
-    """
-    Signup of an account.
+    """Signup of an account.
 
     Signup requiring a username, email and password. After signup a user gets
     an email with an activation link used to activate their account. After
@@ -1226,7 +1207,6 @@ def signupsample(
 
     ``form``
         Form supplied by ``signup_form``.
-
     """
     # If signup is disabled, return 403
     if userena_settings.USERENA_DISABLE_SIGNUP:

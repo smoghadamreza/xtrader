@@ -24,12 +24,8 @@ USERNAME_RE = r"^[\.\w]+$"
 
 
 class SignupFormExtra(SignupForm):
-    """
-    A form to demonstrate how to add extra fields to the signup form, in this
-    case adding the first and last name.
-
-
-    """
+    """A form to demonstrate how to add extra fields to the signup form, in
+    this case adding the first and last name."""
 
     first_name = forms.CharField(
         label=_("نام (فارسی) "), max_length=30, required=False
@@ -63,21 +59,14 @@ class SignupFormExtra(SignupForm):
     )
 
     def __init__(self, *args, **kw):
-        """
-
-        A bit of hackery to get the first name and last name at the top of the
-        form instead at the end.
-
-        """
+        """A bit of hackery to get the first name and last name at the top of
+        the form instead at the end."""
 
         super(SignupFormExtra, self).__init__(*args, **kw)
 
     def save(self):
-        """
-        Override the save method to save the first and last name to the user
-        field.
-
-        """
+        """Override the save method to save the first and last name to the user
+        field."""
         username, email, password = (
             self.cleaned_data["username"],
             self.cleaned_data["email"],
@@ -111,8 +100,9 @@ class SignupFormExtra(SignupForm):
         return new_user
 
     def clean_username(self):
-        """
-        Validate that the username is alphanumeric and is not already in use.
+        """Validate that the username is alphanumeric and is not already in
+        use.
+
         Also validates that the username is not listed in
         ``USERENA_FORBIDDEN_USERNAMES`` list.
         """
@@ -165,8 +155,9 @@ class SignupFormExtra(SignupForm):
 
     def clean(self):
         MIN_LENGTH = 8
-        """
-        Validates that the values entered into the two password fields match.
+        """Validates that the values entered into the two password fields
+        match.
+
         Note that an error here will end up in ``non_field_errors()`` because
         it doesn't apply to a single field.
         """
@@ -174,8 +165,9 @@ class SignupFormExtra(SignupForm):
             "password1" in self.cleaned_data
             and "password2" in self.cleaned_data
         ):
-            from django.contrib.auth.password_validation import \
-                CommonPasswordValidator as cpv
+            from django.contrib.auth.password_validation import (
+                CommonPasswordValidator as cpv,
+            )
 
             if cpv().validate(password=self.cleaned_data["password1"]):
                 raise forms.ValidationError(_("This password is too common"))
@@ -211,9 +203,7 @@ class PasswordResetForm(forms.Form):
         to_email,
         html_email_template_name=None,
     ):
-        """
-        Sends a django.core.mail.EmailMultiAlternatives to `to_email`.
-        """
+        """Sends a django.core.mail.EmailMultiAlternatives to `to_email`."""
         subject = loader.render_to_string(subject_template_name, context)
         # Email subject *must not* contain newlines
         subject = "".join(subject.splitlines())
@@ -233,9 +223,9 @@ class PasswordResetForm(forms.Form):
     def get_users(self, email1):
         """Given an email, return matching user(s) who should receive a reset.
 
-        This allows subclasses to more easily customize the default policies
-        that prevent inactive users and users with unusable passwords from
-        resetting their password.
+        This allows subclasses to more easily customize the default
+        policies that prevent inactive users and users with unusable
+        passwords from resetting their password.
         """
         active_users = get_user_model()._default_manager.filter(
             email=email1, is_active=True
@@ -254,10 +244,8 @@ class PasswordResetForm(forms.Form):
         html_email_template_name=None,
         extra_email_context=None,
     ):
-        """
-        Generates a one-use only link for resetting password and sends to the
-        user.
-        """
+        """Generates a one-use only link for resetting password and sends to
+        the user."""
         username = self.cleaned_data["username"]
         for user in self.get_users(username):
             if not domain_override:
@@ -288,10 +276,8 @@ class PasswordResetForm(forms.Form):
 
 
 class AuthenticationForm(forms.Form):
-    """
-    A custom form where the identification can be a e-mail address or username.
-
-    """
+    """A custom form where the identification can be a e-mail address or
+    username."""
 
     identification = identification_field_factory(
         _("نام کاربری یا ایمیل"), _("نام کاربری یا ایمیل")
@@ -308,8 +294,8 @@ class AuthenticationForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        """A custom init because we need to change
-        the label if no usernames is used"""
+        """A custom init because we need to change the label if no usernames is
+        used."""
         super(AuthenticationForm, self).__init__(*args, **kwargs)
         # Dirty hack, somehow the label doesn't get translated without
         # declaring it again here.
@@ -322,11 +308,10 @@ class AuthenticationForm(forms.Form):
             )
 
     def clean(self):
-        """
-        Checks for the identification and password.
+        """Checks for the identification and password.
 
-        If the combination can't be found will raise an invalid sign in error.
-
+        If the combination can't be found will raise an invalid sign in
+        error.
         """
         identification = self.cleaned_data.get("identification")
         password = self.cleaned_data.get("password")
@@ -351,7 +336,7 @@ class AuthenticationForm(forms.Form):
 
 
 class EditProfileForm(forms.ModelForm):
-    """Base form used for fields that are always required"""
+    """Base form used for fields that are always required."""
 
     first_name = forms.CharField(
         label=_("نام "), max_length=30, required=False
@@ -398,12 +383,10 @@ class ChangeEmailForm(forms.Form):
     )
 
     def __init__(self, user, *args, **kwargs):
-        """
-        The current ``user`` is needed for initialisation of this form so
+        """The current ``user`` is needed for initialisation of this form so
         that we can check if the email address is still free and not always
         returning ``True`` for this query because it's the users own e-mail
-        address.
-        """
+        address."""
         super(ChangeEmailForm, self).__init__(*args, **kwargs)
         if not isinstance(user, get_user_model()):
             raise TypeError(
@@ -413,8 +396,8 @@ class ChangeEmailForm(forms.Form):
             self.user = user
 
     def clean_email(self):
-        """Validate that the email is not already
-        registered with another user"""
+        """Validate that the email is not already registered with another
+        user."""
         if self.cleaned_data["email"].lower() == self.user.email:
             raise forms.ValidationError(_("شما با این ایمیل شناخته میشوید"))
         if (
@@ -431,22 +414,17 @@ class ChangeEmailForm(forms.Form):
         return self.cleaned_data["email"]
 
     def save(self):
-        """
-        Save method calls :func:`user.change_email()` method which sends out an
-        email with an verification key to verify and with it enable this new
-        email address.
-
-        """
+        """Save method calls :func:`user.change_email()` method which sends out
+        an email with an verification key to verify and with it enable this new
+        email address."""
         return self.user.userena_signup.change_email(
             self.cleaned_data["email"]
         )
 
 
 class SetPasswordForm(forms.Form):
-    """
-    A form that lets a user change set their password without entering the old
-    password
-    """
+    """A form that lets a user change set their password without entering the
+    old password."""
 
     error_messages = {
         "password_mismatch": _("رمزعبور و تکرار آن همخوانی ندارند"),

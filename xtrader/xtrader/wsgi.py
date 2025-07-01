@@ -1,5 +1,4 @@
-"""
-WSGI config for xtrader project.
+"""WSGI config for xtrader project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
