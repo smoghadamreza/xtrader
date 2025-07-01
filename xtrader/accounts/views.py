@@ -35,7 +35,6 @@ from accounts.forms import (
     ChangeEmailForm,
     EditProfileForm,
     SignupFormExtra,
-    SignupFormOnlyEmail,
 )
 from accounts.models import Deposit, Profile, Wallet
 from finance import notification
@@ -73,7 +72,7 @@ class ProfileListView(ListView):
         # Call the base implementation first to get a context
         context = super(ProfileListView, self).get_context_data(**kwargs)
         try:
-            page = int(self.request.GET.get("page", None))
+            page = int(self.request.GET.get("page", str(self.page)))
         except (TypeError, ValueError):
             page = self.page
 
@@ -141,13 +140,6 @@ def signup(
     # If signup is disabled, return 403
     if userena_settings.USERENA_DISABLE_SIGNUP:
         raise PermissionDenied
-
-    # If no usernames are wanted and the default form is used, fallback to the
-    # default form that doesn't display to enter the username.
-    if userena_settings.USERENA_WITHOUT_USERNAMES and (
-        signup_form == SignupFormExtra
-    ):
-        signup_form = SignupFormOnlyEmail
 
     form = signup_form()
     if request.method == "POST":
@@ -1211,13 +1203,6 @@ def signupsample(
     # If signup is disabled, return 403
     if userena_settings.USERENA_DISABLE_SIGNUP:
         raise PermissionDenied
-
-    # If no usernames are wanted and the default form is used, fallback to the
-    # default form that doesn't display to enter the username.
-    if userena_settings.USERENA_WITHOUT_USERNAMES and (
-        signup_form == SignupFormExtra
-    ):
-        signup_form = SignupFormOnlyEmail
 
     form = signup_form()
 

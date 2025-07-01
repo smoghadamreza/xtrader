@@ -76,7 +76,6 @@ We quote the docstring notes on the input parameters as they seem sufficient.
 #### Behavior {id=behavior_1}
 
 - If signup is disabled (via `USERENA_DISABLE_SIGNUP`), the function raises a `PermissionDenied` exception.
-- If `USERENA_WITHOUT_USERNAMES` is enabled and the default form is used, the function falls back to `SignupFormOnlyEmail`.
 - On `POST` requests:
   - Validates the form data.
   - Saves the user and sends a `signup_complete` signal.
@@ -561,7 +560,6 @@ We quote the docstring notes on the input parameters as they seem sufficient.
 #### Behavior {id=behavior_15}
 
 - If signup is disabled (via `USERENA_DISABLE_SIGNUP`), the function raises a `PermissionDenied` exception.
-- If `USERENA_WITHOUT_USERNAMES` is enabled and the default form is used, the function falls back to `SignupFormOnlyEmail`.
 - On `POST` requests:
   - Validates the form data.
   - If the form is valid:
