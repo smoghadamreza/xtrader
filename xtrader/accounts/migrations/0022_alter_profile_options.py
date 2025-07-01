@@ -6,12 +6,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0021_auto_20210511_1048'),
+        ("accounts", "0021_auto_20210511_1048"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='profile',
-            options={'default_permissions': ('add', 'change', 'delete'), 'permissions': (('view_profile', 'Can view profile'),)},
+            name="profile",
+            options={
+                "default_permissions": ("add", "change", "delete"),
+                "permissions": (("view_profile", "Can view profile"),),
+            },
         ),
     ]

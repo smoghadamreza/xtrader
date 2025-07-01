@@ -7,28 +7,28 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('social', '0002_follow'),
+        ("social", "0002_follow"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='protrader',
-            old_name='one_months_performace',
-            new_name='one_months_performance',
+            model_name="protrader",
+            old_name="one_months_performace",
+            new_name="one_months_performance",
         ),
         migrations.RenameField(
-            model_name='protrader',
-            old_name='one_year_performace',
-            new_name='one_year_performance',
+            model_name="protrader",
+            old_name="one_year_performace",
+            new_name="one_year_performance",
         ),
         migrations.RenameField(
-            model_name='protrader',
-            old_name='six_months_performace',
-            new_name='six_months_performance',
+            model_name="protrader",
+            old_name="six_months_performace",
+            new_name="six_months_performance",
         ),
         migrations.RenameField(
-            model_name='protrader',
-            old_name='three_months_performace',
-            new_name='three_months_performance',
+            model_name="protrader",
+            old_name="three_months_performace",
+            new_name="three_months_performance",
         ),
     ]

@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('aum', '0001_initial'),
+        ("aum", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='fund',
-            name='brand',
-            field=models.CharField(blank=True, default='', max_length=80, null=True),
+            model_name="fund",
+            name="brand",
+            field=models.CharField(
+                blank=True, default="", max_length=80, null=True
+            ),
         ),
     ]

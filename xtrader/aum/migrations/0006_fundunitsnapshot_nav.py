@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('aum', '0005_fundunitsnapshot'),
+        ("aum", "0005_fundunitsnapshot"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='fundunitsnapshot',
-            name='nav',
+            model_name="fundunitsnapshot",
+            name="nav",
             field=models.FloatField(blank=True, default=0, null=True),
         ),
     ]

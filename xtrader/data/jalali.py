@@ -2,10 +2,12 @@
 #
 # Jalali date converter
 # 2014 07 25
-# Ported from PHP (http://jdf.scr.ir/) to Python (2&3) by Mohammad Javad Naderi <mjnaderi@gmail.com>
+# Ported from PHP (http://jdf.scr.ir/) to Python (2&3) by
+# Mohammad Javad Naderi <mjnaderi@gmail.com>
 #
-# As mentioned in http://jdf.scr.ir/, the original code is free and open source,
-# and you are not allowed to sell it. You can read more in http://jdf.scr.ir/.
+# As mentioned in http://jdf.scr.ir/, the original code is free
+# and open source, and you are not allowed to sell it.
+# You can read more in http://jdf.scr.ir/.
 #
 # Original License Notes:
 #
@@ -13,8 +15,9 @@
 #    Copyright(C)2011, Reza Gholampanahi , http://jdf.scr.ir
 #    version 2.55 :: 1391/08/24 = 1433/12/18 = 2012/11/15 */
 #
-#    /** Convertor from and to Gregorian and Jalali (Hijri_Shamsi,Solar) Functions
-#    Copyright(C)2011, Reza Gholampanahi [ http://jdf.scr.ir/jdf ] version 2.50 */
+#    /** Convertor from and to Gregorian and Jalali (Hijri_Shamsi,Solar)
+# Functions Copyright(C)2011, Reza Gholampanahi
+# [ http://jdf.scr.ir/jdf ] version 2.50 */
 #
 # Example Usage:
 #
@@ -36,8 +39,8 @@
 #  >>> jalali.Gregorian(2014, 3, 31).persian_year
 #  1393
 
-import re
 import datetime
+import re
 
 
 class Gregorian:
@@ -47,9 +50,13 @@ class Gregorian:
         if len(date) == 1:
             date = date[0]
             if type(date) is str:
-                m = re.match(r'^(\d{4})\D(\d{1,2})\D(\d{1,2})$', date)
+                m = re.match(r"^(\d{4})\D(\d{1,2})\D(\d{1,2})$", date)
                 if m:
-                    [year, month, day] = [int(m.group(1)), int(m.group(2)), int(m.group(3))]
+                    [year, month, day] = [
+                        int(m.group(1)),
+                        int(m.group(2)),
+                        int(m.group(3)),
+                    ]
                 else:
                     raise Exception("Invalid Input String")
             elif type(date) is datetime.date:
@@ -71,7 +78,7 @@ class Gregorian:
         # Check the validity of input date
         try:
             datetime.datetime(year, month, day)
-        except:
+        except ValueError:
             raise Exception("Invalid Date")
 
         self.gregorian_year = year
@@ -84,7 +91,7 @@ class Gregorian:
         doy_g = g_a[month] + day
         if d_4 == 0 and month > 2:
             doy_g += 1
-        d_33 = int(((year - 16) % 132) * .0305)
+        d_33 = int(((year - 16) % 132) * 0.0305)
         a = 286 if (d_33 == 3 or d_33 < (d_4 - 1) or d_4 == 0) else 287
         if (d_33 == 1 or d_33 == 2) and (d_33 == d_4 or d_4 == 1):
             b = 78
@@ -115,7 +122,9 @@ class Gregorian:
         return self.persian_year, self.persian_month, self.persian_day
 
     def persian_string(self, date_format="{}-{}-{}"):
-        return date_format.format(self.persian_year, self.persian_month, self.persian_day)
+        return date_format.format(
+            self.persian_year, self.persian_month, self.persian_day
+        )
 
 
 class Persian:
@@ -125,9 +134,13 @@ class Persian:
         if len(date) == 1:
             date = date[0]
             if type(date) is str:
-                m = re.match(r'^(\d{4})\D(\d{1,2})\D(\d{1,2})$', date)
+                m = re.match(r"^(\d{4})\D(\d{1,2})\D(\d{1,2})$", date)
                 if m:
-                    [year, month, day] = [int(m.group(1)), int(m.group(2)), int(m.group(3))]
+                    [year, month, day] = [
+                        int(m.group(1)),
+                        int(m.group(2)),
+                        int(m.group(3)),
+                    ]
                 else:
                     raise Exception("Invalid Input String")
             elif type(date) is tuple:
@@ -145,7 +158,14 @@ class Persian:
             raise Exception("Invalid Input")
 
         # Check validity of date. TODO better check (leap years)
-        if year < 1 or month < 1 or month > 12 or day < 1 or day > 31 or (month > 6 and day == 31):
+        if (
+            year < 1
+            or month < 1
+            or month > 12
+            or day < 1
+            or day > 31
+            or (month > 6 and day == 31)
+        ):
             raise Exception("Incorrect Date")
 
         self.persian_year = year
@@ -158,7 +178,7 @@ class Persian:
             doy_j = ((month - 1) * 31) + day
         else:
             doy_j = ((month - 7) * 30) + day + 186
-        d_33 = int(((year - 55) % 132) * .0305)
+        d_33 = int(((year - 55) % 132) * 0.0305)
         a = 287 if (d_33 != 3 and d_4 <= d_33) else 286
         if (d_33 == 1 or d_33 == 2) and (d_33 == d_4 or d_4 == 1):
             b = 78
@@ -173,7 +193,23 @@ class Persian:
         else:
             gy = year + 622
             gd = doy_j - a
-        for gm, v in enumerate([0, 31, 29 if (gy % 4 == 0) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]):
+        for gm, v in enumerate(
+            [
+                0,
+                31,
+                29 if (gy % 4 == 0) else 28,
+                31,
+                30,
+                31,
+                30,
+                31,
+                31,
+                30,
+                31,
+                30,
+                31,
+            ]
+        ):
             if gd <= v:
                 break
             gd -= v
@@ -186,7 +222,11 @@ class Persian:
         return self.gregorian_year, self.gregorian_month, self.gregorian_day
 
     def gregorian_string(self, date_format="{}-{}-{}"):
-        return date_format.format(self.gregorian_year, self.gregorian_month, self.gregorian_day)
+        return date_format.format(
+            self.gregorian_year, self.gregorian_month, self.gregorian_day
+        )
 
     def gregorian_datetime(self):
-        return datetime.date(self.gregorian_year, self.gregorian_month, self.gregorian_day)
+        return datetime.date(
+            self.gregorian_year, self.gregorian_month, self.gregorian_day
+        )

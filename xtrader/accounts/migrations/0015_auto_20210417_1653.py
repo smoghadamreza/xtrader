@@ -7,15 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0014_auto_20210417_1652'),
+        ("accounts", "0014_auto_20210417_1652"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='transactions',
-            name='wallet',
+            model_name="transactions",
+            name="wallet",
         ),
         migrations.DeleteModel(
-            name='Transactions',
+            name="Transactions",
         ),
     ]

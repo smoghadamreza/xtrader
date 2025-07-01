@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0020_wallet_income'),
+        ("accounts", "0020_wallet_income"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='referral_code',
-            field=models.CharField(blank=True, default='', max_length=80, null=True),
+            model_name="profile",
+            name="referral_code",
+            field=models.CharField(
+                blank=True, default="", max_length=80, null=True
+            ),
         ),
     ]

@@ -7,28 +7,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('aum', '0002_fund_brand'),
+        ("aum", "0002_fund_brand"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='fund',
-            name='deposit',
+            model_name="fund",
+            name="deposit",
             field=models.FloatField(blank=True, default=0, null=True),
         ),
         migrations.AddField(
-            model_name='fund',
-            name='withdraw',
+            model_name="fund",
+            name="withdraw",
             field=models.FloatField(blank=True, default=0, null=True),
         ),
         migrations.RemoveField(
-            model_name='fund',
-            name='last_update',
+            model_name="fund",
+            name="last_update",
             # field=models.FloatField(blank=True, default=0, null=True),
         ),
         migrations.AddField(
-            model_name='fund',
-            name='last_update',
+            model_name="fund",
+            name="last_update",
             field=models.FloatField(blank=True, default=0, null=True),
         ),
     ]

@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0010_auto_20201223_1340'),
+        ("accounts", "0010_auto_20201223_1340"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='telegram_activation_timestamp',
+            model_name="profile",
+            name="telegram_activation_timestamp",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

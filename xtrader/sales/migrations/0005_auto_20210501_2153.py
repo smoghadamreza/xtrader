@@ -7,18 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sales', '0004_auto_20210501_2000'),
+        ("sales", "0004_auto_20210501_2000"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='package',
-            name='active',
+            model_name="package",
+            name="active",
             field=models.NullBooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='package',
-            name='limit',
+            model_name="package",
+            name="limit",
             field=models.FloatField(blank=True, default=1, null=True),
         ),
     ]

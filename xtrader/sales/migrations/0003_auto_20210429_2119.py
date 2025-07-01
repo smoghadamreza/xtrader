@@ -7,18 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sales', '0002_auto_20210429_1844'),
+        ("sales", "0002_auto_20210429_1844"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='package',
-            name='scan_fee',
+            model_name="package",
+            name="scan_fee",
             field=models.FloatField(blank=True, default=0, null=True),
         ),
         migrations.AlterField(
-            model_name='package',
-            name='description',
-            field=models.TextField(blank=True, default='', null=True),
+            model_name="package",
+            name="description",
+            field=models.TextField(blank=True, default="", null=True),
         ),
     ]

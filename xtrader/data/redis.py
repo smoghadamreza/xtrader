@@ -1,12 +1,12 @@
+import json
+import time
+
 import redis
 import requests
-import time
 from django.conf import settings
-import json
 
-
-r = redis.Redis(host='redis', port=6379, db=settings.REDIS_DB)
-needed_keys = ['date', 'open', 'high', 'low', 'close', 'volume']
+r = redis.Redis(host="redis", port=6379, db=settings.REDIS_DB)
+needed_keys = ["date", "open", "high", "low", "close", "volume"]
 intervals = settings.INTERVALS
 
 
@@ -15,6 +15,7 @@ def hgetall(name):
     if result:
         return [res.decode() for res in result]
     return []
+
 
 def set(name, value):
     return r.set(name=name, value=value)
@@ -34,6 +35,7 @@ def hget(name, key):
         return {}
     return json.loads(value.decode())
 
+
 def delete(names):
     return r.delete(*names)
 
@@ -44,11 +46,24 @@ def keys():
 
 def set_history(name, interval):
     history_name = get_history_name(name, interval)
-    params = {"symbol": name, "interval": interval, "limit": settings.CANDLES_HISTORY_LIMIT}
+    params = {
+        "symbol": name,
+        "interval": interval,
+        "limit": settings.CANDLES_HISTORY_LIMIT,
+    }
     print("getting:", history_name)
-    data = requests.get("https://api.binance.com/api/v3/klines", params=params).json()
+    data = requests.get(
+        "https://api.binance.com/api/v3/klines", params=params
+    ).json()
     print(data)
-    data_dict = {'date': [], 'open': [], 'high': [], 'low': [], 'close': [], 'volume': []}
+    data_dict = {
+        "date": [],
+        "open": [],
+        "high": [],
+        "low": [],
+        "close": [],
+        "volume": [],
+    }
     for d in data[:-1]:
         for i, k in enumerate(needed_keys):
             value = d[i]
@@ -61,7 +76,7 @@ def set_history(name, interval):
 
 
 def get_history_name(name, interval):
-    return '{}-{}'.format(name.upper(), interval)
+    return "{}-{}".format(name.upper(), interval)
 
 
 def load_history(name, interval, num=0):
@@ -70,19 +85,19 @@ def load_history(name, interval, num=0):
     name = name.upper()
     history_name = get_history_name(name, interval=interval)
     try:
-        dates = hget(name=history_name, key='date')
+        dates = hget(name=history_name, key="date")
         current_time = time.time() * 1000
         last_candle_time = dates[-1]
         if current_time - last_candle_time > 2 * intervals[interval]:
             set_history(name, interval)
-            return load_history(name, interval, num=num+1)
+            return load_history(name, interval, num=num + 1)
         data_dict = dict()
         for key in needed_keys:
             data_dict[key] = hget(name=history_name, key=key)
         return data_dict
-    except Exception as e:
+    except Exception:
         set_history(name, interval)
-        return load_history(name, interval, num=num+1)
+        return load_history(name, interval, num=num + 1)
 
 
 def flushall():

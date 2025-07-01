@@ -1,55 +1,60 @@
-from django.views.decorators.csrf import csrf_exempt
-from django.db import transaction
 import json
+
 from django.conf import settings
-from finance.views import get_user
-from finance import notification
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse, Http404, HttpResponseNotFound
-from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from social.models import Protrader, Follow
-from finance.models import Exchange
-from finance import oms
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
 from accounts.models import Profile
+from finance import notification, oms
+from finance.models import Exchange
+from finance.views import get_user
+from social.models import Follow, Protrader
 
 
 @csrf_exempt
 def protraders(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.body.decode()
         try:
             data = json.loads(data)
-            username = data['username']
-            brand = data['brand']
-            page_kind = data['page_kind']
-            page_url = data['page_url']
-            subscription = data['subscription']
+            username = data["username"]
+            brand = data["brand"]
+            page_kind = data["page_kind"]
+            page_url = data["page_url"]
+            subscription = data["subscription"]
             trader = User.objects.get_by_natural_key(username)
             ex_obj, ex = oms.OMSManager.get_exchange(request, trader=trader)
             if not ex_obj:
-                return JsonResponse({'o': 'noEx'})
+                return JsonResponse({"o": "noEx"})
             protrader = Protrader(trader=trader, subscription=subscription)
-            protrader.create_pro(ex, ex_obj, brand=brand, page_kind=page_kind, page_url=page_url)
+            protrader.create_pro(
+                ex, ex_obj, brand=brand, page_kind=page_kind, page_url=page_url
+            )
         except Exception as e:
-            return JsonResponse({'e': str(e)})
-        return JsonResponse({'e': protrader.id})
-    elif request.method == 'GET':
+            return JsonResponse({"e": str(e)})
+        return JsonResponse({"e": protrader.id})
+    elif request.method == "GET":
         follow = Follow.objects.filter(follower=request.user).first()
         protrader_id = follow.proTrader.id if follow else 0
-        return JsonResponse({'data': Protrader.get_all(protrader_id)})
+        return JsonResponse({"data": Protrader.get_all(protrader_id)})
 
 
 @csrf_exempt
-@login_required(login_url='accounts:userena_signin')
+@login_required(login_url="accounts:userena_signin")
 def follow_unfollow(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         data = json.loads(request.body.decode())
-        protrader_brand = data['protrader_brand']
-        action = data['action']
-        result = Follow.copytrade(user=request.user, brand=protrader_brand, action=action)
+        protrader_brand = data["protrader_brand"]
+        action = data["action"]
+        result = Follow.copytrade(
+            user=request.user, brand=protrader_brand, action=action
+        )
     else:
-        result = {'m': 'OK'}
+        result = {"m": "OK"}
     return JsonResponse(result)
 
 
@@ -60,72 +65,109 @@ def getpublics(request):
     for pro in Protrader.objects.all():
         ex = Exchange.objects.filter(trader=pro.trader).first()
         if ex:
-            result.append({
-                'id': pro.id,
-                'public': ex.public
-            })
-    return JsonResponse({'publicKeys': result})
+            result.append({"id": pro.id, "public": ex.public})
+    return JsonResponse({"publicKeys": result})
 
 
 @transaction.atomic
 @csrf_exempt
 def copy_order(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         data = json.loads(request.body.decode())
-        pro_id = data.get('id', -1)
+        pro_id = data.get("id", -1)
         pro = Protrader.objects.filter(id=pro_id).first()
         if not pro:
-            return JsonResponse({'m': 'no pro, wrong id'})
-        pro.copy_order(data['order'])
-        result = {'m': 'ok'}
+            return JsonResponse({"m": "no pro, wrong id"})
+        pro.copy_order(data["order"])
+        result = {"m": "ok"}
     else:
-        result = {'m': 'OK'}
+        result = {"m": "OK"}
     return JsonResponse(result)
 
 
 @csrf_exempt
-@login_required(login_url='accounts:userena_signin')
+@login_required(login_url="accounts:userena_signin")
 def promote(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         ex_obj, ex = oms.OMSManager.get_exchange(request, trader=request.user)
         if not ex_obj:
-            return JsonResponse({'s': 302, 'm': 'ابتدا حساب خود را به بایننس متصل کنید', 'href': 'exchange'})
+            return JsonResponse(
+                {
+                    "s": 302,
+                    "m": "ابتدا حساب خود را به بایننس متصل کنید",
+                    "href": "exchange",
+                }
+            )
         pro = Profile.objects.filter(user=request.user).first()
         if not pro or not pro.telegram_id:
-            return JsonResponse({'s': 302, 'm': 'ابتدا حساب خود را به تلگرام متصل کنید', 'href': 'telegram'})
+            return JsonResponse(
+                {
+                    "s": 302,
+                    "m": "ابتدا حساب خود را به تلگرام متصل کنید",
+                    "href": "telegram",
+                }
+            )
         data = json.loads(request.body.decode())
-        if Protrader.objects.filter(brand=data['brand']).first():
-            return JsonResponse({'s': 200, 'm': 'این نام نمایشی قبلا استفاده شده است.'})
+        if Protrader.objects.filter(brand=data["brand"]).first():
+            return JsonResponse(
+                {"s": 200, "m": "این نام نمایشی قبلا استفاده شده است."}
+            )
         if Follow.objects.filter(follower=request.user).first():
-            return JsonResponse({'s': 200, 'm': 'چون شخص دیگری را فالو کرده اید امکان ارتقا حساب وجود ندارد.'})
+            return JsonResponse(
+                {
+                    "s": 200,
+                    "m": "چون شخص دیگری را فالو کرده اید امکان ارتقا حساب وجود ندارد.",
+                }
+            )
         pro = Protrader.objects.filter(trader=request.user).first()
         if pro:
-            if pro.status == 'PENDING':
-                return JsonResponse({'s': 200, 'm': 'شما قبلا حساب خود را ارتقا داده اید و در انتظار تایید است.'})
+            if pro.status == "PENDING":
+                return JsonResponse(
+                    {
+                        "s": 200,
+                        "m": "شما قبلا حساب خود را ارتقا داده اید و در انتظار تایید است.",
+                    }
+                )
             else:
-                return JsonResponse({'s': 200, 'm': 'شما قبلا حساب خود را ارتقا داده اید.'})
+                return JsonResponse(
+                    {"s": 200, "m": "شما قبلا حساب خود را ارتقا داده اید."}
+                )
         history = Protrader.get_history(trader=request.user)
         if len(history) < 28:
-            return JsonResponse({'s': 200, 'm': 'سابقه شما در بایننس کمتر از ۳۰ روز است.'})
-        pro = Protrader(trader=request.user, brand=data['brand'], subscription=float(data['subscription']), status='PENDING')
+            return JsonResponse(
+                {"s": 200, "m": "سابقه شما در بایننس کمتر از ۳۰ روز است."}
+            )
+        pro = Protrader(
+            trader=request.user,
+            brand=data["brand"],
+            subscription=float(data["subscription"]),
+            status="PENDING",
+        )
         pro.save()
-        result = {'s': 200, 'm': 'حساب شما ارتقا پیدا کرد، پس از تایید نام نمایشی به شبکه اضافه می‌شوید'}
-        notification.send_telegram_message(f'promotion request: {data["brand"]}', user_id=settings.ADMIN_TEL_ID)
+        result = {
+            "s": 200,
+            "m": "حساب شما ارتقا پیدا کرد، پس از تایید نام نمایشی به شبکه اضافه می‌شوید",
+        }
+        notification.send_telegram_message(
+            f'promotion request: {data["brand"]}',
+            user_id=settings.ADMIN_TEL_ID,
+        )
     else:
-        result = {'s': 403, 'm': 'OK'}
+        result = {"s": 403, "m": "OK"}
     return JsonResponse(result)
 
 
 def trader(request):
-    return render(request, 'traderProfile.html', get_user(request=request))
+    return render(request, "traderProfile.html", get_user(request=request))
+
 
 def get_profile(request, pro_id):
     try:
         pro = Protrader.objects.filter(id=pro_id).first()
         if not pro:
-            return JsonResponse({'s': 302, 'href': '/social/copytrading'})
-    except Exception as e:
-        return JsonResponse({'s': 302, 'href': '/social/copytrading'})
+            return JsonResponse({"s": 302, "href": "/social/copytrading"})
+    except Exception:
+        return JsonResponse({"s": 302, "href": "/social/copytrading"})
     history = Protrader.get_records(trader=pro.trader)
     if not request.user:
         status = 0  # unknown
@@ -138,33 +180,52 @@ def get_profile(request, pro_id):
                 status = 3  # following someone else
         else:
             status = 2  # not following
-    return JsonResponse({'s': 200, 'proTraderBrand': pro.brand, 'subsFee': pro.subscription, 'history': history, 'status': status})
+    return JsonResponse(
+        {
+            "s": 200,
+            "proTraderBrand": pro.brand,
+            "subsFee": pro.subscription,
+            "history": history,
+            "status": status,
+        }
+    )
 
-@login_required(login_url='accounts:userena_signin')
+
+@login_required(login_url="accounts:userena_signin")
 def copytrading(request):
-    return render(request, 'copytrading.html', get_user(request=request))
+    return render(request, "copytrading.html", get_user(request=request))
 
 
 def league(request):
-    return render(request, 'leagueLanding.html', get_user(request=request))
+    return render(request, "leagueLanding.html", get_user(request=request))
 
 
-@login_required(login_url='accounts:userena_signin')
+@login_required(login_url="accounts:userena_signin")
 @csrf_exempt
 def exchange(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         exs = oms.OMSManager.get_exchanges(request)
         return JsonResponse({"exchanges": exs})
-    elif request.method == 'POST':
-        public = request.POST.get('public', None)
-        private = request.POST.get('secret', None)
-        name = request.POST.get('name', None)
-        _exchange = request.POST.get('exchange', None)
-        if public is None or private is None or name is None or _exchange is None:
-            return JsonResponse({'status': False})
+    elif request.method == "POST":
+        public = request.POST.get("public", None)
+        private = request.POST.get("secret", None)
+        name = request.POST.get("name", None)
+        _exchange = request.POST.get("exchange", None)
+        if (
+            public is None
+            or private is None
+            or name is None
+            or _exchange is None
+        ):
+            return JsonResponse({"status": False})
         result = {
-            "status": oms.OMSManager.verify_and_create_exchange(trader=request.user, name=name, public=public,
-                                                                private=private, exchange=_exchange.upper())
+            "status": oms.OMSManager.verify_and_create_exchange(
+                trader=request.user,
+                name=name,
+                public=public,
+                private=private,
+                exchange=_exchange.upper(),
+            )
         }
         return JsonResponse(result)
     else:

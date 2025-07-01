@@ -1,12 +1,13 @@
 import json
-from django.conf import settings
-from django.http import HttpResponse
-from data.models import StockWatch as Symbol
-from django.http import JsonResponse
-from data import redis
-from finance.models import Strategy
+
 import pandas as pd
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse
+
+from data import redis
 from data import stockwatch as stockwatchModel
+from data.models import StockWatch as Symbol
+from finance.models import Strategy
 
 
 def history(request):
@@ -16,9 +17,11 @@ def history(request):
         symbol_id = symbol_id.decode()
         symbol_history_dict = {}
         symbol_history_dict[symbol_id] = {}
-        for key in ['date', 'close', 'open', 'high', 'low', 'volume']:
+        for key in ["date", "close", "open", "high", "low", "volume"]:
             try:
-                symbol_history_dict[symbol_id][key] = redis.hget(name=symbol_id, key=key)
+                symbol_history_dict[symbol_id][key] = redis.hget(
+                    name=symbol_id, key=key
+                )
             except Exception:
                 pass
         histories.append(symbol_history_dict)
@@ -36,30 +39,35 @@ def symbol_search(request, query):
     result = []
     for symbol in symbols:
         info = redis.hget("exchangeInfo", symbol)
-        result.append(dict(
-            symbol_id=symbol,
-            kind=info['quoteAsset'],
-            category=info['baseAsset'],
-            symbol_name=symbol,
-            name=', '.join(info['permissions']),
-            description='self.CompanyName',
-            title='title',
-        ))
-    return HttpResponse(json.dumps({'items': result}, ensure_ascii=False).encode("utf8"),
-                        content_type="application/json; charset=utf-8")
+        result.append(
+            dict(
+                symbol_id=symbol,
+                kind=info["quoteAsset"],
+                category=info["baseAsset"],
+                symbol_name=symbol,
+                name=", ".join(info["permissions"]),
+                description="self.CompanyName",
+                title="title",
+            )
+        )
+    return HttpResponse(
+        json.dumps({"items": result}, ensure_ascii=False).encode("utf8"),
+        content_type="application/json; charset=utf-8",
+    )
+
 
 def get_data(request, symbol_id, interval):
     data_dict = redis.load_history(symbol_id, interval=interval)
-    df = pd.DataFrame(data=data_dict, index=data_dict['date'])
-    df = df.loc[:, ['date', 'open', 'high', 'low', 'close', 'volume']]
+    df = pd.DataFrame(data=data_dict, index=data_dict["date"])
+    df = df.loc[:, ["date", "open", "high", "low", "close", "volume"]]
     pair = redis.hget("exchangeInfo", symbol_id.upper())
     stock_information = dict(
-        per_name=pair['baseAsset'],
-        measurement_name=pair['symbol'],
-        name=pair['baseAsset'],
+        per_name=pair["baseAsset"],
+        measurement_name=pair["symbol"],
+        name=pair["baseAsset"],
     )
-    stock_history = df.to_json(orient='values')
-    stock_information['items'] = stock_history
+    stock_history = df.to_json(orient="values")
+    stock_information["items"] = stock_history
 
     return JsonResponse(json.dumps(stock_information), safe=False)
 
@@ -67,18 +75,20 @@ def get_data(request, symbol_id, interval):
 def get_symbols(request):
     symbols = Symbol.objects.all()
     symbol_ids = [symbol.SymbolId for symbol in symbols]
-    return JsonResponse({'symbols': symbol_ids})
+    return JsonResponse({"symbols": symbol_ids})
 
 
 def get_all_symbols(request):
     spots = redis.hgetall("exchangeInfo")
-    symbols = [{'title': symbol} for symbol in spots]
-    return JsonResponse({'symbols': symbols})
+    symbols = [{"title": symbol} for symbol in spots]
+    return JsonResponse({"symbols": symbols})
 
 
 def get_intervals(request):
     if not request.user.username:
-        return JsonResponse({'intervals': settings.INTERVALS})
+        return JsonResponse({"intervals": settings.INTERVALS})
     strategy = Strategy.objects.filter(trader=request.user).first()
-    interval = strategy.interval if strategy else '4h'
-    return JsonResponse({'intervals': settings.INTERVALS, 'userTimeFrame': interval})
+    interval = strategy.interval if strategy else "4h"
+    return JsonResponse(
+        {"intervals": settings.INTERVALS, "userTimeFrame": interval}
+    )

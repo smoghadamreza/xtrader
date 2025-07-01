@@ -7,16 +7,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0017_auto_20210418_1029'),
+        ("accounts", "0017_auto_20210418_1029"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='membership',
-            name='profile',
+            model_name="membership",
+            name="profile",
         ),
         migrations.RemoveField(
-            model_name='membership',
-            name='subscribe',
+            model_name="membership",
+            name="subscribe",
         ),
     ]

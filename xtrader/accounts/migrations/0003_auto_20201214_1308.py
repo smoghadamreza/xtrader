@@ -2,19 +2,25 @@
 from __future__ import unicode_literals
 
 import datetime
-from django.db import migrations, models
 from datetime import timezone
+
+from django.db import migrations, models
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_auto_20201214_1308'),
+        ("accounts", "0002_auto_20201214_1308"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='expire',
-            field=models.DateField(default=datetime.datetime(2020, 12, 24, 12, 8, 7, 985495, tzinfo=timezone.utc)),
+            model_name="profile",
+            name="expire",
+            field=models.DateField(
+                default=datetime.datetime(
+                    2020, 12, 24, 12, 8, 7, 985495, tzinfo=timezone.utc
+                )
+            ),
         ),
     ]

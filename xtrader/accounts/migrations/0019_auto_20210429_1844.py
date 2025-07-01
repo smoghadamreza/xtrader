@@ -7,15 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0018_auto_20210429_1844'),
-        ('sales', '0002_auto_20210429_1844'),
+        ("accounts", "0018_auto_20210429_1844"),
+        ("sales", "0002_auto_20210429_1844"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='Membership',
+            name="Membership",
         ),
         migrations.DeleteModel(
-            name='Subscribe',
+            name="Subscribe",
         ),
     ]

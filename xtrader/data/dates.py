@@ -1,12 +1,15 @@
-from data.models import StockWatch
-from data import redis, jalali
-from datetime import datetime
 import time
+from datetime import datetime
+
+from data import jalali, redis
+from data.models import StockWatch
 
 
 def to_timestamp(date, mode):
-    if mode == 'farabi': return fix_date_farabi(date)
-    if mode == 'mabna': return fix_date_mabna(date)
+    if mode == "farabi":
+        return fix_date_farabi(date)
+    if mode == "mabna":
+        return fix_date_mabna(date)
 
 
 def fix_date_mabna(date):
@@ -20,7 +23,9 @@ def fix_date_mabna(date):
     if utc_min < 0:
         utc_min += 60
         utc_hour -= 1
-    dt = datetime.strptime(gorgeain_date, "%Y/%m/%d").replace(hour=utc_hour, minute=utc_min, second=second)
+    dt = datetime.strptime(gorgeain_date, "%Y/%m/%d").replace(
+        hour=utc_hour, minute=utc_min, second=second
+    )
     timestamp = time.mktime(dt.timetuple())
     return 1000 * timestamp
 
@@ -37,7 +42,14 @@ def fix_date_farabi(date):
     if utc_min < 0:
         utc_min += 60
         utc_hour -= 1
-    utc_date = datetime(year=year, month=month, day=day, hour=utc_hour, minute=utc_min, second=second).timetuple()
+    utc_date = datetime(
+        year=year,
+        month=month,
+        day=day,
+        hour=utc_hour,
+        minute=utc_min,
+        second=second,
+    ).timetuple()
     timestamp = time.mktime(utc_date)
     return 1000 * timestamp
 
@@ -54,23 +66,25 @@ class Check:
 
     def time(self):
         market_time = True
-        state = 'at market'
+        state = "at market"
         if self.now < self.now.replace(hour=8, minute=30):
             market_time = False
-            state = 'before market'
+            state = "before market"
         if self.now > self.now.replace(hour=12, minute=30):
             market_time = False
-            state = 'after market'
-        return {'market_time': market_time, 'state': state}
+            state = "after market"
+        return {"market_time": market_time, "state": state}
 
     def last_market(self):
-        last_day = StockWatch.objects.order_by('-LastTradeDate').first()
+        last_day = StockWatch.objects.order_by("-LastTradeDate").first()
         last_day = to_str(last_day.LastTradeDate)
         return last_day
 
     def find_the_last_day(self):
         for delta in range(10):
-            if StockWatch.objects.filter(LastTradeDate=self.strdate()).exists():
+            if StockWatch.objects.filter(
+                LastTradeDate=self.strdate()
+            ).exists():
                 return self.strdate()
         return None
 
@@ -78,11 +92,11 @@ class Check:
         return str(self.now)[:10]
 
     def is_history_updated(self):
-        last_market = StockWatch.objects.order_by('-LastTradeDate').first()
+        last_market = StockWatch.objects.order_by("-LastTradeDate").first()
         SymbolId = last_market.SymbolId
         last_market_date = to_str(last_market.LastTradeDate)
-        last_historical_date = redis.hget(SymbolId, 'date')[-1]
-        last_historical_date *= .001
+        last_historical_date = redis.hget(SymbolId, "date")[-1]
+        last_historical_date *= 0.001
         last_historical_date = datetime.utcfromtimestamp(last_historical_date)
         last_historical_date = to_str(last_historical_date)
         return last_historical_date == last_market_date

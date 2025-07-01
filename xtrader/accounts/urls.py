@@ -1,8 +1,8 @@
 from django.contrib.auth import views as auth_views
 from django.urls import re_path, reverse_lazy
 from userena import settings as userena_settings
+
 import accounts.views as userena_views
-from accounts.compat import auth_views_compat_quirks, password_reset_uid_kwarg
 
 
 def merged_dict(dict_a, dict_b):
@@ -14,29 +14,15 @@ def merged_dict(dict_a, dict_b):
 
 
 urlpatterns = [
-    re_path(r'^getTelegram/$',
-        userena_views.get_telegram,
-        name='getTelegram'),
-    re_path(r'^newDeposit/$',
-        userena_views.new_deposit,
-        name='newDeposit'),
-    re_path(r'^getWallet/$',
-        userena_views.get_wallet,
-        name='getWallet'),
-    re_path(r'^checkDeposits/$',
-        userena_views.check_deposits,
-        name='checkDeposits'),
-    re_path(r'^getDeposits/$',
-        userena_views.get_deposits,
-        name='getDeposits'),
-    re_path(r'^signup/$',
-        userena_views.signupsample,
-        name='userena_signup'),
-
-    re_path(r'^settings/$',
-        userena_views.settings,
-        name='settings'),
-
+    re_path(r"^getTelegram/$", userena_views.get_telegram, name="getTelegram"),
+    re_path(r"^newDeposit/$", userena_views.new_deposit, name="newDeposit"),
+    re_path(r"^getWallet/$", userena_views.get_wallet, name="getWallet"),
+    re_path(
+        r"^checkDeposits/$", userena_views.check_deposits, name="checkDeposits"
+    ),
+    re_path(r"^getDeposits/$", userena_views.get_deposits, name="getDeposits"),
+    re_path(r"^signup/$", userena_views.signupsample, name="userena_signup"),
+    re_path(r"^settings/$", userena_views.settings, name="settings"),
     re_path(r"^signup/$", userena_views.signup, name="userena_signup"),
     re_path(r"^signin/$", userena_views.signin, name="userena_signin"),
     re_path(
@@ -52,7 +38,9 @@ urlpatterns = [
             extra_context={
                 "without_usernames": userena_settings.USERENA_WITHOUT_USERNAMES
             },
-            success_url=reverse_lazy("accounts:userena_password_reset_done"),  # Added namespace
+            success_url=reverse_lazy(
+                "accounts:userena_password_reset_done"
+            ),  # Added namespace
         ),
         name="userena_password_reset",
     ),

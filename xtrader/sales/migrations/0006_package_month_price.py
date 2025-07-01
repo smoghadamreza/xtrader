@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sales', '0005_auto_20210501_2153'),
+        ("sales", "0005_auto_20210501_2153"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='package',
-            name='month_price',
+            model_name="package",
+            name="month_price",
             field=models.FloatField(blank=True, default=0, null=True),
         ),
     ]

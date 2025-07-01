@@ -9,12 +9,11 @@ https://docs.djangoproject.com/en/1.10/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
+
 import os
-from django.conf import settings
-import sys
-import time
-import threading
 from pathlib import Path
+
+from django.conf import settings
 
 settings_dir = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
@@ -24,101 +23,99 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get('DEBUG', 1)))
+DEBUG = bool(int(os.environ.get("DEBUG", 1)))
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 ALLOWED_HOSTS.extend(
     filter(
         None,
-        os.environ.get('ALLOWED_HOSTS', '').split(','),
+        os.environ.get("ALLOWED_HOSTS", "").split(","),
     )
 )
 # Settings used by Userena
 LOGIN_REDIRECT_URL = "/accounts/%(username)s/"
 LOGIN_URL = "/accounts/signin/"
 LOGOUT_URL = "/accounts/signout/"
-AUTH_PROFILE_MODULE = 'accounts.Profile'
+AUTH_PROFILE_MODULE = "accounts.Profile"
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_MUGSHOT_SIZE = 140
 
 
-
-USERENA_REDIRECT_ON_SIGNOUT = getattr(settings,
-                                      'USERENA_REDIRECT_ON_SIGNOUT',
-                                      '/accounts/signin')
-USERENA_SIGNIN_REDIRECT_URL = getattr(settings,
-                                      'USERENA_SIGNIN_REDIRECT_URL',
-                                      '/robots')
+USERENA_REDIRECT_ON_SIGNOUT = getattr(
+    settings, "USERENA_REDIRECT_ON_SIGNOUT", "/accounts/signin"
+)
+USERENA_SIGNIN_REDIRECT_URL = getattr(
+    settings, "USERENA_SIGNIN_REDIRECT_URL", "/robots"
+)
 INSTALLED_APPS = [
-    'django.contrib.admin',
-
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.humanize',
-    'django_extensions',
-    'accounts',
-    'main',
-    'django.contrib.sites',
-    'finance',
-    'data',
-    'sales',
-    'userena',
-    'guardian',
-    'easy_thumbnails',
-    'channels',
-    'social',
-    'bootstrap3',
-    'aum',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    "django_extensions",
+    "accounts",
+    "main",
+    "django.contrib.sites",
+    "finance",
+    "data",
+    "sales",
+    "userena",
+    "guardian",
+    "easy_thumbnails",
+    "channels",
+    "social",
+    "bootstrap3",
+    "aum",
 ]
 SITE_ID = 1
 REDIS_DB = 0
 INTERVALS = [1, 5, 10, 30, 60]
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'xtrader.urls'
+ROOT_URLCONF = "xtrader.urls"
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # TODO: For now we only print the email to the console.
+# TODO: For now we only print the email to the console.
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 EMAIL_PORT = 587
-EMAIL_HOST = ''
-EMAIL_HOST_USER = ''
+EMAIL_HOST = ""
+EMAIL_HOST_USER = ""
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = True
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.i18n',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
 ]
-WSGI_APPLICATION = 'xtrader.wsgi.application'
-ASGI_APPLICATION = 'xtrader.asgi.application'
+WSGI_APPLICATION = "xtrader.wsgi.application"
+ASGI_APPLICATION = "xtrader.asgi.application"
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -130,37 +127,39 @@ CHANNEL_LAYERS = {
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.environ.get('DB_HOST'),
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASS'),
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": os.environ.get("DB_HOST"),
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASS"),
+        "PORT": "5432",
     }
 }
 
 MIGRATION_MODULES = {
-    'userena': 'xtrader.migrations.userena',
-    'guardian': 'xtrader.migrations.guardian',
-    'easy_thumbnails': 'xtrader.migrations.easy_thumbnails'
+    "userena": "xtrader.migrations.userena",
+    "guardian": "xtrader.migrations.guardian",
+    "easy_thumbnails": "xtrader.migrations.easy_thumbnails",
 }
 
 USE_TZ = True
-TIME_ZONE = 'Asia/Tehran'
+TIME_ZONE = "Asia/Tehran"
 
+
+PASSWORD_VALIDATION_PATH = "django.contrib.auth.password_validation."
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": PASSWORD_VALIDATION_PATH + "UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": PASSWORD_VALIDATION_PATH + "MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": PASSWORD_VALIDATION_PATH + "CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": PASSWORD_VALIDATION_PATH + "NumericPasswordValidator",
     },
 ]
 
@@ -168,55 +167,51 @@ USE_I18N = True
 
 USE_L10N = True
 AUTHENTICATION_BACKENDS = (
-    'userena.backends.UserenaAuthenticationBackend',
-    'guardian.backends.ObjectPermissionBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    "userena.backends.UserenaAuthenticationBackend",
+    "guardian.backends.ObjectPermissionBackend",
+    "django.contrib.auth.backends.ModelBackend",
 )
 
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-STATICFILES_DIRS = (
-   os.path.join(BASE_DIR, 'static'),
-)
-MEDIA_ROOT = '/vol/web/media'
-STATIC_ROOT = '/vol/web/static'
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+MEDIA_ROOT = "/vol/web/media"
+STATIC_ROOT = "/vol/web/static"
 
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'locale'),
-)
-XTREASURY_BOT = ''
-USDT_WALLET = ''
-REFERRAL_BOUNCE = .3
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
+XTREASURY_BOT = ""
+USDT_WALLET = ""
+REFERRAL_BOUNCE = 0.3
 ADMIN_TEL_ID = 121366977
 COPYTRADEFEE = 0.4
-LOG_LEVEL = 'INFO'
+LOG_LEVEL = "INFO"
 try:
-    from .localsetting import *
+    pass
 except ImportError:
     pass
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': LOG_LEVEL,
-            'propagate': True,
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": True,
         },
     },
 }
 
 ANONYMOUS_USER_NAME = "AnonymousUser"
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 GRAPH_MODELS = {
-  'all_applications': True,
-  'group_models': True,
+    "all_applications": True,
+    "group_models": True,
 }

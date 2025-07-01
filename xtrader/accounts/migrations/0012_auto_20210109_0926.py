@@ -7,13 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0011_auto_20201223_1402'),
+        ("accounts", "0011_auto_20201223_1402"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='cellPhone',
-            field=models.CharField(blank=True, max_length=20, null=True, verbose_name='شماره تلفن '),
+            model_name="profile",
+            name="cellPhone",
+            field=models.CharField(
+                blank=True,
+                max_length=20,
+                null=True,
+                verbose_name="شماره تلفن ",
+            ),
         ),
     ]

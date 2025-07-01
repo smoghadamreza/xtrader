@@ -7,18 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0009_profile_telegram_id'),
+        ("accounts", "0009_profile_telegram_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='telegram_activation_code',
+            model_name="profile",
+            name="telegram_activation_code",
             field=models.CharField(blank=True, max_length=12, null=True),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='telegram_activation_timestamp',
+            model_name="profile",
+            name="telegram_activation_timestamp",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
     ]
