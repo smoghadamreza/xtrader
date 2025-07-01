@@ -14,10 +14,9 @@ class ProfileAdmin(admin.ModelAdmin):
         "expire",
     )
 
+    @admin.display(description="ایمیل")
     def email(self, obj):
         return obj.user.email
-
-    email.short_description = "ایمیل"
 
     def make_published(self, request, queryset):
         print(queryset)
