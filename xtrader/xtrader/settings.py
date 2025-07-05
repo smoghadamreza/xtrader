@@ -214,3 +214,5 @@ GRAPH_MODELS = {
     "all_applications": True,
     "group_models": True,
 }
+
+WEBHOOK_URL_TEMPLATE = "https://ramzservat.com/webhook/{}"

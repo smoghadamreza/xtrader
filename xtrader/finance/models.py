@@ -100,11 +100,11 @@ class TradingView(models.Model):
     notification = models.BooleanField(default=False)
 
     @staticmethod
-    def create_hook():
-        hook = Profile.code_generator(12)
-        if TradingView.objects.filter(webhook=hook):
-            return TradingView.create_hook()
-        return hook
+    def create_webhook():
+        webhook = Profile.code_generator(12)
+        if not TradingView.objects.filter(webhook=webhook):
+            return webhook
+
 
     def activate(self, trading=False, notification=False):
         error = ""

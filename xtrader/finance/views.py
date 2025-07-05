@@ -11,6 +11,7 @@ from django.db import transaction
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 
 from accounts.models import Profile
 from aum.models import Fund
@@ -444,20 +445,18 @@ def remove_exchange(request):
 
 @csrf_exempt
 @login_required(login_url="accounts:userena_signin")
-def tradingview(request):
+def trading_view(request):
     if request.method == "GET":
-        tw = TradingView.objects.filter(trader=request.user).first()
-        if not tw:
-            hook = TradingView.create_hook()
-            tw = TradingView(
-                webhook=hook,
-                trader=request.user,
-                trading=False,
-                notification=False,
-            )
-            tw.save()
+        tw, _ = TradingView.objects.get_or_create(
+            trader=request.user,
+            defaults={
+                "webhook": TradingView.create_webhook(),
+                "trading": False,
+                "notification": False,
+            },
+        )
         result = {
-            "webhook": "https://ramzservat.com/webhook/{}".format(tw.webhook),
+            "webhook": settings.WEBHOOK_URL_TEMPLATE.format(tw.webhook),
             "trading": tw.trading,
             "notification": tw.notification,
         }
@@ -465,18 +464,28 @@ def tradingview(request):
     elif request.method == "POST":
         tw = TradingView.objects.filter(trader=request.user).first()
         if not tw:
-            return JsonResponse({})
-        data = json.loads(request.body)
-        error = tw.activate(
-            trading=data["trading"], notification=data["notification"]
-        )
-        result = {
-            "webhook": "https://ramzservat.com/webhook/{}".format(tw.webhook),
-            "trading": tw.trading,
-            "notification": tw.notification,
-            "msg": error,
-        }
-        return JsonResponse(result)
+            return JsonResponse({"error": "TradingView configuration not found"}, status=404)
+        
+        try:
+            data = json.loads(request.body)
+            error = tw.activate(
+                trading=data.get("trading", False),
+                notification=data.get("notification", False)
+            )
+            result = {
+                "webhook": settings.WEBHOOK_URL_TEMPLATE.format(tw.webhook),
+                "trading": tw.trading,
+                "notification": tw.notification,
+                "msg": error,
+            }
+            return JsonResponse(result)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+        except KeyError:
+            return JsonResponse({"error": "Missing required fields"}, status=400)
+    
+    return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
 @csrf_exempt
