@@ -12,7 +12,7 @@ from accounts.models import Profile
 from finance import notification, oms
 from finance.models import Exchange
 from finance.views import get_user
-from social.models import Follow, Protrader
+from social.models import Follow, ProTrader
 
 
 @csrf_exempt
@@ -30,17 +30,17 @@ def protraders(request):
             ex_obj, ex = oms.OMSManager.get_exchange(request, trader=trader)
             if not ex_obj:
                 return JsonResponse({"o": "noEx"})
-            protrader = Protrader(trader=trader, subscription=subscription)
+            protrader = ProTrader(trader=trader, subscription=subscription)
             protrader.create_pro(
                 ex, ex_obj, brand=brand, page_kind=page_kind, page_url=page_url
             )
         except Exception as e:
             return JsonResponse({"e": str(e)})
-        return JsonResponse({"e": protrader.id})
+        return JsonResponse({"e": protrader.pk})
     elif request.method == "GET":
         follow = Follow.objects.filter(follower=request.user).first()
-        protrader_id = follow.proTrader.id if follow else 0
-        return JsonResponse({"data": Protrader.get_all(protrader_id)})
+        protrader_id = follow.pro_trader.pk if follow else 0
+        return JsonResponse({"data": ProTrader.get_all(protrader_id)})
 
 
 @csrf_exempt
@@ -62,10 +62,10 @@ def follow_unfollow(request):
 def getpublics(request):
 
     result = []
-    for pro in Protrader.objects.all():
+    for pro in ProTrader.objects.all():
         ex = Exchange.objects.filter(trader=pro.trader).first()
         if ex:
-            result.append({"id": pro.id, "public": ex.public})
+            result.append({"id": pro.pk, "public": ex.public})
     return JsonResponse({"publicKeys": result})
 
 
@@ -75,7 +75,7 @@ def copy_order(request):
     if request.method == "POST":
         data = json.loads(request.body.decode())
         pro_id = data.get("id", -1)
-        pro = Protrader.objects.filter(id=pro_id).first()
+        pro = ProTrader.objects.filter(id=pro_id).first()
         if not pro:
             return JsonResponse({"m": "no pro, wrong id"})
         pro.copy_order(data["order"])
@@ -108,7 +108,7 @@ def promote(request):
                 }
             )
         data = json.loads(request.body.decode())
-        if Protrader.objects.filter(brand=data["brand"]).first():
+        if ProTrader.objects.filter(brand=data["brand"]).first():
             return JsonResponse(
                 {"s": 200, "m": "این نام نمایشی قبلا استفاده شده است."}
             )
@@ -119,7 +119,7 @@ def promote(request):
                     "m": "چون شخص دیگری را فالو کرده اید امکان ارتقا حساب وجود ندارد.",
                 }
             )
-        pro = Protrader.objects.filter(trader=request.user).first()
+        pro = ProTrader.objects.filter(trader=request.user).first()
         if pro:
             if pro.status == "PENDING":
                 return JsonResponse(
@@ -132,12 +132,12 @@ def promote(request):
                 return JsonResponse(
                     {"s": 200, "m": "شما قبلا حساب خود را ارتقا داده اید."}
                 )
-        history = Protrader.get_history(trader=request.user)
+        history = ProTrader.get_history(trader=request.user)
         if len(history) < 28:
             return JsonResponse(
                 {"s": 200, "m": "سابقه شما در بایننس کمتر از ۳۰ روز است."}
             )
-        pro = Protrader(
+        pro = ProTrader(
             trader=request.user,
             brand=data["brand"],
             subscription=float(data["subscription"]),
@@ -163,12 +163,12 @@ def trader(request):
 
 def get_profile(request, pro_id):
     try:
-        pro = Protrader.objects.filter(id=pro_id).first()
+        pro = ProTrader.objects.filter(id=pro_id).first()
         if not pro:
             return JsonResponse({"s": 302, "href": "/social/copytrading"})
     except Exception:
         return JsonResponse({"s": 302, "href": "/social/copytrading"})
-    history = Protrader.get_records(trader=pro.trader)
+    history = ProTrader.get_records(trader=pro.trader)
     if not request.user:
         status = 0  # unknown
     else:

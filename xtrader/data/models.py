@@ -3,17 +3,17 @@ from django.utils import timezone
 
 
 class StockWatch(models.Model):
-    SymbolId = models.CharField(max_length=80)
-    InstrumentName = models.CharField(max_length=80)
-    InstrumentTitle = models.CharField(max_length=80)
-    InstrumentCode = models.CharField(max_length=80, blank=True, null=True)
-    InstrumentStateCode = models.CharField(
+    symbol_id = models.CharField(max_length=80)
+    instrument_name = models.CharField(max_length=80)
+    instrument_title = models.CharField(max_length=80)
+    instrument_code = models.CharField(max_length=80, blank=True, null=True)
+    instrument_state_code = models.CharField(
         max_length=50, blank=True, null=True
     )
-    InstrumentStateTitle = models.CharField(
+    instrument_state_title = models.CharField(
         max_length=50, blank=True, null=True
     )
-    BaseQuantity = models.BigIntegerField(blank=True, null=True)
+    base_quantity = models.BigIntegerField(blank=True, null=True)
 
     pd1 = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
@@ -46,116 +46,116 @@ class StockWatch(models.Model):
     zo3 = models.IntegerField(blank=True, null=True)
     qo3 = models.BigIntegerField(blank=True, null=True)
 
-    BuyGroupCount = models.IntegerField(blank=True, null=True)
-    BuyGroupVolume = models.BigIntegerField(blank=True, null=True)
-    BuyGroupVolumePercentage = models.FloatField(blank=True, null=True)
+    buy_group_count = models.IntegerField(blank=True, null=True)
+    buy_group_volume = models.BigIntegerField(blank=True, null=True)
+    buy_group_volume_percentage = models.FloatField(blank=True, null=True)
 
-    BuyFirmCount = models.IntegerField(blank=True, null=True)
-    BuyFirmVolume = models.BigIntegerField(blank=True, null=True)
-    BuyFirmVolumePercentage = models.FloatField(blank=True, null=True)
+    buy_firm_count = models.IntegerField(blank=True, null=True)
+    buy_firm_volume = models.BigIntegerField(blank=True, null=True)
+    buy_firm_volume_percentage = models.FloatField(blank=True, null=True)
 
-    BuyIndividualCount = models.IntegerField(blank=True, null=True)
-    BuyIndividualVolume = models.BigIntegerField(blank=True, null=True)
-    BuyIndividualVolumePercentage = models.FloatField(blank=True, null=True)
+    buy_individual_count = models.IntegerField(blank=True, null=True)
+    buy_individual_volume = models.BigIntegerField(blank=True, null=True)
+    buy_individual_volume_percentage = models.FloatField(blank=True, null=True)
 
-    SellFirmCount = models.IntegerField(blank=True, null=True)
-    SellFirmVolume = models.BigIntegerField(blank=True, null=True)
-    SellFirmVolumePercentage = models.FloatField(blank=True, null=True)
+    sell_firm_count = models.IntegerField(blank=True, null=True)
+    sell_firm_volume = models.BigIntegerField(blank=True, null=True)
+    sell_firm_volume_percentage = models.FloatField(blank=True, null=True)
 
-    SellIndividualCount = models.IntegerField(blank=True, null=True)
-    SellIndividualVolume = models.BigIntegerField(blank=True, null=True)
-    SellIndividualVolumePercentage = models.FloatField(blank=True, null=True)
+    sell_individual_count = models.IntegerField(blank=True, null=True)
+    sell_individual_volume = models.BigIntegerField(blank=True, null=True)
+    sell_individual_volume_percentage = models.FloatField(blank=True, null=True)
 
-    ClosingPrice = models.DecimalField(
+    closing_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    ClosingPriceVariation = models.DecimalField(
+    closing_price_variation = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    ClosingPriceVariationPercent = models.DecimalField(
+    closing_price_variation_percentage = models.DecimalField(
         max_digits=4, decimal_places=2, blank=True, null=True
     )
 
-    CompanyName = models.CharField(max_length=50, blank=True, null=True)
-    ExchangeName = models.CharField(max_length=50, blank=True, null=True)
-    ExchangeCode = models.CharField(max_length=50, blank=True, null=True)
+    company_name = models.CharField(max_length=50, blank=True, null=True)
+    exchange_name = models.CharField(max_length=50, blank=True, null=True)
+    exchange_code = models.CharField(max_length=50, blank=True, null=True)
 
     # TODO: change default value  to constant
-    LastTradeDate = models.DateField(
+    last_trade_data = models.DateField(
         default=timezone.now, blank=True, null=True
     )
 
-    FirstTradePrice = models.DecimalField(
+    first_trade_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    LastTradePrice = models.DecimalField(
+    last_trade_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
 
-    ReferencePrice = models.DecimalField(
+    reference_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    ReferencePriceVariation = models.DecimalField(
+    reference_price_variation = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    ReferencePriceVariationPercent = models.DecimalField(
+    reference_price_variation_percentage = models.DecimalField(
         max_digits=4, decimal_places=2, blank=True, null=True
     )
 
-    YearHighestTradePrice = models.DecimalField(
+    year_highest_trade_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    YearLowestTradePrice = models.DecimalField(
-        max_digits=7, decimal_places=1, blank=True, null=True
-    )
-
-    MinimumOrderQuantity = models.BigIntegerField(blank=True, null=True)
-    MaximumOrderQuantity = models.BigIntegerField(blank=True, null=True)
-
-    LowerPriceThreshold = models.DecimalField(
-        max_digits=7, decimal_places=1, blank=True, null=True
-    )
-    UpperPriceThreshold = models.DecimalField(
+    year_lowest_trade_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
 
-    LowestTradePrice = models.DecimalField(
+    minimum_order_quantity = models.BigIntegerField(blank=True, null=True)
+    maximum_order_quantity = models.BigIntegerField(blank=True, null=True)
+
+    lower_price_threshold = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    HighestTradePrice = models.DecimalField(
+    upper_price_threshold = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
 
-    PreviousDayPrice = models.DecimalField(
+    lowest_trade_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    TotalNumberOfSharesTraded = models.BigIntegerField(blank=True, null=True)
-    TotalNumberOfTrades = models.BigIntegerField(blank=True, null=True)
-    TotalTradeValue = models.BigIntegerField(blank=True, null=True)
-    Eps = models.IntegerField(blank=True, null=True)
-    PricePerEarningGroup = models.DecimalField(
+    highest_trade_price = models.DecimalField(
+        max_digits=7, decimal_places=1, blank=True, null=True
+    )
+
+    previous_day_price = models.DecimalField(
+        max_digits=7, decimal_places=1, blank=True, null=True
+    )
+    total_number_of_shares_traded = models.BigIntegerField(blank=True, null=True)
+    total_number_of_trades = models.BigIntegerField(blank=True, null=True)
+    total_trade_value = models.BigIntegerField(blank=True, null=True)
+    eps = models.IntegerField(blank=True, null=True)
+    price_per_earning_group = models.DecimalField(
         max_digits=4, decimal_places=2, blank=True, null=True
     )
-    PricePerEarning = models.DecimalField(
+    price_per_earning = models.DecimalField(
         max_digits=4, decimal_places=2, blank=True, null=True
     )
-    FreeFloatPercent = models.DecimalField(
+    free_float_percentage = models.DecimalField(
         max_digits=4, decimal_places=2, blank=True, null=True
     )
-    MonthAverageVolume = models.BigIntegerField(blank=True, null=True)
-    InstrumentMarketValue = models.BigIntegerField(blank=True, null=True)
-    NumberOfSharesOrBonds = models.BigIntegerField(blank=True, null=True)
+    month_average_volume = models.BigIntegerField(blank=True, null=True)
+    instrument_market_value = models.BigIntegerField(blank=True, null=True)
+    number_of_shares_or_bonds = models.BigIntegerField(blank=True, null=True)
 
     def __str__(self):
-        return self.SymbolId
+        return self.symbol_id
 
     def to_dict(self):
-        obj_dict = {"SymbolId": self.SymbolId}
+        obj_dict = {"symbol_id": self.symbol_id}
         return obj_dict
 
     def dict(self, keys, date):
         d = {}
-        if str(self.LastTradeDate) == date:
+        if str(self.last_trade_data) == date:
             for key in keys:
                 try:
                     d[key] = float(self.__getattribute__(key))
@@ -167,12 +167,12 @@ class StockWatch(models.Model):
 
     def as_json(self):
         return dict(
-            symbol_id=self.SymbolId,
-            kind=self.InstrumentStateTitle,
-            category=self.ExchangeName,
-            symbol_name=self.InstrumentName,
-            name=self.CompanyName,
-            description=self.CompanyName,
+            symbol_id=self.symbol_id,
+            kind=self.instrument_state_title,
+            category=self.exchange_name,
+            symbol_name=self.instrument_name,
+            name=self.company_name,
+            description=self.company_name,
             title="title",
         )
 
@@ -192,11 +192,11 @@ class StockWatch(models.Model):
 
 
 class BalanceSheet(models.Model):
-    StockWatch = models.ForeignKey(
+    stock_watch = models.ForeignKey(
         StockWatch, verbose_name="سهم ", on_delete=models.CASCADE
     )
-    SymbolId = models.CharField(max_length=80, null=True, blank=True)
-    InstrumentName = models.CharField(max_length=80)
+    symbol_id = models.CharField(max_length=80, null=True, blank=True)
+    instrument_name = models.CharField(max_length=80)
     cash = models.IntegerField(verbose_name="وجه نقد", null=True, blank=True)
     net_receivables = models.IntegerField(
         verbose_name="حساب های دریافتی", null=True, blank=True
@@ -258,11 +258,11 @@ class BalanceSheet(models.Model):
 
 
 class Income(models.Model):
-    StockWatch = models.ForeignKey(
+    stock_watch = models.ForeignKey(
         StockWatch, verbose_name="سهم ", on_delete=models.CASCADE
     )
-    SymbolId = models.CharField(max_length=80, null=True, blank=True)
-    InstrumentName = models.CharField(max_length=80)
+    symbol_id = models.CharField(max_length=80, null=True, blank=True)
+    instrument_name = models.CharField(max_length=80)
     total_income = models.IntegerField(
         verbose_name="فروش", null=True, blank=True
     )
@@ -298,11 +298,11 @@ class Income(models.Model):
 
 
 class Ratio(models.Model):
-    StockWatch = models.ForeignKey(
+    stock_watch = models.ForeignKey(
         StockWatch, verbose_name="سهم ", on_delete=models.CASCADE
     )
-    SymbolId = models.CharField(max_length=80, null=True, blank=True)
-    InstrumentName = models.CharField(max_length=80)
+    symbol_id = models.CharField(max_length=80, null=True, blank=True)
+    instrument_name = models.CharField(max_length=80)
     current_ratio = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -421,10 +421,10 @@ class Ratio(models.Model):
 
 
 class MarketWatch(models.Model):
-    stockWatch = models.ForeignKey(
+    stock_watch = models.ForeignKey(
         StockWatch, null=True, blank=True, on_delete=models.CASCADE
     )
-    balanceSheet = models.ForeignKey(
+    balance_sheet = models.ForeignKey(
         BalanceSheet, null=True, blank=True, on_delete=models.CASCADE
     )
     ratio = models.ForeignKey(
@@ -435,10 +435,16 @@ class MarketWatch(models.Model):
     )
 
     def get_instrument_name(self):
-        return self.stockWatch.InstrumentName
+        if self.stock_watch is None:
+            raise ValueError("stock_watch is None")
+        return self.stock_watch.instrument_name
 
-    def get_SymbolId(self):
-        return self.stockWatch.SymbolId
+    def get_symbol_id(self):
+        if self.stock_watch is None:
+            raise ValueError("stock_watch is None")
+        return self.stock_watch.symbol_id
 
-    def get_CompanyName(self):
-        return self.stockWatch.CompanyName
+    def get_company_name(self):
+        if self.stock_watch is None:
+            raise ValueError("stock_watch is None")
+        return self.stock_watch.company_name

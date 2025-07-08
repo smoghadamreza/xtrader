@@ -47,9 +47,9 @@ class ratio_admin(admin.ModelAdmin):
 
 class marketwatch_admin(admin.ModelAdmin):
     list_display = (
-        "get_CompanyName",
+        "get_company_name",
         "get_instrument_name",
-        "get_SymbolId",
+        "get_symbol_id",
     )
 
 

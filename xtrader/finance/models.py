@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -28,7 +30,7 @@ class WatchlistSymbol(models.Model):
             return []
         if watchlist_id == 0:
             symbols = StockWatch.objects.all()
-            result = [symbol.SymbolId for symbol in symbols]
+            result = [symbol.symbol_id for symbol in symbols]
         else:
             result = [
                 symbol.symbol
@@ -59,26 +61,26 @@ class Strategy(models.Model):
     )
 
     def loads(self):
-        strategy_dict = dict(
-            filters=[],
-            interval=self.interval,
-            symbols=self.get_strategy_watchlist_symbols(),
-            # TODO: include backtest config
-        )
-        for filter in eval(self.filters):
-            strategy_dict["filters"].append(eval(filter))
+        strategy_dict: dict[str, Any] = {
+            "filters": [],  # Now guaranteed to be List[str]
+            "interval": self.interval,
+            "symbols": self.get_strategy_watchlist_symbols(),
+        }
+
+        temp_filters = strategy_dict["filters"]
+        for filter_expr in eval(self.filters):
+            temp_filters.append(eval(filter_expr))
         return strategy_dict
 
     def get_strategy_watchlist_symbols(self):
         watchlist_id = self.get_strategy_watchlist_id()
         return WatchlistSymbol.get_symbols(watchlist_id=watchlist_id)
 
-    def get_strategy_watchlist_id(self):
-        try:
-            watchlist_id = self.watchlist.id
-        except Exception:
-            watchlist_id = 0
-        return watchlist_id
+    def get_strategy_watchlist_id(self) -> int:
+        """Returns the watchlist's primary key or 0 if unavailable."""
+        if self.watch_list is not None:
+            return self.watch_list.pk
+        return 0
 
 
 class Exchange(models.Model):
@@ -87,8 +89,8 @@ class Exchange(models.Model):
     )
     name = models.CharField(max_length=80, default="myExchange")
     exchange = models.CharField(max_length=80, default="BINANCE")
-    public = models.CharField(max_length=500, null=True, blank=True)
-    private = models.CharField(max_length=500, null=True, blank=True)
+    public = models.CharField(max_length=500, null=False, blank=False)
+    private = models.CharField(max_length=500, null=False, blank=False)
 
 
 class TradingView(models.Model):

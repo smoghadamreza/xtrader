@@ -11,14 +11,14 @@ from finance import oms
 from sales.models import Payment
 
 
-class Protrader(models.Model):
+class ProTrader(models.Model):
     trader = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.CASCADE
     )
     page_url = models.CharField(max_length=80, null=True, blank=True)
     page_kind = models.CharField(max_length=50, null=True, blank=True)
-    brand = models.CharField(max_length=12, null=True, blank=True)
-    subscription = models.FloatField(default=0, null=True, blank=True)
+    brand = models.CharField(max_length=12, null=False, blank=True)
+    subscription = models.FloatField(default=0, null=False, blank=True)
 
     age = models.IntegerField(null=True, blank=True)
     nav = models.IntegerField(null=True, blank=True)
@@ -41,21 +41,29 @@ class Protrader(models.Model):
     def get_history(trader):
         from finance.oms import OMSManager
 
-        ex_obj, ex = OMSManager.get_exchange(None, trader=trader)
-        return ex.get_historical_nav(ex_obj.public, ex_obj.private)
+        exchange, exchange_class = OMSManager.get_exchange(None, trader=trader)
+        if exchange_class is None:
+            raise ValueError("exchange_class cannot be None")
+        if exchange is None:
+            raise ValueError("exchange cannot be None")
+        return exchange_class.get_historical_nav(exchange.public, exchange.private)
 
     @staticmethod
     def get_records(trader):
         from finance.oms import OMSManager
 
-        ex_obj, ex = OMSManager.get_exchange(None, trader=trader)
-        history = ex.get_historical_nav(ex_obj.public, ex_obj.private)
+        exchange, exchange_class = OMSManager.get_exchange(None, trader=trader)
+        if exchange_class is None:
+            raise ValueError("exchange_class cannot be None")
+        if exchange is None:
+            raise ValueError("exchange cannot be None")
+        history =  exchange_class.get_historical_nav(exchange.public, exchange.private)
         records = {
             record["updateTime"]: float(record["data"]["totalAssetOfBtc"])
             for record in history
         }
         params = {"symbol": "BTCUSDT", "interval": "1d", "limit": 50}
-        candles = ex.get_candles(params)
+        candles = exchange_class.get_candles(params)
         h = []
         btc = []
         for candle in candles:
@@ -68,12 +76,12 @@ class Protrader(models.Model):
 
     @staticmethod
     def get_all(protrader_id=0):
-        pros = Protrader.objects.filter(status="ACTIVE")
+        pros = ProTrader.objects.filter(status="ACTIVE")
         result = []
         for pro in pros:
             result.append(
                 {
-                    "id": pro.id,
+                    "id": pro.pk,
                     "name": pro.brand,
                     "pageKind": pro.page_kind,
                     "link": pro.page_url,
@@ -103,23 +111,25 @@ class Protrader(models.Model):
 
 
 class Follow(models.Model):
-    proTrader = models.ForeignKey(
-        Protrader, null=True, blank=True, on_delete=models.CASCADE
+    pro_trader = models.ForeignKey(
+        ProTrader, null=False, blank=True, on_delete=models.CASCADE
     )
     follower = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.CASCADE
     )
-    expiry = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    expiry = models.DateTimeField(null=False, blank=False)
 
     def subscribe(self, period=32):
         self.expiry += timedelta(days=period)
         follower_wallet = Wallet.objects.filter(user=self.follower).first()
-        fee = self.proTrader.subscription
+        if follower_wallet is None:
+            raise ValueError("user Wallet was not found")
+        fee = self.pro_trader.subscription
         if not follower_wallet or follower_wallet.balance < fee:
             return False
-        Wallet.get_wallet(self.proTrader.trader)
+        Wallet.get_wallet(self.pro_trader.trader)
         trader_wallet = Wallet.objects.filter(
-            user=self.proTrader.trader
+            user=self.pro_trader.trader
         ).first()
         if not trader_wallet:
             return False
@@ -131,7 +141,7 @@ class Follow(models.Model):
             wallet=follower_wallet,
             amount=site_fee,
             action="income",
-            reason=self.proTrader.brand,
+            reason=self.pro_trader.brand,
             pay2ref=True,
             txid=txid,
         )
@@ -139,7 +149,7 @@ class Follow(models.Model):
             wallet=follower_wallet,
             amount=trader_fee,
             action="pay",
-            reason=self.proTrader.brand,
+            reason=self.pro_trader.brand,
             pay2ref=False,
             txid=txid,
         )
@@ -147,7 +157,7 @@ class Follow(models.Model):
             wallet=trader_wallet,
             amount=trader_fee,
             action="receive",
-            reason="copyTrading-" + str(follower_wallet.id),
+            reason="copyTrading-" + str(follower_wallet.pk),
             pay2ref=False,
             txid=txid,
         )
@@ -155,7 +165,7 @@ class Follow(models.Model):
 
     @staticmethod
     def copytrade(user, brand, action):
-        if Protrader.objects.filter(trader=user).first():
+        if ProTrader.objects.filter(trader=user).first():
             action = -1
         following = Follow.objects.filter(
             proTrader__brand=brand, follower=user
@@ -168,7 +178,7 @@ class Follow(models.Model):
                         "msg": "شما تریدر دیگری را دنبال می‌کنید",
                     }
                 else:
-                    protrader = Protrader.objects.filter(
+                    protrader = ProTrader.objects.filter(
                         brand=brand, status="ACTIVE"
                     ).first()
                     if protrader:
@@ -206,7 +216,7 @@ class Follow(models.Model):
 
 
 class TraderHistory(models.Model):
-    trader = models.ForeignKey(Protrader, on_delete=models.CASCADE)
+    trader = models.ForeignKey(ProTrader, on_delete=models.CASCADE)
     record_time = models.IntegerField(default=0, null=True, blank=True)
     btc = models.FloatField(default=0, null=True, blank=True)
     nav = models.FloatField(default=0, null=True, blank=True)

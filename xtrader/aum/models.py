@@ -7,20 +7,21 @@ from django.db import connections, models
 from django.utils import timezone
 
 from finance import oms
+from finance.models import Exchange
 
 
 class Fund(models.Model):
     manager = models.ForeignKey(
-        User, null=True, blank=True, on_delete=models.CASCADE
+        User, null=False, blank=False, on_delete=models.CASCADE
     )
-    issue_fee = models.FloatField(default=0.01, blank=True, null=True)
-    redeem_fee = models.FloatField(default=0.01, blank=True, null=True)
-    fee = models.FloatField(default=0, blank=True, null=True)
-    aum = models.FloatField(default=0, blank=True, null=True)
+    issue_fee = models.FloatField(default=0.01, blank=True, null=False)
+    redeem_fee = models.FloatField(default=0.01, blank=True, null=False)
+    fee = models.FloatField(default=0, blank=True, null=False)
+    aum = models.FloatField(default=0, blank=True, null=False)
     last_update = models.FloatField(default=0, blank=True, null=True)
-    brand = models.CharField(max_length=80, default="", blank=True, null=True)
-    deposit = models.FloatField(default=0, blank=True, null=True)
-    withdraw = models.FloatField(default=0, blank=True, null=True)
+    brand = models.CharField(max_length=80, default="", blank=True, null=False)
+    deposit = models.FloatField(default=0, blank=True, null=False)
+    withdraw = models.FloatField(default=0, blank=True, null=False)
 
     def __str__(self):
         return self.brand
@@ -35,10 +36,12 @@ class Fund(models.Model):
         return result
 
     def get_assets(self):
-        ex_obj, ex = oms.OMSManager.get_exchange(
+        exchange, exchange_class = oms.OMSManager.get_exchange(
             request=None, trader=self.manager
         )
-        return ex.get_portfolio(ex_obj)
+        if exchange_class is None:
+            raise ValueError("Exchange class cannot be None")
+        return exchange_class.get_portfolio(exchange)
 
     def get_cash(self, assets=None):
         if not assets:
@@ -76,23 +79,26 @@ class Fund(models.Model):
         return result
 
     def get_transactions(self):
-        ex_obj, ex = oms.OMSManager.get_exchange(
+        exchange, _ = oms.OMSManager.get_exchange(
             request=None, trader=self.manager
         )
+
+        if exchange is None:
+            raise ValueError("Exchange not found") 
 
         d = []
         deposits = (
             d
             + oms.Binance.get_deposits(
                 params={"asset": "USDT"},
-                public=ex_obj.public,
-                private=ex_obj.private,
+                public=exchange.public,
+                private=exchange.private,
             )["depositList"]
         )
         withdraws = oms.Binance.get_withdraws(
             params={"asset": "USDT"},
-            public=ex_obj.public,
-            private=ex_obj.private,
+            public=exchange.public,
+            private=exchange.private,
         )["withdrawList"]
         trxs = {}
         for deposit in deposits:
@@ -267,6 +273,10 @@ class Fund(models.Model):
             .values("age", "insert_date")
             .first()
         )
+
+        if snapshot is None:
+            raise ValueError("FundUnitSnapshot not found")
+
         insert_date = timezone.datetime.today()
         if str(snapshot["insert_date"]) == str(insert_date.date()):
             print("snapshot exists!")
@@ -342,15 +352,14 @@ class Fund(models.Model):
             params={"symbol": "BTCUSDT", "interval": "1d", "limit": 500},
         ).json()
         btc_prices = [float(c[4]) for c in btc_candles[-len(result) - 2 : -1]]
-        for idx, price in enumerate(btc_prices):
-            if idx == 0:
+        try:
+            p_price = btc_prices[0]  # Initialize with first price
+            for idx, price in enumerate(btc_prices[1:], start=1):  # Skip first element
+                result[idx - 1]["btc"] = price
+                result[idx - 1]["btcReturn"] = 100 * round((price / p_price) - 1, 3)
                 p_price = price
-                continue
-            result[idx - 1]["btc"] = price
-            result[idx - 1]["btcReturn"] = 100 * round(
-                (price / p_price) - 1, 3
-            )
-            p_price = price
+        except IndexError:
+            raise ValueError("btc_prices cannot be empty")
         if mode == "btc":
             return [
                 [int(1000 * time.mktime(r["date"].timetuple())), r["btc"]]
@@ -368,10 +377,10 @@ class FundInvestor(models.Model):
         max_length=20, default="", blank=True, null=True
     )
     first_name = models.CharField(
-        max_length=20, default="", blank=True, null=True
+        max_length=20, default="", blank=True, null=False
     )
     last_name = models.CharField(
-        max_length=20, default="", blank=True, null=True
+        max_length=20, default="", blank=True, null=False
     )
     note = models.CharField(max_length=20, default="", blank=True, null=True)
     units = models.FloatField(default=0, blank=True, null=True)

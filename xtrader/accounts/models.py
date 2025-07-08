@@ -129,13 +129,13 @@ class Profile(UserenaBaseProfile):
 
 class Wallet(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    balance = models.FloatField(default=0, null=True, blank=True)
+    balance = models.FloatField(default=0, null=False, blank=False)
     income = models.FloatField(default=0, null=True, blank=True)
     address = models.CharField(
         max_length=80, default="", null=True, blank=True
     )
     nonce = models.CharField(max_length=40, default="", null=True, blank=True)
-    last_change = models.IntegerField(default=time.time, null=True, blank=True)
+    last_change = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.username
@@ -151,7 +151,7 @@ class Wallet(models.Model):
         if wallet:
             balance = wallet.balance
             income = wallet.income
-            if int(time.time()) - wallet.last_change > 70 * 24 * 60 * 60:
+            if wallet._should_regenerate_address:
                 address = wallet.create_address()
             else:
                 address = wallet.address
@@ -182,7 +182,6 @@ class Wallet(models.Model):
         ).json()
         if "status" in response and response["status"] == "success":
             self.address = response["address_in"]
-            self.last_change = time.time()
             self.save()
             return self.address
         else:
@@ -216,6 +215,11 @@ class Wallet(models.Model):
             }
             Deposit.create(nonce=self.nonce, params=params, wallet=self)
         return new_deposit
+    
+    @property
+    def _should_regenerate_address(self) -> bool:
+        """Check if address is older than 70 days."""
+        return (timezone.now() - self.last_change).days > 70
 
 
 class Deposit(models.Model):
@@ -241,7 +245,7 @@ class Deposit(models.Model):
     network = models.CharField(
         max_length=10, default="", null=True, blank=True
     )
-    tx_time = models.IntegerField(default=time.time, null=True, blank=True)
+    tx_time = models.DateTimeField(auto_now=True)
 
     @classmethod
     def create(cls, nonce, params, wallet=None):
@@ -272,7 +276,6 @@ class Deposit(models.Model):
         deposit.save()
         if wallet:
             wallet.balance += amount
-            wallet.last_change = time.time()
             wallet.save()
         return True
 
@@ -287,10 +290,9 @@ class Deposit(models.Model):
                     "txid": deposit.txid_in,
                     "action": "واریز",
                     "coin": "تتر (trc20)",
-                    "time": str(
-                        timezone.datetime.fromtimestamp(deposit.tx_time)
+                    "time": str(deposit.tx_time,
                     ).replace("T", " "),
-                    "id": deposit.id,
+                    "id": deposit.pk,
                 }
             )
         return result

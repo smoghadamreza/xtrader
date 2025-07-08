@@ -24,7 +24,7 @@ class Package(models.Model):
 
     def info(self):
         pack = {
-            "id": self.id,
+            "id": self.pk,
             "category": self.category,
             "price": self.price,
             "monthPrice": self.month_price,
@@ -39,10 +39,10 @@ class Package(models.Model):
 
 class Subscription(models.Model):
     package = models.ForeignKey(
-        Package, on_delete=models.CASCADE, null=True, blank=True
+        Package, on_delete=models.CASCADE, null=False, blank=True
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, blank=True
+        User, on_delete=models.CASCADE, null=False, blank=True
     )
     expiry = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
