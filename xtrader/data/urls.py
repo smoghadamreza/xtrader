@@ -1,6 +1,6 @@
 from django.urls import re_path
 
-from data import views
+import data.views as views
 
 urlpatterns = [
     re_path(r"^symbols", views.get_symbols, name="get_symbols"),

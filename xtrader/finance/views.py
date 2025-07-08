@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import transaction
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
@@ -104,12 +104,14 @@ def get_watch_lists(request):
 
 
 @login_required(login_url="accounts:userena_signin")
-def update_symbol2watchlist(request):
+def update_symbol2watchlist(request: HttpRequest) -> JsonResponse:
     if not request.method == "GET":
         return JsonResponse({}, status=403)
+
     user = request.user
     if not user:
         return JsonResponse({"m": "login required", "s": 403})
+
     watchlist_id = request.GET.get("watchListId", "")
     symbol = request.GET.get("symbol", "BTCUSDT")
     action = request.GET.get("action", "add")
@@ -266,8 +268,7 @@ def back_test(request):
             name, res, data["config"], interval=interval
         )
         return JsonResponse(result, safe=False)
-    else:
-        return Http404("this is not a GET!")
+    raise Http404("this view only supports GET requests")
 
 
 def about_us(request):

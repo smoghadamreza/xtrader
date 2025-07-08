@@ -24,7 +24,6 @@ urlpatterns = [
     ),
     re_path(r"^getDeposits/$", userena_views.get_deposits, name="getDeposits"),
     re_path(r"^signup/$", userena_views.signupsample, name="userena_signup"),
-    re_path(r"^settings/$", userena_views.settings, name="settings"),
     re_path(r"^signup/$", userena_views.signup, name="userena_signup"),
     re_path(r"^signin/$", userena_views.signin, name="userena_signin"),
     re_path(

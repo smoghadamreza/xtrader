@@ -4,7 +4,7 @@ from social import views
 
 urlpatterns = [
     re_path(r"^exchange", views.exchange, name="saveExchange"),
-    re_path(r"^protraders", views.protraders, name="protraders"),
+    re_path(r"^protraders", views.pro_traders, name="protraders"),
     re_path(r"^copytrading", views.copytrading, name="copytrading"),
     re_path(r"^copytrade", views.follow_unfollow, name="copytrade"),
     re_path(r"^copyorder", views.copy_order, name="copyorder"),

@@ -72,19 +72,20 @@ class Profile(UserenaBaseProfile):
         chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
         return "".join(random.choice(chars) for _ in range(size))
 
-    def get_code(self):
+    def get_code(self) -> str:
         t = int(time.time())
         if (
-            self.telegram_activation_timestamp
-            and self.telegram_activation_timestamp > t
+            self.telegram_activation_code and 
+            self.telegram_activation_timestamp and
+            self.telegram_activation_timestamp > t
         ):
             return self.telegram_activation_code
-        else:
-            code = Profile.code_generator()
-            self.telegram_activation_timestamp = t + (5 * 60)
-            self.telegram_activation_code = code
-            self.save()
-            return code
+
+        code = Profile.code_generator()
+        self.telegram_activation_timestamp = t + (5 * 60)
+        self.telegram_activation_code = code
+        self.save()
+        return code
 
     def last_login(self):
         return self.user.last_login

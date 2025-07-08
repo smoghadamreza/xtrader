@@ -16,7 +16,7 @@ from social.models import Follow, ProTrader
 
 
 @csrf_exempt
-def protraders(request):
+def pro_traders(request):
     if request.method == "POST":
         data = request.body.decode()
         try:
@@ -41,6 +41,11 @@ def protraders(request):
         follow = Follow.objects.filter(follower=request.user).first()
         protrader_id = follow.pro_trader.pk if follow else 0
         return JsonResponse({"data": ProTrader.get_all(protrader_id)})
+
+    return JsonResponse(
+            {"e": "Method not allowed."},
+            status=405
+        )
 
 
 @csrf_exempt

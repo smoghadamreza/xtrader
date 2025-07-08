@@ -3,6 +3,7 @@ import threading
 import urllib.parse as urlparse
 import warnings
 from urllib.parse import parse_qs
+from typing import cast
 
 from django.contrib import messages
 from django.contrib.auth import (
@@ -27,8 +28,12 @@ from guardian.decorators import permission_required_or_403
 from userena import settings as userena_settings
 from userena import signals as userena_signals
 from userena.decorators import secure_required
-from userena.models import UserenaSignup
+from userena.models import (
+    UserenaSignup, UserenaBaseProfileManager, UserenaManager,
+    UserenaBaseProfile
+)
 from userena.utils import get_profile_model, get_user_profile, signin_redirect
+
 
 from accounts.forms import (
     AuthenticationForm,
@@ -93,9 +98,11 @@ class ProfileListView(ListView):
 
     def get_queryset(self):
         profile_model = get_profile_model()
-        queryset = profile_model.objects.get_visible_profiles(
-            self.request.user
-        ).select_related()
+        userena_profile_manager = cast(
+            UserenaBaseProfileManager, profile_model.objects
+        )
+        queryset = userena_profile_manager.get_visible_profiles(
+            self.request.user).select_related()
         return queryset
 
 
@@ -243,11 +250,12 @@ def activate(
         context. Default to an empty dictionary.
     """
     try:
+        userena_manager = cast(UserenaManager, UserenaSignup.objects)
         if (
-            not UserenaSignup.objects.check_expired_activation(activation_key)
+            not userena_manager.check_expired_activation(activation_key)
             or not userena_settings.USERENA_ACTIVATION_RETRY
         ):
-            user = UserenaSignup.objects.activate_user(activation_key)
+            user = userena_manager.activate_user(activation_key)
             if user:
                 # Sign the user in.
                 auth_user = authenticate(
@@ -316,7 +324,8 @@ def activate_pending(
     # user is now not active, it is safe to assume that the user was
     # actually disabled after completion of activation.  In that
     # case, we will redirect to ``userena_disabled``.
-    if user.userena_signup.activation_completed:
+    signup: UserenaSignup = getattr(user, "userena_signup")
+    if signup.activation_completed:
         return redirect(
             reverse("userena_disabled", kwargs={"username": user.username})
         )
@@ -359,8 +368,9 @@ def activate_retry(
     if not userena_settings.USERENA_ACTIVATION_RETRY:
         return redirect(reverse("userena_activate", args=(activation_key,)))
     try:
-        if UserenaSignup.objects.check_expired_activation(activation_key):
-            new_key = UserenaSignup.objects.reissue_activation(activation_key)
+        userena_manager = cast(UserenaManager, UserenaSignup.objects)
+        if userena_manager.check_expired_activation(activation_key):
+            new_key = userena_manager.reissue_activation(activation_key)
             if new_key:
                 if not extra_context:
                     extra_context = dict()
@@ -406,7 +416,8 @@ def email_confirm(
         Dictionary of variables that are passed on to the template supplied by
         ``template_name``.
     """
-    user = UserenaSignup.objects.confirm_email(confirmation_key)
+    userena_manager = cast(UserenaManager, UserenaSignup.objects)
+    user = userena_manager.confirm_email(confirmation_key)
     if user:
         if userena_settings.USERENA_USE_MESSAGES:
             messages.success(
@@ -576,6 +587,8 @@ def landing(
             user = authenticate(
                 identification=identification, password=password
             )
+            if not user:
+                raise ValueError("user can not be None")
             if user.is_active:
                 login(request, user)
                 if remember_me:
@@ -697,6 +710,8 @@ def signin(
             user = authenticate(
                 identification=identification, password=password
             )
+            if user is None:
+                raise ValueError("user can not be None")
             if user.is_active:
                 login(request, user)
                 if remember_me:
@@ -729,7 +744,8 @@ def signin(
                 # activation process, show the 'Account disabled'
                 # page.  Otherwise, show the 'Activation pending'
                 # page to encourage activation.
-                if user.userena_signup.activation_completed:
+                signup: UserenaSignup = getattr(user, "userena_signup")
+                if signup.activation_completed:
                     return redirect(
                         reverse(
                             "userena_disabled",
@@ -1073,7 +1089,7 @@ def profile_detail(
         Instance of the currently viewed ``Profile``.
     """
     user = get_object_or_404(get_user_model(), username__iexact=username)
-    profile = get_user_profile(user=user)
+    profile = cast(UserenaBaseProfile, get_user_profile(user=user))
     if not profile.can_view_profile(request.user):
         raise PermissionDenied
     if not extra_context:
@@ -1148,7 +1164,8 @@ def profile_list(
         raise Http404
 
     profile_model = get_profile_model()
-    queryset = profile_model.objects.get_visible_profiles(request.user)
+    userena_profile_manager = cast(UserenaBaseProfileManager, profile_model.objects)
+    queryset = userena_profile_manager.get_visible_profiles(request.user)
 
     if not extra_context:
         extra_context = dict()
@@ -1355,7 +1372,7 @@ def account_status(request):
     following = Follow.objects.filter(follower=user).first()
     if following:
         status["following"] = True
-        status["protrader"] = following.proTrader.brand
+        status["protrader"] = following.pro_trader.brand
     if Exchange.objects.filter(trader=user).first():
         status["exchange"] = True
     profile = Profile.objects.filter(user=user).first()
