@@ -53,7 +53,7 @@ class Strategy(models.Model):
     name = models.CharField(max_length=80, default=" استراتژی من ")
     filters = models.TextField()
     config = models.CharField(max_length=500, null=True, blank=True)
-    watch_list = models.ForeignKey(
+    watchlist = models.ForeignKey(
         Watchlist, null=True, blank=True, on_delete=models.CASCADE
     )
     interval = models.CharField(
@@ -78,8 +78,8 @@ class Strategy(models.Model):
 
     def get_strategy_watchlist_id(self) -> int:
         """Returns the watchlist's primary key or 0 if unavailable."""
-        if self.watch_list is not None:
-            return self.watch_list.pk
+        if self.watchlist is not None:
+            return self.watchlist.pk
         return 0
 
 

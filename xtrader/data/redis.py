@@ -1,5 +1,6 @@
 import json
 import time
+from typing import cast, List
 
 import redis
 import requests
@@ -11,7 +12,7 @@ intervals = settings.INTERVALS
 
 
 def hgetall(name):
-    result = r.hgetall(name)
+    result = cast(List[bytes], r.hgetall(name))
     if result:
         return [res.decode() for res in result]
     return []
@@ -22,7 +23,7 @@ def set(name, value):
 
 
 def get(name):
-    return r.get(name=name).decode()
+    return cast(bytes, r.get(name=name)).decode()
 
 
 def hset(name, key, value):
@@ -30,9 +31,10 @@ def hset(name, key, value):
 
 
 def hget(name, key):
-    value = r.hget(name=name, key=key)
+    value = cast(bytes, r.hget(name=name, key=key))
     if value is None:
         return {}
+    
     return json.loads(value.decode())
 
 

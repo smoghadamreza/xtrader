@@ -3,6 +3,7 @@ import json
 import threading
 import time
 from datetime import datetime
+from typing import cast
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -34,13 +35,12 @@ def calculate_indicators(request, interval):
 
 @login_required(login_url="accounts:userena_signin")
 @csrf_exempt
-def add_new_watch_list(request):
+def add_new_watchlist(request):
     if not request.method == "POST":
         return JsonResponse({}, status=403)
-    if (
-        strategy.get_watchlist_counts(request.user) + 1
-        > strategy.get_pack_limit(request.user)["watchlist"]
-    ):
+    watchlist_limit = cast(int, strategy.get_pack_limit(request.user).get("watchlist", 0))
+    watchlist_count = strategy.get_watchlist_counts(request.user)
+    if (watchlist_count >= watchlist_limit):
         return JsonResponse(
             {
                 "redirect": "/profile/setup/?s=packages",
@@ -58,11 +58,11 @@ def add_new_watch_list(request):
         return JsonResponse({"m": "نام واچ‌لیست تکراری است", "s": 403})
     watchlist = Watchlist(user=user, name=watchlist_name)
     watchlist.save()
-    return JsonResponse({"id": watchlist.id, "s": 200})
+    return JsonResponse({"id": watchlist.pk, "s": 200})
 
 
 @login_required(login_url="accounts:userena_signin")
-def get_watch_lists(request):
+def get_watchlists(request):
     if not request.method == "GET":
         return JsonResponse({}, status=403)
     user = request.user
@@ -75,7 +75,7 @@ def get_watch_lists(request):
         for watchlist in watchlists:
             result.append(
                 {
-                    "id": watchlist.id,
+                    "id": watchlist.pk,
                     "name": watchlist.name,
                 }
             )
@@ -142,6 +142,8 @@ def update_symbol2watchlist(request: HttpRequest) -> JsonResponse:
         ).delete()
         return JsonResponse({"m": "نماد از واچ لیست حذف شد.", "s": 200})
 
+    return JsonResponse({"m": "Invalid action", "s": 400})
+
 
 @csrf_exempt
 def save_strategy(request):
@@ -193,12 +195,12 @@ def market_watch(request):
     profile = Profile.objects.get(
         user=User.objects.get_by_natural_key(request.user)
     )
-    if profile.expire >= datetime.today().date():
+    if not profile.expire or profile.expire >= datetime.today().date():
         return render(
             request, "payment.html", {"subscribes": 0, **get_user(request)}
         )
-    else:
-        return render(request, "marketwatch.html", get_user(request))
+
+    return render(request, "marketwatch.html", get_user(request))
 
 
 @login_required(login_url="accounts:userena_signin")
@@ -216,7 +218,7 @@ def getfilters(request):
 
 def filtermarket(request):
     filters = json.loads(request.GET["filters"])
-    from data import dates as d
+    import data.dates as d
 
     last = d.Check().last_market()
     from data.models import MarketWatch
@@ -280,7 +282,7 @@ def index(request):
     referral_code = request.GET.get("ref", "")
     referred_by = Profile.objects.filter(referral_code=referral_code).first()
     if referral_code and referred_by:
-        request.session["ref_id"] = referred_by.id
+        request.session["ref_id"] = referred_by.pk
     return render(request, "newindex.html")
 
 
@@ -340,9 +342,11 @@ def ssl(request):
 def trade(request):
     data = request.POST["order"]
     order = json.loads(data)
-    ex_obj, ex = oms.OMSManager.get_exchange(request)
-    if ex_obj:
-        result = ex.send_order(ex_obj, order)
+    exchange, exchange_class = oms.OMSManager.get_exchange(request)
+    if exchange_class is None:
+        raise ValueError("exchange_class cannot be None")
+    if exchange:
+        result = exchange_class.send_order(exchange, order)
         return JsonResponse(result)
     else:
         return JsonResponse(
@@ -351,35 +355,43 @@ def trade(request):
 
 
 def portfo(request):
-    ex_obj, ex = oms.OMSManager.get_exchange(request)
-    if ex_obj:
-        assets = ex.get_portfolio(ex_obj)
+    exchange, exchange_class = oms.OMSManager.get_exchange(request)
+    if exchange_class is None:
+        raise ValueError("exchange_class cannot be None")
+    if exchange:
+        assets = exchange_class.get_portfolio(exchange)
         return JsonResponse({"assets": assets})
     else:
         return JsonResponse({"msg": "NoExchange"}, status=403)
 
 
 def get_orders(request):
-    ex_obj, ex = oms.OMSManager.get_exchange(request)
-    if ex_obj:
+    exchange, exchange_class = oms.OMSManager.get_exchange(request)
+    if exchange_class is None:
+        raise ValueError("exchange_class cannot be None")
+    if exchange:
         symbol = request.GET["symbol"]
-        orders = ex.get_orders(ex_obj, symbol)
+        orders = exchange_class.get_orders(exchange, symbol)
         return JsonResponse({"orders": orders})
     else:
         return JsonResponse({"msg": "NoExchange"}, status=403)
 
 
 def account_status(request):
-    ex_obj, ex = oms.OMSManager.get_exchange(request)
-    balance = ex.get_balance(ex_obj)
-    account = {"BuyingPower": balance["BuyingPower"]}
+    exchange, exchange_class = oms.OMSManager.get_exchange(request)
+    if exchange_class is None:
+        raise ValueError("exchange_class cannot be None")
+    balance = exchange_class.get_balance(exchange)
+    account = {"buying_power": balance.get("buying_power", None)}
     return JsonResponse(account)
 
 
 def cancelOrder(request):
-    ex_obj, ex = oms.OMSManager.get_exchange(request)
-    result = ex.cancel_order(
-        ex_obj, symbol=request.GET["symbol"], order_id=request.GET["OrderId"]
+    exchange, exchange_class = oms.OMSManager.get_exchange(request)
+    if exchange_class is None:
+        raise ValueError("exchange_class cannot be None")
+    result = exchange_class.cancel_order(
+        exchange, symbol=request.GET["symbol"], order_id=request.GET["OrderId"]
     )
     if result is None:
         return HttpResponse("e", status=400)
@@ -509,10 +521,10 @@ def tradingview_trade(request, token):
             return JsonResponse({"msg": "invalid webhook"})
         order_result = ""
         if tw.trading:
-            ex_obj, ex = oms.OMSManager.get_exchange(
+            exchange, exchange_class = oms.OMSManager.get_exchange(
                 request=None, trader=tw.trader
             )
-            if ex_obj:
+            if exchange and exchange_class:
                 try:
                     params = msg.split(" ")
                     exchange = params[0].upper()
@@ -530,7 +542,7 @@ def tradingview_trade(request, token):
                         if "n" in volume_text:
                             quantity = 0
                         else:
-                            assets = ex.get_portfolio(ex_obj)
+                            assets = exchange_class.get_portfolio(exchange)
                             ratio = float(volume_text.replace("%", ""))
                             symbol_info = oms.Binance.get_symbol_info(
                                 symbol=symbol
@@ -569,7 +581,7 @@ def tradingview_trade(request, token):
                         order["price"] = float(price)
                         order["type"] = "LIMIT"
                     if not order_result:
-                        result = ex.send_order(ex_obj, order)
+                        result = exchange_class.send_order(exchange, order)
                         if result["error"]:
                             order_result = result["msg"]
                         else:
@@ -585,7 +597,7 @@ def tradingview_trade(request, token):
             if profile:
                 telegram_id = profile.telegram_id
                 if order_result:
-                    msg += "\n" + order_result
+                    msg += "\n" + str(order_result)
                 telegram_result = notification.send_telegram_message(
                     msg, telegram_id
                 )

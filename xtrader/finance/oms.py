@@ -198,9 +198,11 @@ class Binance:
             + Binance.sign(params=order, private=ex.private),
             headers=Binance.get_header(ex.public),
         ).json()
-        result = {"error": True}
+        result: dict[str, bool | str] = {"error": True}
         if "msg" not in response:
             result["error"] = False
+        
+        
         elif response["code"] == -2010:
             result["msg"] = "موجودی حساب کافی نیست"
         elif response["code"] == -1013:
@@ -245,11 +247,11 @@ class Binance:
         return response.json()
 
     @staticmethod
-    def get_balance(ex):
+    def get_balance(ex) -> dict:
         assets = Binance.get_portfolio(ex)
         if assets is None:
-            return None
-        return {"BuyingPower": 2000}
+            return {"buying_power": 0}
+        return {"buying_power": 2000}
 
     @staticmethod
     def get_portfolio(ex):

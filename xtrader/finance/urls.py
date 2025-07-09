@@ -22,9 +22,9 @@ urlpatterns = [
         name="updateSymbol2Watchlist",
     ),
     re_path(
-        r"^addNewWatchList", views.add_new_watch_list, name="addNewWatchList"
+        r"^addNewWatchList", views.add_new_watchlist, name="addNewWatchList"
     ),
-    re_path(r"^getWatchLists", views.get_watch_lists, name="getWatchLists"),
+    re_path(r"^getWatchLists", views.get_watchlists, name="getWatchLists"),
     re_path(
         r"^strategyNotif/(?:(?P<interval>\w+)/)?$",
         views.strategy_notif,

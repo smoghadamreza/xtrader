@@ -1,57 +1,70 @@
+from typing import Dict, Any, Union, cast
+
 from sales.models import Subscription
 
 from .models import Strategy, Watchlist
 
 
-def add_strategy_to_db(data, user):
-    watchlist_id = data["watchlistId"]
-    if watchlist_id == "0":
-        watchlist = None
-    else:
-        watchlist = Watchlist.objects.filter(
-            user=user, id=int(watchlist_id)
-        ).first()
-    strategy = dict(
-        trader=user,
-        name=data["name"],
-        filters=str(data["filters"]),
-        watchlist=watchlist,
-        interval=data["interval"],
-    )
-    strategy_id = data["id"]
-    st = Strategy.objects.filter(
-        trader=strategy["trader"], id=strategy_id
-    ).first()
+def add_strategy_to_db(data: Dict[str, Any], user) -> Dict[str, Union[str, int]]:
+    """Add or update a strategy in the database for a given user."""
+
+    watchlist_id = data.get("watchlistId")
+    watchlist = None
+
+    if watchlist_id and watchlist_id != "0":
+        try:
+            watchlist = Watchlist.objects.filter(user=user, id=int(watchlist_id)).first()
+        except (ValueError, TypeError):
+            watchlist = None  # Invalid ID passed; treat as no watchlist
+
+    strategy_data = {
+        "trader": user,
+        "name": data.get("name", ""),
+        "filters": str(data.get("filters", "[]")),
+        "watchlist": watchlist,
+        "interval": data.get("interval", ""),
+    }
+
+    strategy_id = data.get("id")
+    if strategy_id is None:
+        raise ValueError("Strategy.id cannot be None")
+    existing_strategy = Strategy.objects.filter(trader=user, id=strategy_id).first()
+
     result = "save"
-    if st:
-        if strategy["filters"] == "[]":
-            st.delete()
+
+    if existing_strategy:
+        if strategy_data["filters"] == "[]":
+            existing_strategy.delete()
             result = "delete"
         else:
-            st.name = strategy["name"]
-            st.filters = strategy["filters"]
-            st.interval = strategy["interval"]
-            st.watchlist = watchlist
-            st.save()
+            # Update existing strategy
+            existing_strategy.name = strategy_data["name"]
+            existing_strategy.filters = strategy_data["filters"]
+            existing_strategy.interval = strategy_data["interval"]
+            existing_strategy.watchlist = watchlist
+            existing_strategy.save()
     else:
-        if not strategy["filters"] == "[]":
-            if (
-                get_pack_limit(user)["strategy"]
-                >= get_strategy_counts(user) + 1
-            ):
-                st = Strategy(**strategy)
-                st.save()
-                strategy_id = st.id
+        if strategy_data["filters"] != "[]":
+            # Check user's strategy limit
+            pack_limit = cast(int, get_pack_limit(user).get("strategy", 0))
+            strategy_count = get_strategy_counts(user)
+            if pack_limit > strategy_count:
+                new_strategy = Strategy(**strategy_data)
+                new_strategy.save()
+                strategy_id = new_strategy.pk
             else:
                 return {
                     "redirect": "/profile/setup/?s=packages",
                     "s": 302,
-                    "m": "برای ساخت استراژی جدید به نیاز به ارتقا اشتراک دارید.",
+                    "m": "برای ساخت استراتژی جدید به نیاز به ارتقا اشتراک دارید.",
                 }
         else:
             result = "delete"
-    return {"result": result, "id": strategy_id}
 
+    return {
+        "result": result,
+        "id": strategy_id
+    }
 
 def load_strategy_names(user):
     strategies = Strategy.objects.filter(trader=user).values("name", "id")
@@ -63,13 +76,12 @@ def load_strategy_names(user):
 
 def load_strategy_from_db(user, strategy_id):
     strategy = Strategy.objects.filter(trader=user, id=strategy_id).first()
+    if not strategy:
+        raise ValueError("strategy not found")
     filters = strategy.filters if strategy else "[]"
     interval = strategy.interval if strategy else "4h"
-    watchlist_id = 0
-    try:
-        watchlist_id = strategy.watchlist.id
-    except Exception:
-        pass
+
+    watchlist_id = 0 if not strategy.watchlist else strategy.watchlist.pk
     return {
         "filters": eval(filters),
         "watchlistId": str(watchlist_id),
@@ -85,9 +97,9 @@ def get_pack_limit(user):
     sub = Subscription.have_subscribe(user)
     if not sub:
         return {"strategy": 1, "watchlist": 0}
-    else:
-        return {"strategy": sub.package.limit, "watchlist": sub.package.limit}
+    
+    return {"strategy": sub.package.limit, "watchlist": sub.package.limit}
 
 
-def get_watchlist_counts(user):
+def get_watchlist_counts(user) -> int:
     return len(Watchlist.objects.filter(user=user))

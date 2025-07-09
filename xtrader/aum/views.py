@@ -76,7 +76,7 @@ def investors(request):
         for investor in investors:
             result.append(
                 {
-                    "id": investor.id,
+                    "id": investor.pk,
                     "name": "{} {}".format(
                         investor.first_name, investor.last_name
                     ),

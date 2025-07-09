@@ -1,17 +1,18 @@
 import json
+from typing import cast, List
 
 import pandas as pd
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 
-from data import redis
-from data import stockwatch as stockwatchModel
+import data.redis as redis
+import data.stockwatch as stockwatchModel
 from data.models import StockWatch as Symbol
 from finance.models import Strategy
 
 
 def history(request):
-    symbol_ids = redis.keys()
+    symbol_ids = cast(List[bytes], redis.keys())
     histories = []
     for symbol_id in symbol_ids:
         symbol_id = symbol_id.decode()
@@ -74,7 +75,7 @@ def get_data(request, symbol_id, interval):
 
 def get_symbols(request):
     symbols = Symbol.objects.all()
-    symbol_ids = [symbol.SymbolId for symbol in symbols]
+    symbol_ids = [symbol.symbol_id for symbol in symbols]
     return JsonResponse({"symbols": symbol_ids})
 
 
