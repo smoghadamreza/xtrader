@@ -1,4 +1,5 @@
 import json
+from typing import Dict, Any
 
 import numpy as np
 import pandas as pd
@@ -12,7 +13,7 @@ def give_result_more(data, mt=None, get_json=True, interval=None):
     if mt is None:
         mt = Indicator(name=data["symbol_id"], interval=interval)
     valid = int(data["valid"])
-    indicators = {"main": {}, "minor": {}}
+    indicators: Dict[str, Any] = {"main": {}, "minor": {}}
 
     main = {"function_name": data["indicators"]["main"]["name"]}
     main = add_apply_to(main, "main", data)
@@ -91,7 +92,7 @@ def give_result_special(data, mt=None, get_json=True, interval=None):
     )
 
     outputs = data["indicators"]["special"]["outputs"]
-    indicators = {"special": {}}
+    indicators: Dict[str, Any] = {"special": {}}
     for output in outputs:
         indicators["special"][output] = indicator.add_time(
             pd.DataFrame(indicator_special_org[output])
@@ -133,7 +134,7 @@ def give_result_ascending(data, mt=None, get_json=True, interval=None):
     indicator_ascending = pd.DataFrame(indicator_ascending)
 
     outputs = data["indicators"]["ascending"]["outputs"]
-    indicators = {"ascending": {}}
+    indicators: Dict[str, Any] = {"ascending": {}}
     for output in outputs:
         indicators["ascending"][output] = indicator.add_time(
             pd.DataFrame(indicator_ascending_org[output])
@@ -164,7 +165,7 @@ def give_result_draw(data, mt=None, get_json=True, interval=None):
         int(data["indicators"]["draw"]["settings"]["shift"]),
     )
     outputs = data["indicators"]["draw"]["outputs"]
-    indicators = {"draw": {}}
+    indicators: Dict[str, Any] = {"draw": {}}
     for output in outputs:
         indicators["draw"][output] = indicator.add_time(
             pd.DataFrame(indicator_draw_org[output])
@@ -196,7 +197,7 @@ def give_result_candlestick(data, mt=None, get_json=True, interval=None):
     ]
     indicator_candlestick = pd.DataFrame(indicator_candlestick)
 
-    indicators = {"candlestick": {}}
+    indicators: Dict[str, Any] = {"candlestick": {}}
     outputs = data["indicators"]["candlestick"]["outputs"]
     for output in outputs:
         indicators["candlestick"][output] = indicator.add_time(
@@ -219,7 +220,7 @@ def give_result_cross(data, mt=None, get_json=True, interval=None):
     if mt is None:
         mt = Indicator(name=data["symbol_id"], interval=interval)
     valid = int(data["valid"])
-    indicators = {"shorter": {}, "longer": {}}
+    indicators: Dict[str, Any] = {"shorter": {}, "longer": {}}
 
     shorter = {"function_name": data["indicators"]["shorter"]["name"]}
     shorter = add_apply_to(shorter, "shorter", data)
@@ -282,7 +283,7 @@ def give_result_advance_cross(data, mt=None, get_json=True, interval=None):
     if mt is None:
         mt = Indicator(name=data["symbol_id"], interval=interval)
     valid = int(data["valid"])
-    indicators = {
+    indicators: Dict[str, Any] = {
         "buying shorter": {},
         "buying longer": {},
         "selling shorter": {},

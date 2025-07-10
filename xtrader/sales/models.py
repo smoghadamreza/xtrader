@@ -13,7 +13,7 @@ class Package(models.Model):
     category = models.CharField(max_length=11, null=True, blank=True)
     price = models.FloatField(default=0, null=True, blank=True)
     month_price = models.FloatField(default=0, null=True, blank=True)
-    gas_fee = models.FloatField(default=0, null=True, blank=True)
+    gas_fee = models.FloatField(default=0, null=False, blank=True)
     limit = models.FloatField(default=1, null=True, blank=True)
     days = models.IntegerField(default=30, null=True, blank=True)
     active = models.BooleanField(null=True)

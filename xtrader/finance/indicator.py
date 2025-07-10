@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
+from typing import Dict, Any
 import talib
 from talib import abstract
 
-from data import redis
+import data.redis as redis
 
 columns = ["<TIME>", "<OPEN>", "<HIGH>", "<LOW>", "<CLOSE>", "<VOL>"]
 fields = ["Open", "High", "Low", "Close", "Volume"]
@@ -37,7 +38,7 @@ class Indicator:
             for p in ["high", "low", "close", "open"]:
                 db[p][-1] = tail["price"][p]
         df = pd.DataFrame(db)
-        df.index = df["date"]
+        df.index = pd.Index(df["date"].values)
         df = df.loc[:, ["date", "open", "high", "low", "close", "volume"]]
         df.columns = ["time", "open", "high", "low", "close", "volume"]
         return df
@@ -155,7 +156,7 @@ Bad_indicators = ["MAVP"]
 
 def get_group_api():
     # add signal lines to api
-    mdic = dict(
+    mdic: Dict[Any, Any] = dict(
         signal_line=dict(
             fun_name="signal_line",
             params=dict(value=0),
@@ -209,7 +210,7 @@ def get_group_api():
 
 
 def get_ti_api():
-    dic = dict(
+    dic: Dict[Any, Any] = dict(
         signal_line=dict(
             fun_name="signal_line",
             params=dict(value=0),

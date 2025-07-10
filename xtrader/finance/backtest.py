@@ -134,7 +134,7 @@ def more_than(main, minor, days=0):
     mono = diff >= 0
     for i in range(len(index)):
         stat = mono["0"][index[i]]
-        if stat:
+        if bool(stat):
             for j in range(days):
                 stat = stat and mono["0"][index[i - j]]
             result[0][index[i]] = 1

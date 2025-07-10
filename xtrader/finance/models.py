@@ -10,7 +10,7 @@ from data.models import StockWatch
 
 class Watchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=80, null=True, blank=True, default="")
+    name = models.CharField(max_length=80, null=False, blank=True, default="")
     updated = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     def __str__(self):
@@ -54,7 +54,7 @@ class Strategy(models.Model):
     filters = models.TextField()
     config = models.CharField(max_length=500, null=True, blank=True)
     watchlist = models.ForeignKey(
-        Watchlist, null=True, blank=True, on_delete=models.CASCADE
+        Watchlist, null=False, blank=True, on_delete=models.CASCADE
     )
     interval = models.CharField(
         max_length=5, null=True, blank=True, default="4h"

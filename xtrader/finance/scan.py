@@ -1,5 +1,6 @@
 import inspect
 import threading
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -22,11 +23,10 @@ def screener(interval):
     users = set(strategy.trader for strategy in Strategy.objects.all())
     for user in users:
         profile = Profile.objects.filter(user=user).first()
+        strategy_count = strategyModule.get_strategy_counts(user)
+        strategy_limit = cast(int, strategyModule.get_pack_limit(user)["strategy"])
         if profile and profile.telegram_id:
-            if (
-                strategyModule.get_strategy_counts(user)
-                > strategyModule.get_pack_limit(user)["strategy"]
-            ):
+            if strategy_count > strategy_limit:
                 notification.send_telegram_message(
                     msg="کاربر گرامی اشتراک شما به اتمام رسیده است",
                     user_id=profile.telegram_id,

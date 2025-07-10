@@ -3,14 +3,14 @@ import hmac
 import json
 import threading
 import time
-import urllib
+from urllib.parse import urlencode
 from datetime import datetime, timedelta
 
 import requests
 from django.conf import settings
 from django.db import connections
 
-from data import redis
+import data.redis as redis
 from finance.models import Exchange, TradingView
 
 
@@ -96,7 +96,7 @@ class Binance:
     def sign(params, private):
         params["timestamp"] = int(time.time()) * 1000
         params["recvWindow"] = 50000
-        params_str = urllib.parse.urlencode(params).encode("utf-8")
+        params_str = urlencode(params).encode("utf-8")
         sign = hmac.new(
             key=str.encode(private), msg=params_str, digestmod=hashlib.sha256
         ).hexdigest()
@@ -438,6 +438,7 @@ class Binance:
 
     @staticmethod
     def get_last_price(symbol):
+        last_price = 0
         try:
             ticker = redis.hget("LASTPRICE", symbol)
             if ticker["time"] > int(time.time()) - 30:
@@ -555,15 +556,18 @@ class OMSManager:
     def get_exchange(request, trader=None):
         if trader is None:
             trader = request.user
-        ex_obj = None
-        ex_class = None
-        exs = Exchange.objects.filter(trader=trader)
-        if not exs:
-            return ex_obj, ex_class
-        ex_obj = exs.first()
-        if ex_obj.name == "BINANCE":
-            ex_class = Binance
-        return ex_obj, ex_class
+        trader_exchange = None
+        exchange_class = None
+        exchanges = Exchange.objects.filter(trader=trader)
+        if not exchanges.exists():
+            return trader_exchange, exchange_class
+
+        trader_exchange = exchanges.first()
+        if trader_exchange is None:
+            raise ValueError("Exchange object cannot be None")
+        if trader_exchange.name == "BINANCE":
+            exchange_class = Binance
+        return trader_exchange, exchange_class
 
     @staticmethod
     def get_exchanges(request, trader=None):
@@ -594,7 +598,7 @@ class OMSManager:
         return nav
 
     @staticmethod
-    def order_nav_ratio(new_order, assets, quote_price, order_market_value=0):
+    def order_nav_ratio(new_order, assets, quote_price, order_market_value: float=0.0):
         nav = OMSManager.get_nav(assets=assets)
         if order_market_value > 0:
             order_value = order_market_value
@@ -648,8 +652,10 @@ class OMSManager:
             order_market_value = float(new_order["Q"])
         ratio = 0
         if order_action == "NEW":
-            ex_obj, ex_class = OMSManager.get_exchange(None, trader=trader)
-            assets = ex_class.get_portfolio(ex_obj)
+            exchange, exchange_class = OMSManager.get_exchange(None, trader=trader)
+            if exchange_class is None:
+                raise ValueError("Exchange class cannot be None")
+            assets = exchange_class.get_portfolio(exchange)
             ratio = OMSManager.order_nav_ratio(
                 new_order=new_order,
                 assets=assets,
