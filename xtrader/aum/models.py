@@ -7,7 +7,6 @@ from django.db import connections, models
 from django.utils import timezone
 
 from finance import oms
-from finance.models import Exchange
 
 
 class Fund(models.Model):
@@ -84,7 +83,7 @@ class Fund(models.Model):
         )
 
         if exchange is None:
-            raise ValueError("Exchange not found") 
+            raise ValueError("Exchange not found")
 
         d = []
         deposits = (
@@ -354,9 +353,13 @@ class Fund(models.Model):
         btc_prices = [float(c[4]) for c in btc_candles[-len(result) - 2 : -1]]
         try:
             p_price = btc_prices[0]  # Initialize with first price
-            for idx, price in enumerate(btc_prices[1:], start=1):  # Skip first element
+            for idx, price in enumerate(
+                btc_prices[1:], start=1
+            ):  # Skip first element
                 result[idx - 1]["btc"] = price
-                result[idx - 1]["btcReturn"] = 100 * round((price / p_price) - 1, 3)
+                result[idx - 1]["btcReturn"] = 100 * round(
+                    (price / p_price) - 1, 3
+                )
                 p_price = price
         except IndexError:
             raise ValueError("btc_prices cannot be empty")

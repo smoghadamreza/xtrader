@@ -75,9 +75,9 @@ class Profile(UserenaBaseProfile):
     def get_code(self) -> str:
         t = int(time.time())
         if (
-            self.telegram_activation_code and 
-            self.telegram_activation_timestamp and
-            self.telegram_activation_timestamp > t
+            self.telegram_activation_code
+            and self.telegram_activation_timestamp
+            and self.telegram_activation_timestamp > t
         ):
             return self.telegram_activation_code
 
@@ -216,7 +216,7 @@ class Wallet(models.Model):
             }
             Deposit.create(nonce=self.nonce, params=params, wallet=self)
         return new_deposit
-    
+
     @property
     def _should_regenerate_address(self) -> bool:
         """Check if address is older than 70 days."""
@@ -291,7 +291,8 @@ class Deposit(models.Model):
                     "txid": deposit.txid_in,
                     "action": "واریز",
                     "coin": "تتر (trc20)",
-                    "time": str(deposit.tx_time,
+                    "time": str(
+                        deposit.tx_time,
                     ).replace("T", " "),
                     "id": deposit.pk,
                 }

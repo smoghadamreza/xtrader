@@ -46,7 +46,9 @@ class ProTrader(models.Model):
             raise ValueError("exchange_class cannot be None")
         if exchange is None:
             raise ValueError("exchange cannot be None")
-        return exchange_class.get_historical_nav(exchange.public, exchange.private)
+        return exchange_class.get_historical_nav(
+            exchange.public, exchange.private
+        )
 
     @staticmethod
     def get_records(trader):
@@ -57,7 +59,9 @@ class ProTrader(models.Model):
             raise ValueError("exchange_class cannot be None")
         if exchange is None:
             raise ValueError("exchange cannot be None")
-        history =  exchange_class.get_historical_nav(exchange.public, exchange.private)
+        history = exchange_class.get_historical_nav(
+            exchange.public, exchange.private
+        )
         records = {
             record["updateTime"]: float(record["data"]["totalAssetOfBtc"])
             for record in history

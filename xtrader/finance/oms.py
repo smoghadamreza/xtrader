@@ -3,8 +3,8 @@ import hmac
 import json
 import threading
 import time
-from urllib.parse import urlencode
 from datetime import datetime, timedelta
+from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
@@ -201,8 +201,7 @@ class Binance:
         result: dict[str, bool | str] = {"error": True}
         if "msg" not in response:
             result["error"] = False
-        
-        
+
         elif response["code"] == -2010:
             result["msg"] = "موجودی حساب کافی نیست"
         elif response["code"] == -1013:
@@ -598,7 +597,9 @@ class OMSManager:
         return nav
 
     @staticmethod
-    def order_nav_ratio(new_order, assets, quote_price, order_market_value: float=0.0):
+    def order_nav_ratio(
+        new_order, assets, quote_price, order_market_value: float = 0.0
+    ):
         nav = OMSManager.get_nav(assets=assets)
         if order_market_value > 0:
             order_value = order_market_value
@@ -652,7 +653,9 @@ class OMSManager:
             order_market_value = float(new_order["Q"])
         ratio = 0
         if order_action == "NEW":
-            exchange, exchange_class = OMSManager.get_exchange(None, trader=trader)
+            exchange, exchange_class = OMSManager.get_exchange(
+                None, trader=trader
+            )
             if exchange_class is None:
                 raise ValueError("Exchange class cannot be None")
             assets = exchange_class.get_portfolio(exchange)

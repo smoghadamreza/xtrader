@@ -1,5 +1,5 @@
 import json
-from typing import cast, List
+from typing import List, cast
 
 import pandas as pd
 from django.conf import settings

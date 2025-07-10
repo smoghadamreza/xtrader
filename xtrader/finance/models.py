@@ -107,7 +107,6 @@ class TradingView(models.Model):
         if not TradingView.objects.filter(webhook=webhook):
             return webhook
 
-
     def activate(self, trading=False, notification=False):
         error = ""
         if trading:

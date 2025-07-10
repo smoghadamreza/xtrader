@@ -9,7 +9,9 @@ from sales.models import Package, Subscription
 
 
 def get_packages(request):
-    active_packages = Package.objects.filter(active=True).order_by("month_price")
+    active_packages = Package.objects.filter(active=True).order_by(
+        "month_price"
+    )
     active_packages_info = [pack.info() for pack in active_packages]
     subscription = (
         Subscription.objects.filter(
@@ -27,7 +29,9 @@ def get_packages(request):
             raise ValueError("there are not active packages")
         pack = first_active_package.info()
         pack["expiry"] = "همیشه"
-    return JsonResponse({"packages": active_packages_info, "currentPack": pack})
+    return JsonResponse(
+        {"packages": active_packages_info, "currentPack": pack}
+    )
 
 
 @csrf_exempt

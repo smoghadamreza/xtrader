@@ -1,6 +1,6 @@
 import json
 import time
-from typing import cast, List
+from typing import List, cast
 
 import redis
 import requests
@@ -34,7 +34,7 @@ def hget(name, key):
     value = cast(bytes, r.hget(name=name, key=key))
     if value is None:
         return {}
-    
+
     return json.loads(value.decode())
 
 

@@ -1,11 +1,13 @@
-from typing import Dict, Any, Union, cast
+from typing import Any, Dict, Union, cast
 
 from sales.models import Subscription
 
 from .models import Strategy, Watchlist
 
 
-def add_strategy_to_db(data: Dict[str, Any], user) -> Dict[str, Union[str, int]]:
+def add_strategy_to_db(
+    data: Dict[str, Any], user
+) -> Dict[str, Union[str, int]]:
     """Add or update a strategy in the database for a given user."""
 
     watchlist_id = data.get("watchlistId")
@@ -13,7 +15,9 @@ def add_strategy_to_db(data: Dict[str, Any], user) -> Dict[str, Union[str, int]]
 
     if watchlist_id and watchlist_id != "0":
         try:
-            watchlist = Watchlist.objects.filter(user=user, id=int(watchlist_id)).first()
+            watchlist = Watchlist.objects.filter(
+                user=user, id=int(watchlist_id)
+            ).first()
         except (ValueError, TypeError):
             watchlist = None  # Invalid ID passed; treat as no watchlist
 
@@ -28,7 +32,9 @@ def add_strategy_to_db(data: Dict[str, Any], user) -> Dict[str, Union[str, int]]
     strategy_id = data.get("id")
     if strategy_id is None:
         raise ValueError("Strategy.id cannot be None")
-    existing_strategy = Strategy.objects.filter(trader=user, id=strategy_id).first()
+    existing_strategy = Strategy.objects.filter(
+        trader=user, id=strategy_id
+    ).first()
 
     result = "save"
 
@@ -61,10 +67,8 @@ def add_strategy_to_db(data: Dict[str, Any], user) -> Dict[str, Union[str, int]]
         else:
             result = "delete"
 
-    return {
-        "result": result,
-        "id": strategy_id
-    }
+    return {"result": result, "id": strategy_id}
+
 
 def load_strategy_names(user):
     strategies = Strategy.objects.filter(trader=user).values("name", "id")
@@ -97,7 +101,7 @@ def get_pack_limit(user):
     sub = Subscription.have_subscribe(user)
     if not sub:
         return {"strategy": 1, "watchlist": 0}
-    
+
     return {"strategy": sub.package.limit, "watchlist": sub.package.limit}
 
 

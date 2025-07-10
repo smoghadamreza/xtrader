@@ -49,8 +49,7 @@ urlpatterns = [
         views.ssl,
         name="ssl",
     ),
-    re_path(r"^trade", views.
-    trade, name="trade"),
+    re_path(r"^trade", views.trade, name="trade"),
     re_path(r"^tradingview", views.trading_view, name="trading_view"),
     re_path(
         r"^webhook/(?P<token>[\w-]+)",

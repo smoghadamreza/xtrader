@@ -42,10 +42,7 @@ def pro_traders(request):
         protrader_id = follow.pro_trader.pk if follow else 0
         return JsonResponse({"data": ProTrader.get_all(protrader_id)})
 
-    return JsonResponse(
-            {"e": "Method not allowed."},
-            status=405
-        )
+    return JsonResponse({"e": "Method not allowed."}, status=405)
 
 
 @csrf_exempt

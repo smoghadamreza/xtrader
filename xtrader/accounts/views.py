@@ -2,8 +2,8 @@ import json
 import threading
 import urllib.parse as urlparse
 import warnings
-from urllib.parse import parse_qs
 from typing import cast
+from urllib.parse import parse_qs
 
 from django.contrib import messages
 from django.contrib.auth import (
@@ -29,11 +29,12 @@ from userena import settings as userena_settings
 from userena import signals as userena_signals
 from userena.decorators import secure_required
 from userena.models import (
-    UserenaSignup, UserenaBaseProfileManager, UserenaManager,
-    UserenaBaseProfile
+    UserenaBaseProfile,
+    UserenaBaseProfileManager,
+    UserenaManager,
+    UserenaSignup,
 )
 from userena.utils import get_profile_model, get_user_profile, signin_redirect
-
 
 from accounts.forms import (
     AuthenticationForm,
@@ -102,7 +103,8 @@ class ProfileListView(ListView):
             UserenaBaseProfileManager, profile_model.objects
         )
         queryset = userena_profile_manager.get_visible_profiles(
-            self.request.user).select_related()
+            self.request.user
+        ).select_related()
         return queryset
 
 
@@ -1164,7 +1166,9 @@ def profile_list(
         raise Http404
 
     profile_model = get_profile_model()
-    userena_profile_manager = cast(UserenaBaseProfileManager, profile_model.objects)
+    userena_profile_manager = cast(
+        UserenaBaseProfileManager, profile_model.objects
+    )
     queryset = userena_profile_manager.get_visible_profiles(request.user)
 
     if not extra_context:

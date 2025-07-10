@@ -64,7 +64,9 @@ class StockWatch(models.Model):
 
     sell_individual_count = models.IntegerField(blank=True, null=True)
     sell_individual_volume = models.BigIntegerField(blank=True, null=True)
-    sell_individual_volume_percentage = models.FloatField(blank=True, null=True)
+    sell_individual_volume_percentage = models.FloatField(
+        blank=True, null=True
+    )
 
     closing_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
@@ -129,7 +131,9 @@ class StockWatch(models.Model):
     previous_day_price = models.DecimalField(
         max_digits=7, decimal_places=1, blank=True, null=True
     )
-    total_number_of_shares_traded = models.BigIntegerField(blank=True, null=True)
+    total_number_of_shares_traded = models.BigIntegerField(
+        blank=True, null=True
+    )
     total_number_of_trades = models.BigIntegerField(blank=True, null=True)
     total_trade_value = models.BigIntegerField(blank=True, null=True)
     eps = models.IntegerField(blank=True, null=True)

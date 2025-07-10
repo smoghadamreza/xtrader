@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 from typing import cast
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -12,7 +13,6 @@ from django.db import transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 
 from accounts.models import Profile
 from aum.models import Fund
@@ -38,9 +38,11 @@ def calculate_indicators(request, interval):
 def add_new_watchlist(request):
     if not request.method == "POST":
         return JsonResponse({}, status=403)
-    watchlist_limit = cast(int, strategy.get_pack_limit(request.user).get("watchlist", 0))
+    watchlist_limit = cast(
+        int, strategy.get_pack_limit(request.user).get("watchlist", 0)
+    )
     watchlist_count = strategy.get_watchlist_counts(request.user)
-    if (watchlist_count >= watchlist_limit):
+    if watchlist_count >= watchlist_limit:
         return JsonResponse(
             {
                 "redirect": "/profile/setup/?s=packages",
@@ -477,13 +479,15 @@ def trading_view(request):
     elif request.method == "POST":
         tw = TradingView.objects.filter(trader=request.user).first()
         if not tw:
-            return JsonResponse({"error": "TradingView configuration not found"}, status=404)
-        
+            return JsonResponse(
+                {"error": "TradingView configuration not found"}, status=404
+            )
+
         try:
             data = json.loads(request.body)
             error = tw.activate(
                 trading=data.get("trading", False),
-                notification=data.get("notification", False)
+                notification=data.get("notification", False),
             )
             result = {
                 "webhook": settings.WEBHOOK_URL_TEMPLATE.format(tw.webhook),
@@ -492,12 +496,14 @@ def trading_view(request):
                 "msg": error,
             }
             return JsonResponse(result)
-        
+
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON data"}, status=400)
         except KeyError:
-            return JsonResponse({"error": "Missing required fields"}, status=400)
-    
+            return JsonResponse(
+                {"error": "Missing required fields"}, status=400
+            )
+
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
