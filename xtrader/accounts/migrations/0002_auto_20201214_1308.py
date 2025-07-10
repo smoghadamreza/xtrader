@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
+from datetime import timezone
 
 
 class Migration(migrations.Migration):
@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='expire',
-            field=models.DateField(default=datetime.datetime(2020, 12, 24, 12, 7, 59, 281050, tzinfo=utc)),
+            field=models.DateField(default=datetime.datetime(2020, 12, 24, 12, 7, 59, 281050, tzinfo=timezone.utc)),
         ),
     ]

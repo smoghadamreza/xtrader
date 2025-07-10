@@ -34,7 +34,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUG', 1)))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 ALLOWED_HOSTS.extend(
     filter(
         None,
@@ -137,6 +137,16 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = 'xtrader.wsgi.application'
+ASGI_APPLICATION = 'xtrader.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.get('REDIS_URL', 'redis://localhost:6379'))],
+        },
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -151,7 +161,7 @@ DATABASES = {
     }
 }
 USE_TZ = True
-TIME_ZONE = 'Iran'
+TIME_ZONE = 'Asia/Tehran'
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 

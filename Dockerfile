@@ -1,5 +1,5 @@
 # Use the official Python image
-FROM python:3.9
+FROM python:3.12
 LABEL maintainer="dc.ramzservat.com"
 
 # Set the working directory
@@ -7,7 +7,7 @@ WORKDIR /xtrader
 
 # Set environment variables
 ENV PYTHONUNBUFFERED 1
-ENV PATH="/scripts:/py/bin:$PATH"
+ENV PATH="/opt/conda/bin:/scripts:/py/bin:$PATH"
 
 # Install system dependencies
 RUN apt-get update && \
@@ -24,49 +24,44 @@ RUN apt-get update && \
     postgresql-client \
     wget \
     vim \
-    less
-
-# Download and build TA-Lib
-RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
-    tar -xvzf ta-lib-0.4.0-src.tar.gz && \
-    cd ta-lib/ && \
-    ./configure --prefix=/usr --build=aarch64-unknown-linux-gnu && \
-    make && \
-    make install && \
-    cd .. && \
-    rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
-
-# Copy the requirements file and project code
-COPY ./requirements.txt /xtrader/
-
-# Create and activate a virtual environment
-RUN python -m venv /py && \
-    /py/bin/pip install --upgrade pip
-
-# Install project dependencies
-RUN /py/bin/pip install -r /xtrader/requirements.txt
-
-# Clean up unnecessary packages
-RUN apt-get autoremove -y && \
+    less && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
+    bash miniconda.sh -b -p /opt/conda && \
+    rm miniconda.sh
 
+# Configure Conda
+RUN conda init bash && \
+    conda config --set auto_activate_base false
+
+# Create Conda environment
+RUN conda create -n xtrader-env -c conda-forge python=3.12 ta-lib && \
+    conda clean -afy
+
+# Copy requirements and install
+COPY ./requirements.txt /xtrader/
+RUN conda run -n xtrader-env pip install --upgrade pip && \
+    conda run -n xtrader-env pip install -r /xtrader/requirements.txt
+
+# Copy project files
 COPY ./xtrader /xtrader/
 COPY ./scripts /scripts
 
-# Create a non-root user and set up directories
+# Set up non-root user and permissions
 RUN adduser --disabled-password --no-create-home xtrader && \
     mkdir -p /vol/web/static /vol/web/media && \
     chown -R xtrader:xtrader /xtrader /vol && \
     chmod -R 755 /vol && \
     chmod -R +x /scripts
 
-# Switch to the non-root user
+# Switch to non-root user
 USER xtrader
 
-# Expose the port
+# Expose port
 EXPOSE 9000
 
-# Specify the default command to run on container start
-CMD ["run.sh"]
+# Specify the default command (modified for Conda)
+CMD ["conda", "run", "-n", "xtrader-env", "python", "manage.py", "runserver", "0.0.0.0:8000"]

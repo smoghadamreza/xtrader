@@ -6,7 +6,7 @@ import datetime
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils.timezone import utc
+from datetime import timezone
 
 
 class Migration(migrations.Migration):
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='expire',
-            field=models.DateField(default=datetime.datetime(2020, 12, 24, 15, 11, 9, 40234, tzinfo=utc)),
+            field=models.DateField(default=datetime.datetime(2020, 12, 24, 15, 11, 9, 40234, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='profile',
