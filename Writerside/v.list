@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vars SYSTEM "https://resources.jetbrains.com/writerside/1.0/vars.dtd">
+<vars>
+    <var name="product" value="xtrader"/>
+    <var name="django.auth.user" value="[User](https://docs.djangoproject.com/en/5.1/ref/contrib/auth/#user-model)"/>
+</vars>

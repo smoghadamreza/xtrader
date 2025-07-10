@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/html-entities.dtd">
+<topic xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" is-library="true" id="repeatable-texts" title="repeatable-texts">
+    <snippet id="python-self">
+        The instance itself, signifying that this method is an <include from="third-party-libraries-links.topic" element-id="python.instance-method"/>.
+    </snippet>
+
+    <snippet id="python-cls">
+        The class object, signifying that this method is a <include from="third-party-libraries-links.topic" element-id="python.class-method"/>.
+    </snippet>
+
+    <snippet id="django-models.desc">
+        This class inherits <code>django.db.models.Model</code>. Django offers this class as a tool for defining a SQL database in python.
+        The documentation is available at
+        <include from="third-party-libraries-links.topic" element-id="django.db.models"/>.
+
+    </snippet>
+
+    <snippet id="django-views">
+        <p>The <a href="https://docs.djangoproject.com/en/5.1/topics/http/views/">Django documentation</a>
+            define views as follows:</p>
+        <tip>
+            <p>A view function, or view for short, is a Python function
+                that takes a web request and returns a web response.
+                This response can be the HTML contents of a web page,
+                or a redirect, or a 404 error, or an XML document,
+                or an image or anything, really. The view itself
+                contains whatever arbitrary logic is necessary to return
+                that response.</p>
+        </tip>
+        <p>All the functions that take a request and return proper views (mainly html) are
+            located in <code>views.py</code> files in app folders. We now review all the functions inside this app
+            <code>views.py</code>.</p>
+    </snippet>
+
+    <snippet id="django-forms">
+        <p>According to <a href="https://docs.djangoproject.com/en/5.1/topics/forms/">Django Documentation</a>:</p>
+        <tip>
+            <p>Unless you’re planning to build websites and applications that do nothing but publish content, and don’t
+                accept input
+                from your visitors, you’re going to need to understand and use forms.</p>
+        </tip>
+        <p>Forms are a means to get inputs from users and apply it into our product's logic. As %product% is a product
+            that provides users the means for cryptocurrency trading, it is going to need get various inputs from the
+            users
+            in different contexts. Thus, we must use forms repeatedly and all of these are stored in
+            <code>forms.py</code> files in each
+            app's folder.</p>
+
+    </snippet>
+
+    <snippet id="django-model-forms-meta">
+        <p>According to <a href="https://docs.djangoproject.com/en/5.1/topics/forms/modelforms/">Django
+            Documentations</a> Model forms require a <code>Meta</code> class
+            so they would know which database table is corresponding to this form. This <code>Meta</code> class also
+            provides some customization
+            over the form such as excluding some fields to appear and be editable inside the form regardless of their
+            presence in the database.
+            For a more options refer to the <a href="https://docs.djangoproject.com/en/5.1/topics/forms/modelforms/">Django
+                Documentations</a>.</p>
+    </snippet>
+
+    <snippet id="userena-secure-required-decorator">
+        <list>
+            <li><a href="https://django-userena.readthedocs.io/en/latest/api/decorators.html">secure_required</a>: A
+                userena library decorator.
+                We quote this function docstring in the following:
+            </li>
+        </list>
+        <tip>
+            <p>Decorator to switch an url from http to https.</p>
+        </tip>
+        <tip>
+            <p>If a view is accessed through http and this decorator is applied to that
+                view, then it will return a permanent redirect to the secure (https)
+                version of the same view.</p>
+        </tip>
+        <tip>
+            <p>The decorator also must check that <code>USERENA_USE_HTTPS</code> is enabled. If
+                disabled, it should not redirect to https because the project doesn't
+                support it.</p>
+        </tip>
+    </snippet>
+
+    <snippet id="csrf-exempt-decorator">
+        <list>
+            <li><a href="https://docs.djangoproject.com/en/5.1/ref/csrf/#django.views.decorators.csrf.csrf_exempt">csrf_exempt</a>It
+                is a django decorator which according to its docstring does the following:
+            </li>
+        </list>
+        <tip>
+            <p>Mark a view function as being exempt from the CSRF view protection.</p>
+        </tip>
+        <warning>
+            <p>Be careful when to use this decorator as it has security risks. Read more on CSRF in <a
+                    href="https://docs.djangoproject.com/en/5.1/ref/csrf/">Django's documentation</a>.</p>
+        </warning>
+    </snippet>
+
+    <snippet id="permission-required-or-403-decorator">
+        <list>
+            <li>
+                <a href="https://django-guardian.readthedocs.io/en/stable/api/guardian.decorators.html#permission-required-or-403">permission_required_or_403</a>:
+                A decorator from <a href="https://django-guardian.readthedocs.io/en/stable/overview.html">django-guardian</a>
+                library. According to its docstring:
+            </li>
+        </list>
+        <tip>
+            <p>Simple wrapper for
+                <a href="https://docs.djangoproject.com/en/5.1/topics/auth/default/#django.contrib.auth.decorators.permission_required">permission_required</a>
+                decorator.</p>
+        </tip>
+        <tip>
+            <p>Standard Django's permission_required decorator redirects user to login page
+                in case permission check failed. This decorator may be used to return
+                <code>HttpResponseForbidden</code> (status 403) instead of redirection.</p>
+        </tip>
+        <tip>
+            <p>The only difference between <code>permission_required</code> decorator is that this
+                one always set <code>return_403</code> parameter to <code>True</code>.</p>
+        </tip>
+
+    </snippet>
+
+    <snippet id="transaction-atomic-decorator">
+        <list>
+            <li>
+                <a href="https://docs.djangoproject.com/en/5.1/topics/db/transactions/#controlling-transactions-explicitly">transaction.atomic</a>:
+                Ensures the database operations are performed atomically.
+            </li>
+        </list>
+    </snippet>
+
+    <snippet id="login-required-decorator">
+        <list>
+            <li><a href="https://docs.djangoproject.com/en/5.1/topics/auth/default/#the-login-required-decorator"><code>login_required</code></a>:
+                According to its docstring:
+
+        <tip>
+            <p>Decorator for views that checks that the user is logged in, redirecting
+                to the log-in page if necessary.
+                </p>
+        </tip>
+        <p>It also takes login URL as an input parameter.</p>
+        </li>
+        </list>
+    </snippet>
+
+    <snippet id="http-request">
+        <a href="https://docs.djangoproject.com/en/5.1/ref/request-response/#httprequest-objects">HttpRequest</a>
+    </snippet>
+    
+    <snippet id="python-threading">
+        <a href="https://docs.python.org/3/library/threading.html"></a>
+    </snippet>
+
+    <snippet id="sensitive-post-parameters-decorator">
+        We quote this decorator's docstring:
+        <tip>
+                Indicate which POST parameters used in the decorated view are sensitive,
+                so that those parameters can later be treated in a special way, for example
+                by hiding them when logging unhandled exceptions.
+        </tip>
+    </snippet>
+    
+    <snippet id="never-cache-decorator">
+        We quote this decorator's docstring:
+        <tip>
+            Decorator that adds headers to a response so that it will never be cached.
+        </tip>
+    </snippet>
+
+    <snippet id="django-urls">
+        <a href="https://docs.djangoproject.com/en/5.1/topics/http/urls/">link</a>
+    </snippet>
+
+    <snippet id="django-db">
+        <a href="https://docs.djangoproject.com/en/1.10/ref/settings/#databases">Django DATABASES</a>
+    </snippet>
+</topic>

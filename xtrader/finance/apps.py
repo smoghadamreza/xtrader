@@ -6,6 +6,10 @@ class FinanceConfig(AppConfig):
 
     def ready(self):
         """Run startup tasks after Django is fully initialized"""
+        import sys
+        if 'manage.py' in sys.argv[0] and 'runserver' not in sys.argv:
+            return  # Skip for management commands except runserver
+
         if not threading.current_thread().daemon:
             self.run_startup_tasks()
 

@@ -25,6 +25,7 @@ RUN apt-get update && \
     wget \
     vim \
     redis-tools  \
+    graphviz \
     less && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

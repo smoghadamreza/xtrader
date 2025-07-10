@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/html-entities.dtd">
+<topic xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" is-library="true" id="architecture-diagrams" title="architecture-diagrams">
+    <!-- Put your snippets here -->
+    <snippet id="finance-app-data-flow-diagram">
+        <img src="finance-app-data-flow-diagram.svg" alt="Finance App DataFlow " width="450"/>
+        <warning>This DataFlow's syntax is AI-generated and then was rendered by <a
+                href="https://www.mermaidchart.com/">Mermaid Chart</a></warning>
+
+    </snippet>
+</topic>
