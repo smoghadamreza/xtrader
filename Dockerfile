@@ -24,6 +24,7 @@ RUN apt-get update && \
     postgresql-client \
     wget \
     vim \
+    redis-tools  \
     less && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -38,7 +39,7 @@ RUN conda init bash && \
     conda config --set auto_activate_base false
 
 # Create Conda environment
-RUN conda create -n xtrader-env -c conda-forge python=3.12 ta-lib && \
+RUN conda create -n xtrader-env -c conda-forge python=3.12 ta-lib uwsgi && \
     conda clean -afy
 
 # Copy requirements and install
@@ -56,6 +57,16 @@ RUN adduser --disabled-password --no-create-home xtrader && \
     chown -R xtrader:xtrader /xtrader /vol && \
     chmod -R 755 /vol && \
     chmod -R +x /scripts
+
+# Create migration files directory for 3rd part libraries. Make xtrader user, have access to modify it. 
+RUN mkdir -p /xtrader/migrations/userena && \
+    mkdir -p /xtrader/migrations/guardian && \
+    mkdir -p /xtrader/migrations/easy_thumbnails && \
+    touch /xtrader/migrations/__init__.py && \
+    touch /xtrader/migrations/userena/__init__.py && \
+    touch /xtrader/migrations/guardian/__init__.py && \
+    touch /xtrader/migrations/easy_thumbnails/__init__.py && \
+    chown -R xtrader:xtrader /xtrader/migrations
 
 # Switch to non-root user
 USER xtrader

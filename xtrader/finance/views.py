@@ -258,7 +258,7 @@ def index(request):
 
 
 @login_required(login_url='accounts:userena_signin')
-def stockwatch(request, SymbolId):
+def stockwatch(request, SymbolId=None):
     if not SymbolId:
         return redirect('/spot/BTCUSDT')
     return redirect('/spot/' + SymbolId)
@@ -271,10 +271,14 @@ def stockwatch(request, SymbolId):
 
 @login_required(login_url='accounts:userena_signin')
 def spot(request, symbol_id):
+    if not symbol_id:
+        return redirect('/spot/BTCUSDT')
+    
     try:
         result = oms.Binance.get_symbol_info(symbol_id)
-    except Exception as e:
-        return redirect('/spot/BTCUSDT')
+    except Exception as _:
+        return render(request, 'error.html', {'message': 'getting symbol info failed.'})
+    
     stockWatchDict = {'SymbolId': symbol_id, 'title': result['baseAsset'], **get_user(request)}
     return render(request, 'stockwatch1.html', stockWatchDict)
 

@@ -5,44 +5,82 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: xtrader-app
     command: >
       sh -c "conda run -n xtrader-env python manage.py wait_for_db &&
+             conda run -n xtrader-env python manage.py collectstatic --noinput &&
+             conda run -n xtrader-env python manage.py makemigrations &&
              conda run -n xtrader-env python manage.py migrate &&
              conda run -n xtrader-env python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
     volumes:
       - ./xtrader:/xtrader
-      - ./data/web:/vol/web
+      - ./xtrader/migrations:/xtrader/migrations
+      - ./xtrader/media:/vol/web/media
+      - ./xtrader/static:/vol/web/static
     environment:
-      - SECRET_KEY=devsecretkey
-      - DEBUG=1
+      - SECRET_KEY=${SECRET_KEY:-devsecretkey}
+      - DEBUG=${DEBUG:-1}
       - DB_HOST=db
-      - DB_NAME=devdb
-      - DB_USER=devuser
-      - DB_PASS=changeme
+      - DB_NAME=${DB_NAME:-devdb}
+      - DB_USER=${DB_USER:-devuser}
+      - DB_PASS=${DB_PASS:-changeme}
+      - REDIS_URL=redis://redis:6379/0 # internal container communication
       - PYTHONUNBUFFERED=1
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - xtrader-net
+    restart: unless-stopped
 
   db:
     image: postgres:17.4
+    container_name: xtrader-db
     environment:
-      - POSTGRES_DB=devdb
-      - POSTGRES_USER=devuser
-      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=${DB_NAME:-devdb}
+      - POSTGRES_USER=${DB_USER:-devuser}
+      - POSTGRES_PASSWORD=${DB_PASS:-changeme}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - xtrader-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-devuser} -d ${DB_NAME:-devdb}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: xtrader-redis
+    ports:
+      - "6380:6379" # Map host port 6380 to container port 6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - xtrader-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
+    driver: local
   static_volume:
+    driver: local
   media_volume:
-
+    driver: local
 
 networks:
   xtrader-net:

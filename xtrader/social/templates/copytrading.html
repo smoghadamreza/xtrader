@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% block title %}کپی تریدینگ{% endblock %}
 {% block headContent %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/copytrading.css' %}?v=1"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/copytrading.css' %}?v=1" />
 <script src="{% static 'js/copytrading.js' %}"></script>
 <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.js"></script>-->
 <link rel="stylesheet" type="text/css" href="/static/css/jquery.dataTables.css">
@@ -15,9 +15,10 @@
 {% block bodyContent %}
 <div class="container" style="background:#1c1f32;direction:rtl;">
     <br>
-        <h1>شبکه اجتماعی ترید</h1>
+    <h1>شبکه اجتماعی ترید</h1>
     <br>
-        <p>با دنبال کردن یک تریدر معاملات ایشان برای شما بصورت خودکار در بایننس کپی می‌شود. (بدون امکان برداشت از حساب شما)</p>
+    <p>با دنبال کردن یک تریدر معاملات ایشان برای شما بصورت خودکار در بایننس کپی می‌شود. (بدون امکان برداشت از حساب شما)
+    </p>
     <br>
 </div>
 

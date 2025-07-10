@@ -86,15 +86,6 @@ INSTALLED_APPS = [
     'bootstrap3',
     'aum',
 ]
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "asgi_redis.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')],
-#         },
-#         "ROUTING": "chat.routing.channel_routing",
-#     },
-# }
 SITE_ID = 1
 REDIS_DB = 0
 # settings.py
@@ -111,7 +102,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'xtrader.urls'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # TODO: For now we only print the email to the console.
+
 EMAIL_PORT = 587
 EMAIL_HOST = ''
 EMAIL_HOST_USER = ''
@@ -142,7 +135,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.environ.get('REDIS_URL', 'redis://localhost:6379'))],
+            "hosts": [("redis", 6379)],
         },
     },
 }
@@ -160,6 +153,13 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+MIGRATION_MODULES = {
+    'userena': 'xtrader.migrations.userena',
+    'guardian': 'xtrader.migrations.guardian',
+    'easy_thumbnails': 'xtrader.migrations.easy_thumbnails'
+}
+
 USE_TZ = True
 TIME_ZONE = 'Asia/Tehran'
 # Password validation
@@ -202,9 +202,9 @@ AUTHENTICATION_BACKENDS = (
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-#STATICFILES_DIRS = (
-#    os.path.join(BASE_DIR, 'static'),
-#)
+STATICFILES_DIRS = (
+   os.path.join(BASE_DIR, 'static'),
+)
 MEDIA_ROOT = '/vol/web/media'
 STATIC_ROOT = '/vol/web/static'
 #MEDIA_URL = 'media/'

@@ -10,31 +10,31 @@ let watchlistId = '0';
 var groupingUnitsMap = {
     '15m': ['minute', [15]],
     '30m': ['minute', [30]],
-    '1h': ['hour',[1]],
-    '4h': ['hour',[4]],
+    '1h': ['hour', [1]],
+    '4h': ['hour', [4]],
     '1d': ['day', [1]],
 }
 console.log(currentStrategyId);
 // TODO: reading indicators
-function backtestPageSetup(){
+function backtestPageSetup() {
     getSetIndicators();
     setIntervalsCandles();
     load_strategy_names();
     getWatchLists();
 }
-function setIntervalsCandles(){
+function setIntervalsCandles() {
     $.ajax({
         type: 'GET',
         url: "/data/intervals",
         success: function (result) {
-//            console.log(result);
+            console.log(result);
             let intervalsDiv = document.getElementById('timeframes');
             let intervals_buttons = '';
             let intervals_buttons2 = '';
             intervals = Object.keys(result.intervals);
-            intervals.forEach(function (chart_interval){
-                intervals_buttons += '<button onclick="changeTimeFrame(this.id)" id='+chart_interval+'>'+chart_interval+'</button>';
-                intervals_buttons2 += '<option>'+chart_interval+'</option>';
+            intervals.forEach(function (chart_interval) {
+                intervals_buttons += '<button onclick="changeTimeFrame(this.id)" id=' + chart_interval + '>' + chart_interval + '</button>';
+                intervals_buttons2 += '<option>' + chart_interval + '</option>';
             });
             intervalsDiv.innerHTML = intervals_buttons;
             document.getElementById('strategyTimeFrame').innerHTML = intervals_buttons2;
@@ -45,7 +45,7 @@ function setIntervalsCandles(){
         }
     });
 }
-function getSetIndicators(){
+function getSetIndicators() {
     $.ajax({
         type: 'GET',
         url: "/indicators-api",
@@ -58,7 +58,7 @@ function getSetIndicators(){
 var isScaned = false;
 var isStrategySaved;
 var isBacktested = false;
-var drawing_tool = {'tool': {'name': 'line', 'params': {}}, 'status': 0, 'num_of_points': 0};
+var drawing_tool = { 'tool': { 'name': 'line', 'params': {} }, 'status': 0, 'num_of_points': 0 };
 var per_name;
 var portfo = [];
 var num_of_charts = 1;
@@ -74,7 +74,7 @@ window.ODate = Date;
 window.Date = JDate;
 
 function loadChartsReady() {
-//    isStrategySaved = false;
+    //    isStrategySaved = false;
     changeIsStrategySaved(false);
     load_data('/data/get-data/' + symbol_id);
     // Highcharts.setOptions({
@@ -339,8 +339,8 @@ function load_data(url) {
     waiting('wait');
     isBacktested = false;
     $.ajax({
-        url: url + '/'+userTimeFrame,
-        success: function (data){
+        url: url + '/' + userTimeFrame,
+        success: function (data) {
             // window.history.pushState('page2', 'Title', '/backtest/stock=' + symbol_id);
             // console.log(data);
             data = JSON.parse(data);
@@ -381,14 +381,14 @@ function load_data(url) {
             }
             result_type_2[0] = type_2;
             draw_chart();
-                delete_all(['indicators'], false);
-               load_strategy();
-//            load_strategy_names();
+            delete_all(['indicators'], false);
+            load_strategy();
+            //            load_strategy_names();
             document.getElementById('search').children[0].children[0].value = '';
             waiting('default');
 
         },
-        error: function(e){
+        error: function (e) {
             waiting('default');
         },
     });
@@ -638,10 +638,10 @@ function check_strategies_number() {
             let button = document.getElementById(button_id);
             button.addEventListener('mouseover', function () {
                 let filters_color = good_mouse_color;
-                if (button_id === 'delete_all_button'){
+                if (button_id === 'delete_all_button') {
                     button.style.backgroundColor = bad_mouse_color;
                     filters_color = bad_mouse_color;
-                }else{
+                } else {
                     button.style.backgroundColor = good_mouse_color;
                 }
                 for (var i = 0; i < num_of_charts; i++) {
@@ -658,23 +658,23 @@ function check_strategies_number() {
                 }
                 button.style.backgroundColor = default_button_color;
             });
-//            button.addEventListener('click', function () {
-//                if (button_id === 'save_button'){
-//                     pick_portfolio('block');
-//                     toggle(this);
-//                     save_filters('default');
-//                }else if (button_id === 'delete_all_button'){
-//                    delete_all(['symbol_ids', 'indicators', 'back test', 'scan', 'filters'], true);
-//                }else{
-//                    toggle(this);
-//                }
-//                 button.style.color = 'white';
-//            });
+            //            button.addEventListener('click', function () {
+            //                if (button_id === 'save_button'){
+            //                     pick_portfolio('block');
+            //                     toggle(this);
+            //                     save_filters('default');
+            //                }else if (button_id === 'delete_all_button'){
+            //                    delete_all(['symbol_ids', 'indicators', 'back test', 'scan', 'filters'], true);
+            //                }else{
+            //                    toggle(this);
+            //                }
+            //                 button.style.color = 'white';
+            //            });
             button.style.backgroundColor = default_button_color;
-            if (filters_num > 0){
+            if (filters_num > 0) {
                 button.disabled = false;
                 button.style.display = 'block';
-            }else{
+            } else {
                 button.disabled = true;
                 button.style.display = 'none';
                 button.classList.remove("active");
@@ -691,7 +691,7 @@ function show_market() {
 function delete_all(targets, save) {
     let deletedStrategy = false;
     targets.forEach(function (target) {
-//    console.log(target);
+        //    console.log(target);
         switch (target) {
             case 'indicators':
                 for (var i = 1; i < num_of_charts; i++) {
@@ -714,19 +714,19 @@ function delete_all(targets, save) {
                 if (save && !deletedStrategy) {
                     // console.log(save);
                     // console.log('saved null filters');
-//                    isStrategySaved = false;
+                    //                    isStrategySaved = false;
                     deletedStrategy = true;
                     changeIsStrategySaved(false);
                     save_filters('default');
                 }
-//                load_strategy();
+                //                load_strategy();
                 break;
             case 'filters':
                 // check_strategies_number();
                 break;
             case 'back test':
                 var chart = $('#container').highcharts();
-                if (chart){
+                if (chart) {
                     if (chart.get('back_b') != null) {
                         chart.get('back_b').remove();
                     }
@@ -742,13 +742,13 @@ function delete_all(targets, save) {
                 var div = document.getElementById('scan-place');
                 div.setAttribute('style', 'display: none');
                 changeIsStrategySaved(true);
-                if (!deletedStrategy){
+                if (!deletedStrategy) {
                     deletedStrategy = true;
                     save_filters('default');
                 }
                 isScaned = false;
-//                isStrategySaved = false;
-//                changeIsStrategySaved(true);
+                //                isStrategySaved = false;
+                //                changeIsStrategySaved(true);
                 break;
             case 'symbol_ids':
                 portfo = [];
@@ -821,7 +821,7 @@ function apply() {
             config[setting][conf] = document.getElementById(setting + ' ' + conf).value;
         })
     });
-    var dd = {'name': symbol_id, 'trades': JSON.stringify(result2), 'config': config, 'interval': userTimeFrame};
+    var dd = { 'name': symbol_id, 'trades': JSON.stringify(result2), 'config': config, 'interval': userTimeFrame };
     // console.log(dd);
     waiting('wait');
 
@@ -830,18 +830,18 @@ function apply() {
         url: "/back-test",
         data: {
             param: JSON.stringify(dd),
-//            strategyId: getSelectedStrategyId(),
+            //            strategyId: getSelectedStrategyId(),
         },
         error: function () {
             waiting('default');
             // alert('Sorry something went wrong.');
             alert('مشکلی پیش آمده است. لطفا بعدا دوباره تلاش کنید.');
         },
-//        beforeSend: function () {
-//            if (!isStrategySaved) {
-//                save_filters('wait');
-//            }
-//        },
+        //        beforeSend: function () {
+        //            if (!isStrategySaved) {
+        //                save_filters('wait');
+        //            }
+        //        },
         success: function (result) {
             // console.log(result);
             res = JSON.parse(result);
@@ -967,16 +967,18 @@ function translate(word) {
 
 function save_filters(pointer) {
     console.log('saving strategy -------');
-//    pick_portfolio('none');
+    //    pick_portfolio('none');
     waiting('wait');
     var filters = Object.keys(chosen_strategies),
-    strategy_id = getSelectedStrategyId();
+        strategy_id = getSelectedStrategyId();
     let strategy_name = getSelectedStrategyName(strategy_id);
-    var strategy = {id: strategy_id,
-                    watchlistId: watchlistId,
-                name: strategy_name, 'filters': filters, 'symbol_ids': portfo, 'interval': userTimeFrame};
+    var strategy = {
+        id: strategy_id,
+        watchlistId: watchlistId,
+        name: strategy_name, 'filters': filters, 'symbol_ids': portfo, 'interval': userTimeFrame
+    };
     // console.log('save ajax');
-     console.log(isStrategySaved);
+    console.log(isStrategySaved);
     if (!isStrategySaved && strategy_name) {
         $.ajax({
             type: 'POST',
@@ -984,7 +986,7 @@ function save_filters(pointer) {
             data: {
                 param: JSON.stringify(strategy),
 
-//                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                //                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
             },
             async: false,
             error: function () {
@@ -993,32 +995,32 @@ function save_filters(pointer) {
                 // alert('Sorry, while saving your strategy something went wrong.');
             },
             success: function (result) {
-                if (result.s === 302){
+                if (result.s === 302) {
                     alert(result.m);
                     window.location = result.redirect;
                 }
-//                isStrategySaved = true;
+                //                isStrategySaved = true;
                 waiting(pointer);
                 // console.log(result);
                 changeIsStrategySaved(true);
                 if (result.result == 'delete') {
                     console.log("strategy deleted", isStrategySaved);
                     let elm = document.getElementById("strategyId-" + getSelectedStrategyId());
-                    if (elm){
+                    if (elm) {
                         elm.remove();
                     }
                     load_strategy();
-                }else{
+                } else {
                     console.log("changed, isStrategySaved", isStrategySaved);
-//                    let strategyNames = document.getElementById('strategyNames').children;
-//                    for (let i=0; i++; i < strategyNames.length){
-//                        strategyNames[i].selected = false;
-//                    }
-                    if (strategy_id !== result.id){
-                        new_strategy = '<option id="strategyId-'+result.id+'" value="strategyId-'+result.id+'" selected>'+strategy_name+'</option>';
+                    //                    let strategyNames = document.getElementById('strategyNames').children;
+                    //                    for (let i=0; i++; i < strategyNames.length){
+                    //                        strategyNames[i].selected = false;
+                    //                    }
+                    if (strategy_id !== result.id) {
+                        new_strategy = '<option id="strategyId-' + result.id + '" value="strategyId-' + result.id + '" selected>' + strategy_name + '</option>';
                         document.getElementById('strategyNames').innerHTML = new_strategy + document.getElementById('strategyNames').innerHTML;
                     }
-                    document.getElementById('strategyNames').value = "strategyId-"+result.id;
+                    document.getElementById('strategyNames').value = "strategyId-" + result.id;
                 }
             }
         });
@@ -1051,11 +1053,11 @@ function add_stock(result) {
         but.addEventListener('click', function () {
             portfo.splice(portfo.indexOf(this.getAttribute('name')), 1);
             this.remove();
-//            isStrategySaved = false;
+            //            isStrategySaved = false;
             changeIsStrategySaved(false);
         });
         div.appendChild(but);
-//        isStrategySaved = false;
+        //        isStrategySaved = false;
         changeIsStrategySaved(false);
     }
 }
@@ -1067,32 +1069,32 @@ function load_strategy_names() {
         url: "/get_strategy_names",
         success: function (result) {
             let strategyNames = '';
-            result.strategies.forEach(function (strategy){
-                strategyNames += '<option id="strategyId-'+strategy.id+'" value="strategyId-'+strategy.id+'">'+strategy.name+'</option>';
+            result.strategies.forEach(function (strategy) {
+                strategyNames += '<option id="strategyId-' + strategy.id + '" value="strategyId-' + strategy.id + '">' + strategy.name + '</option>';
             });
             strategyNames += '<option id="strategyId-0" value="strategyId-0">ساخت استراتژی جدید</option>';
             let strategyNamesDiv = document.getElementById('strategyNames');
             strategyNamesDiv.innerHTML = strategyNames;
             console.log(currentStrategyId);
-//                load_strategy();
-            if (currentStrategyId !== undefined){
+            //                load_strategy();
+            if (currentStrategyId !== undefined) {
                 load_strategy();
             }
         }
     });
 }
-function getSelectedStrategyId(){
+function getSelectedStrategyId() {
     let selectedStrategyId = document.getElementById('strategyNames').value.split('-')[1];
     return parseInt(selectedStrategyId)
 }
-function getSelectedStrategyName(selectedStrategyId){
+function getSelectedStrategyName(selectedStrategyId) {
     let strategyName = '';
-    if (selectedStrategyId === 0 && Object.keys(chosen_strategies).length > 0){
+    if (selectedStrategyId === 0 && Object.keys(chosen_strategies).length > 0) {
         strategyName = prompt('برای استراتژی خود یک نام تعیین کنید:');
-    }else{
-        let strategyNameDiv = document.getElementById('strategyId-'+selectedStrategyId);
-        if (strategyNameDiv){
-           strategyName = strategyNameDiv.innerHTML;
+    } else {
+        let strategyNameDiv = document.getElementById('strategyId-' + selectedStrategyId);
+        if (strategyNameDiv) {
+            strategyName = strategyNameDiv.innerHTML;
         }
     }
     return strategyName
@@ -1101,9 +1103,9 @@ function load_strategy() {
     let selectedStrategyId = getSelectedStrategyId();
     console.log("load strategy", selectedStrategyId, currentStrategyId);
     waiting('wait');
-//    selectedStrategyId = parseInt(selectedStrategyId);
-    if (selectedStrategyId > 0){
-    console.log('here');
+    //    selectedStrategyId = parseInt(selectedStrategyId);
+    if (selectedStrategyId > 0) {
+        console.log('here');
         $.ajax({
             type: 'GET',
             url: "/load_strategy",
@@ -1114,20 +1116,20 @@ function load_strategy() {
                 strategy = JSON.parse(strategy);
                 document.getElementById('watchListNames').value = strategy.watchlistId;
                 changeWatchList();
-                if (selectedStrategyId === currentStrategyId){
+                if (selectedStrategyId === currentStrategyId) {
                     delete_all(['symbol_ids', 'indicators', 'filters'], false);
-                }else{
+                } else {
                     delete_all(['symbol_ids', 'indicators', 'back test', 'scan', 'filters'], false);
-                setTimeFrame(strategy.interval);
-                changeIsStrategySaved(true);
+                    setTimeFrame(strategy.interval);
+                    changeIsStrategySaved(true);
                 }
-//                if (selectedStrategyId === currentStrategyId){
-//                    if (isStrategySaved)
-//                }
+                //                if (selectedStrategyId === currentStrategyId){
+                //                    if (isStrategySaved)
+                //                }
                 currentStrategyId = selectedStrategyId;
-//                console.log(strategy);
-//                setTimeFrame(strategy.interval);
-//                changeIsStrategySaved(true);
+                //                console.log(strategy);
+                //                setTimeFrame(strategy.interval);
+                //                changeIsStrategySaved(true);
 
                 strategy['filters'].forEach(function (filter) {
                     filter = JSON.parse(filter);
@@ -1138,8 +1140,8 @@ function load_strategy() {
                 });
             },
             error: function () {
-//                delete_strategy({'name': name});
-//                load_alternative_strategy({});
+                //                delete_strategy({'name': name});
+                //                load_alternative_strategy({});
                 // create_name_option({'new_name':name});
                 // var opt = document.getElementById("strategy name: " + name);
                 // opt.parentNode.removeChild(opt);
@@ -1147,9 +1149,9 @@ function load_strategy() {
             }
 
         });
-    }else{
-//    console.log('here');
-         delete_all(['symbol_ids', 'indicators', 'back test', 'scan', 'filters'], false);
+    } else {
+        //    console.log('here');
+        delete_all(['symbol_ids', 'indicators', 'back test', 'scan', 'filters'], false);
     }
     waiting('default');
 }
@@ -1164,7 +1166,7 @@ function scan() {
             url: "/scan_market",
             data: {
                 strategyId: getSelectedStrategyId(),
-//                interval: userTimeFrame,
+                //                interval: userTimeFrame,
             },
             error: function () {
                 waiting('default');
@@ -1201,10 +1203,10 @@ function show_scan_result(result) {
             var num = 1;
             result[signal].forEach(function (signal_symbol) {
                 var signal_symbol_name = signal_symbol['symbol_id']; //signal_symbol['symbol_name'],
-                    description_text = ''; //signal_symbol['description'],
-                    color = '#1C1F32';
-//                    let color = '#1C1F32';
-                    let symbol_url = signal_symbol['symbol_id'];
+                description_text = ''; //signal_symbol['description'],
+                color = '#1C1F32';
+                //                    let color = '#1C1F32';
+                let symbol_url = signal_symbol['symbol_id'];
                 var item = document.createElement('tr');
                 if (num % 2 == 0) color = '#4D5068';
                 item.setAttribute('style', 'background: ' + color);
@@ -1227,10 +1229,10 @@ function show_scan_result(result) {
                 var symbol_name = document.createElement('td');
                 var a = document.createElement('a');
                 a.addEventListener('click', function () {
-//                    delete_all(['indicators'], false);
+                    //                    delete_all(['indicators'], false);
                     symbol_id = symbol_url;
                     load_data('/data/get-data/' + symbol_id);
-//                    load_strategy();
+                    //                    load_strategy();
                 });
                 if (signal === 'buy') a.setAttribute('style', 'color: #00CA9D; cursor:pointer;');
                 else a.setAttribute('style', 'color: #E35C67;cursor: pointer');
@@ -1505,7 +1507,7 @@ function insert_indicators() {
             'BaseLineperiod': 26,
             'LagingB': 52
         },
-        'settings': {'shift': 0}
+        'settings': { 'shift': 0 }
     };
     var gp = ['Trend Indicators', 'Momentum Indicators', 'Volatility Indicators', 'Volume Indicators', 'Historical Data'];
     // var gp = {
@@ -1542,8 +1544,8 @@ function insert_indicators() {
     indicators_cross = indicators;
     indicators_cross['config_trade'] = {
         'fun_name': 'config_trade',
-        'outputs': {'real': ['line', 'solid']},
-        'params': {'stop loss': 0, 'take profit': 0},
+        'outputs': { 'real': ['line', 'solid'] },
+        'params': { 'stop loss': 0, 'take profit': 0 },
     };
     // indicators_cross['stop loss'] = {
     //     'fun_name':'STOP LOSS',
@@ -1585,7 +1587,7 @@ function insert_param(id) {
             place.appendChild(select);
         }
 
-        var option = {'params': '', 'settings': ''};
+        var option = { 'params': '', 'settings': '' };
         Object.keys(option).forEach(function (options) {
             if (indicator[options]) {
                 Object.keys(indicator[options]).forEach(function (param) {
@@ -1596,9 +1598,9 @@ function insert_param(id) {
                     inp.setAttribute('class', 'input');
                     inp.setAttribute('value', indicator[options][param]);
                     inp.setAttribute('style', 'max-width:5%');
-                    if (options === 'settings' && param==='shift'){
-                        inp.addEventListener('change', function(){
-                            let val = Math.round(this.value);if(val<0){val=-1*val};this.value=Math.max(val, 1);
+                    if (options === 'settings' && param === 'shift') {
+                        inp.addEventListener('change', function () {
+                            let val = Math.round(this.value); if (val < 0) { val = -1 * val }; this.value = Math.max(val, 1);
                         });
                     }
                     var t = document.createTextNode(' ' + param + ' : ');
@@ -1692,7 +1694,7 @@ function let_draw(data) {
 }
 
 function call_add(kind) {
-    var data = {'kind': kind};
+    var data = { 'kind': kind };
     switch (kind) {
         case 'more':
             data['ids'] = ['main', 'minor'];
@@ -1753,7 +1755,7 @@ function add_method(data) {
         if (nsi != '' & valid) {
             strategy['indicators'][idx]['name'] = indicators_cross[nsi]['fun_name'];
             var indicator = indicators_cross[nsi];
-            var option = {'params': '', 'settings': ''};
+            var option = { 'params': '', 'settings': '' };
             Object.keys(option).forEach(function (options) {
                 strategy['indicators'][idx][options] = {};
                 if (indicator[options]) {
@@ -1836,14 +1838,14 @@ function check_strategy(strategy) {
 
 function calculate_indicators(strategy, saving_status) {
     var strg = jQuery.extend(true, {}, strategy);
-//    strategy['interval'] = userTimeFrame;
+    //    strategy['interval'] = userTimeFrame;
     waiting('wait');
     $.ajax({
         type: 'GET',
-        url: "/calculate_filter/"+userTimeFrame,
+        url: "/calculate_filter/" + userTimeFrame,
         data: {
             param: JSON.stringify(strategy),
-//            interval: userTimeFrame;
+            //            interval: userTimeFrame;
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
         },
         error: function () {
@@ -1854,7 +1856,7 @@ function calculate_indicators(strategy, saving_status) {
             // alert('Sorry something went wrong \nCheck inputs please.');
         },
         success: function (result) {
-//            isStrategySaved = saving_status;
+            //            isStrategySaved = saving_status;
             changeIsStrategySaved(saving_status);
             console.log('isStrategySaved saving status', isStrategySaved);
             var st = JSON.stringify(strategy);
@@ -1959,7 +1961,7 @@ function add(data) {
             }
         },
 
-        yAxis: [{opposite: false}]
+        yAxis: [{ opposite: false }]
     };
     switch (data['kind']) {
         case 'cross':
@@ -2127,7 +2129,7 @@ function add(data) {
                 var abr = give_abr({
                     'name': data['indicators'][chosen]['name'],
                     'params': data['indicators'][chosen]['params'],
-                    'output': {'name': output, 'type': data['indicators'][chosen]['outputs'][output]['type']},
+                    'output': { 'name': output, 'type': data['indicators'][chosen]['outputs'][output]['type'] },
                 });
                 switch (data['indicators'][chosen]['name']) {
                     case 'ichimoku':
@@ -2235,7 +2237,7 @@ function add(data) {
             });
         }
     });
-    insert_strategy({'brief': brief, 'id': data['id'], 'id_finish': data['id_finish'], 'str_brief': data['str_brief']});
+    insert_strategy({ 'brief': brief, 'id': data['id'], 'id_finish': data['id_finish'], 'str_brief': data['str_brief'] });
     check_strategies_number();
 }
 
@@ -2287,7 +2289,7 @@ function give_abr(data) {
     //         ind_type = 'line';
     //         break;
     // }
-    return {'abr': abr, 'type': ind_type, 'dash': dash}
+    return { 'abr': abr, 'type': ind_type, 'dash': dash }
 }
 
 function give_id() {
@@ -2303,9 +2305,9 @@ function insert_strategy(data) {
     div.setAttribute('id', data['id']);
     div.setAttribute('name', data['id_finish']);
     var ic = document.createElement('i');
-//    ic.setAttribute('class', 'icon checkmark');
+    //    ic.setAttribute('class', 'icon checkmark');
     ic.setAttribute('class', 'trash icon');
-//    ic.setAttribute('style', 'text-align: right; float: right;cursor:pointer;margin-right:5%');
+    //    ic.setAttribute('style', 'text-align: right; float: right;cursor:pointer;margin-right:5%');
     ic.setAttribute('style', 'color:#E35C67;text-align: right; float: right;cursor:pointer;margin-right:5%');
     ic.setAttribute('title', 'حذف فیلتر');
     ic.setAttribute('name', data['str_brief']);
@@ -2316,11 +2318,11 @@ function insert_strategy(data) {
     });
     ic.addEventListener("mouseover", function () {
         this.parentElement.style.color = '#E35C67';
-//        this.setAttribute('class', 'remove icon');
+        //        this.setAttribute('class', 'remove icon');
     });
     ic.addEventListener("mouseout", function () {
         this.parentElement.style.color = 'white';
-//        this.setAttribute('class', 'checkmark icon');
+        //        this.setAttribute('class', 'checkmark icon');
     });
     div.appendChild(ic);
     var para = document.createElement("P");
@@ -2355,7 +2357,7 @@ function del(start, finish, str) {
     }
     delete result_type_1[start];
     delete result_type_2[start];
-//    isStrategySaved = false;
+    //    isStrategySaved = false;
     changeIsStrategySaved(false);
 }
 
@@ -2377,7 +2379,7 @@ function update_indicators(c) {
                 type: 'GET',
                 url: "finance/update-indicators",
                 data: {
-                    param: JSON.stringify({'params': params, 'price': c}),
+                    param: JSON.stringify({ 'params': params, 'price': c }),
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                 },
                 error: function () {
@@ -2397,7 +2399,7 @@ function update_indicators(c) {
 
                         series.data[l - 1].remove();
                         series.addPoint(JSON.parse(result[i])[0], false, true);
-                        chart.redraw({'animation': {'duration': 0}});
+                        chart.redraw({ 'animation': { 'duration': 0 } });
 
                     });
                 }
@@ -2465,7 +2467,7 @@ $(document).ready(function () {
                     var
                         category = item.category || 'Unknown',
                         maxResults = 8
-                    ;
+                        ;
                     if (index >= maxResults) {
                         return false;
                     }
@@ -2504,23 +2506,23 @@ $(document).ready(function () {
     });
 });
 
-function changeTimeFrame(new_timeFrame){
-//    console.log(elm.id);
+function changeTimeFrame(new_timeFrame) {
+    //    console.log(elm.id);
     let selectedTimeFrame = new_timeFrame;
-    if (selectedTimeFrame === userTimeFrame){
+    if (selectedTimeFrame === userTimeFrame) {
         return true
     }
     userTimeFrame = selectedTimeFrame;
     setTimeFrame(userTimeFrame);
-//    isStrategySaved = false;
+    //    isStrategySaved = false;
     changeIsStrategySaved(false);
     isBacktested = false;
     isScaned = false;
     console.log("timeframe changed, isStrategySaved", isStrategySaved);
-    load_data('/data/get-data/'+symbol_id);
+    load_data('/data/get-data/' + symbol_id);
 }
-function setTimeFrame(chosen_interval){
-    intervals.forEach(function (interval){
+function setTimeFrame(chosen_interval) {
+    intervals.forEach(function (interval) {
         document.getElementById(interval).style.backgroundColor = '';
         document.getElementById(interval).style.color = 'black';
     });
@@ -2529,38 +2531,38 @@ function setTimeFrame(chosen_interval){
     document.getElementById('strategyTimeFrame').value = chosen_interval;
     userTimeFrame = chosen_interval;
 }
-function changeIsStrategySaved(saving_status){
+function changeIsStrategySaved(saving_status) {
     isStrategySaved = saving_status;
     let strategySavingStatusDiv = document.getElementById('strategySavingStatus');
-    if (saving_status){
+    if (saving_status) {
         strategySavingStatus.value = 'ذخیره شده';
         strategySavingStatus.style.color = '#00ca9d';
-    }else{
+    } else {
         strategySavingStatus.value = 'ذخیره نشده';
         strategySavingStatus.style.color = 'rgb(227, 92, 103)';
     }
 }
 
 
-function getWatchLists(){
+function getWatchLists() {
     let url = '/getWatchLists'
     $.ajax({
         url: url,
-        success: function (result){
+        success: function (result) {
             insertWatchlists(result.watchlists);
-//            console.log(result);
+            //            console.log(result);
         },
     });
 }
-function insertWatchlists(watchlists){
+function insertWatchlists(watchlists) {
     let watchListNamesDiv = document.getElementById('watchListNames');
     watchListNamesDiv.innerHTML = '';
-    watchlists.forEach(function (watchlist){
-        watchListNamesDiv.innerHTML += '<option value="'+watchlist.id+'">'+watchlist.name+'</option>'
+    watchlists.forEach(function (watchlist) {
+        watchListNamesDiv.innerHTML += '<option value="' + watchlist.id + '">' + watchlist.name + '</option>'
     });
-//    getWatchLists(watchListNamesDiv.value);
+    //    getWatchLists(watchListNamesDiv.value);
 }
-function changeWatchList(){
+function changeWatchList() {
     watchlistId = document.getElementById('watchListNames').value;
     changeIsStrategySaved(false);
 }

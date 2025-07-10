@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 
 {% block title %}{{ title }}{% endblock %}
 
 {% block headContent %}
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/stockwatch.css' %}"/>
-    <script src="https://code.highcharts.com/stock/highstock.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
-    <script src="//raw.githack.com/tahajahangir/jdate/master/jdate.min.js"></script>
-    <script type="text/javascript" src="{% static 'js/farabi.js' %}"></script>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="{% static 'css/stockwatch.css' %}" />
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="//raw.githack.com/tahajahangir/jdate/master/jdate.min.js"></script>
+<script type="text/javascript" src="{% static 'js/farabi.js' %}"></script>
 {% endblock headContent %}
 
 {% load i18n %}

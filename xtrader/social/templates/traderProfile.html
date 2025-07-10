@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% block title %}پروفایل{% endblock %}
 {% block headContent %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/copytrading.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/copytrading.css' %}" />
 <script src="{% static 'js/protrader.js' %}?v=1"></script>
 <script src="{% static 'js/base.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="/static/css/jquery.dataTables.css">
@@ -23,27 +23,23 @@
                 <div class="column customColumnsX">
                     نام:
                     <input id="traderBrand"
-                           style="background-color: rgb(28, 31, 50); width: 10rem; color: rgb(0, 202, 157);"
-                           disabled="">
+                        style="background-color: rgb(28, 31, 50); width: 10rem; color: rgb(0, 202, 157);" disabled="">
                 </div>
                 <div class="column customColumnsX">
                     اشتراک ماهانه (تتر):
-                    <input id="subsFee"
-                           style="background-color: rgb(28, 31, 50); width: 5rem; color: rgb(0, 202, 157);"
-                           disabled="">
+                    <input id="subsFee" style="background-color: rgb(28, 31, 50); width: 5rem; color: rgb(0, 202, 157);"
+                        disabled="">
                 </div>
                 <div class="column customColumnsX">
                     وضعیت:
-                    <input id="status"
-                           style="background-color: rgb(28, 31, 50); width: 10rem; color: rgb(0, 202, 157);"
-                           disabled="">
+                    <input id="status" style="background-color: rgb(28, 31, 50); width: 10rem; color: rgb(0, 202, 157);"
+                        disabled="">
                 </div>
                 <div class="column customColumnsX">
-                    <button class="positive ui button" id="follow" style=""
-                            onclick="showRiskModal(1)">دنبال کردن
+                    <button class="positive ui button" id="follow" style="" onclick="showRiskModal(1)">دنبال کردن
                     </button>
                     <button class="negative ui button" id="unfollow" style="display:none"
-                            onclick="showRiskModal(0)">دنبال نکردن
+                        onclick="showRiskModal(0)">دنبال نکردن
                     </button>
                     <a href="/social/copytrading">
                         <button class="positive ui button">مشاهده همه
@@ -70,10 +66,14 @@
         <br>
         <h1>ریسک‌های کپی تریدینگ:</h1>
         <ul>
-            <li>بازار رمزارزها نوسانات بالایی دارد و هیچ تضمینی برای کسب سود ثابت (تضمینی) یا حتی حفظ اصل سرمایه وجود ندارد،</li>
-            <li>رمزثروت هیچ‌گونه ارزیابی از عملکرد تریدر انجام نداده است و ایشان مورد تایید یا توصیه رمزثروت نیستند،</li>
+            <li>بازار رمزارزها نوسانات بالایی دارد و هیچ تضمینی برای کسب سود ثابت (تضمینی) یا حتی حفظ اصل سرمایه وجود
+                ندارد،</li>
+            <li>رمزثروت هیچ‌گونه ارزیابی از عملکرد تریدر انجام نداده است و ایشان مورد تایید یا توصیه رمزثروت نیستند،
+            </li>
             <li>رمزثروت ضامن حسن نیت و حسن انجام سفارشات توسط ایشان نیست،</li>
-            <li>رمزثروت مسولیتی در برابر قطعی‌های اینترنت، تفاوت در ارزش دارایی که عملیات کپی کردن سفارشات را مختل می‌سازد (مانند کپی کردن سفارشاتی با ارزش کمتر از ۱۰ تتر)، دخل و تصرف شخص شما یا تریدر در سبد خود که باعث اختلاف با تریدر می‌شود و در نهایت حصول بازدهی یکسان با تریدر ندارد،</li>
+            <li>رمزثروت مسولیتی در برابر قطعی‌های اینترنت، تفاوت در ارزش دارایی که عملیات کپی کردن سفارشات را مختل
+                می‌سازد (مانند کپی کردن سفارشاتی با ارزش کمتر از ۱۰ تتر)، دخل و تصرف شخص شما یا تریدر در سبد خود که باعث
+                اختلاف با تریدر می‌شود و در نهایت حصول بازدهی یکسان با تریدر ندارد،</li>
             <li>مبلغ اشتراک ماهانه، به هیچ عنوان (حتی در صورت انصراف از دنبال کردن) قابل بازگشت نیست.</li>
         </ul>
         <br>
@@ -96,18 +96,18 @@
         یادآوری
     </div>
     <div class="content" style="text-align: right;">
-لطفا برای دنبال نکردن تریدر شرایط زیر را در نظر بگیرید
+        لطفا برای دنبال نکردن تریدر شرایط زیر را در نظر بگیرید
         <br>
         <br>
-<!--        <h1>ریسک‌های کپی تریدینگ:</h1>-->
+        <!--        <h1>ریسک‌های کپی تریدینگ:</h1>-->
         <ul>
             <li>
                 مبلغ پرداخت شده بابت دنبال کردن تریدر بازگشت داده نمی‌شود،
             </li>
             <li>در صورتی که بخواهید همین تریدر یا تریدر دیگری را دنبال کنید مجددا نیاز به پرداخت اشتراک می‌باشد.</li>
         </ul>
-<!--        <br>-->
-<!--        آیا ریسک‌های موجود برای دنبال کردن ایشان را می‌پذیرید؟-->
+        <!--        <br>-->
+        <!--        آیا ریسک‌های موجود برای دنبال کردن ایشان را می‌پذیرید؟-->
     </div>
     <div class="actions">
         <div class="ui green ok inverted button" onclick="copytrade(0)">

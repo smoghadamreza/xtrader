@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -9,14 +9,14 @@
 
 
 <!-- Needed stylesheets start -->
-<link rel="stylesheet" type="text/css" href="{% static 'css/stockwatch.css' %}?v=1"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/stockwatch.css' %}?v=1" />
 <!-- Needed stylesheets end -->
 
 
 <!-- Needed scripts start -->
 <script>
-        var SymbolId = "{{ SymbolId }}",
-            user = "{{request.user.username}}";
+    var SymbolId = "{{ SymbolId }}",
+        user = "{{request.user.username}}";
 
 
 
@@ -34,44 +34,45 @@
 <div class="container-fluid" dir="rtl" style="max-height: 120%;">
     <div class="row" style="min-height: 68%">
         <div class="col" style="padding-left: 0px;width: 25%;padding-right: 10px">
-<!--        <div class="col-xl-3" style="width: 25%; margin-right: 0px;padding-right: 7px;padding-left: 3px">-->
+            <!--        <div class="col-xl-3" style="width: 25%; margin-right: 0px;padding-right: 7px;padding-left: 3px">-->
             <div class="row" style="min-height: 45% ; flex-direction: row-reverse;">
-                <div class="col-12 col-md-7 col-lg-8 height_fix_mobile"  >
+                <div class="col-12 col-md-7 col-lg-8 height_fix_mobile">
                     <!--        <div class="col-xl-9" style="width: 75%; padding-left: 0px;padding-right: 0px">-->
-                                <!-- TradingView Widget BEGIN -->
-                                <div class="tradingview-widget-container">
-                                    <div id="tradingview_87049"></div>
-                                    <!--  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/BTCUSDT/?exchange=BINANCE" rel="noopener" target="_blank"><span class="blue-text">BTCUSDT Chart</span></a> by TradingView</div>-->
-                                    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                                    <script type="text/javascript">
-                                          new TradingView.widget(
-                                          {
-                                          "autosize": true,
-                                          "symbol": "BINANCE:"+SymbolId,
-                                          "interval": "D",
-                                          "timezone": "Etc/UTC",
-                                          "theme": "dark",
-                                          "style": "1",
-                                          "locale": "en",
-                                          "toolbar_bg": "#f1f3f6",
-                                          "enable_publishing": false,
-                                          "hide_side_toolbar": false,
-                                          "show_popup_button": true,
-                                          "popup_width": "1000",
-                                          "popup_height": "650",
-                                          // "allow_symbol_change": true,
-                                          "container_id": "tradingview_87049"
-                                        }
-                                          );
-                    
-                                    </script>
-                                </div>
-                                <!-- TradingView Widget END -->
+                    <!-- TradingView Widget BEGIN -->
+                    <div class="tradingview-widget-container">
+                        <div id="tradingview_87049"></div>
+                        <!--  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/BTCUSDT/?exchange=BINANCE" rel="noopener" target="_blank"><span class="blue-text">BTCUSDT Chart</span></a> by TradingView</div>-->
+                        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                        <script type="text/javascript">
+                            new TradingView.widget(
+                                {
+                                    "autosize": true,
+                                    "symbol": "BINANCE:" + SymbolId,
+                                    "interval": "D",
+                                    "timezone": "Etc/UTC",
+                                    "theme": "dark",
+                                    "style": "1",
+                                    "locale": "en",
+                                    "toolbar_bg": "#f1f3f6",
+                                    "enable_publishing": false,
+                                    "hide_side_toolbar": false,
+                                    "show_popup_button": true,
+                                    "popup_width": "1000",
+                                    "popup_height": "650",
+                                    // "allow_symbol_change": true,
+                                    "container_id": "tradingview_87049"
+                                }
+                            );
+
+                        </script>
+                    </div>
+                    <!-- TradingView Widget END -->
                     <!--            <div class="xyz" id="chart" style="display:none;min-height: 99%;width: 100%" dir="ltr"></div>-->
-                            </div>
+                </div>
                 <div class="col-12 col-md-5 col-lg-4">
                     <div class="row">
-                        <div class="col-12 xyz" id="costs" style="width:100%;min-height: 100%;margin-right: 13px;padding-bottom: 10px;">
+                        <div class="col-12 xyz" id="costs"
+                            style="width:100%;min-height: 100%;margin-right: 13px;padding-bottom: 10px;">
                             <div class="divTable margin_for_xl_size">
                                 <div class="divTableBody">
                                     <div class="divTableRow">
@@ -79,10 +80,12 @@
                                         <table>
                                             <tr>
                                                 <td>نماد</td>
-    <!--                                            <td><h1 id="InstrumentName"></h1></td>-->
-                                                <td><h1>{{SymbolId}}</h1></td>
-    <!--                                            <td id="intervals" style="direction: ltr">-->
-    <!--                                            </td>-->
+                                                <!--                                            <td><h1 id="InstrumentName"></h1></td>-->
+                                                <td>
+                                                    <h1>{{SymbolId}}</h1>
+                                                </td>
+                                                <!--                                            <td id="intervals" style="direction: ltr">-->
+                                                <!--                                            </td>-->
                                             </tr>
                                             <tr>
                                                 <td style="width: 30%">
@@ -90,9 +93,9 @@
                                                 </td>
                                                 <td>
                                                     <select id="orderType" onchange="changeOrderType(this)"
-                                                            style="background-color: #1c1f32; color: white;">
+                                                        style="background-color: #1c1f32; color: white;">
                                                         <option value="LIMIT">Limit</option>
-<!--                                                        <option value="MARKET">Market</option>-->
+                                                        <!--                                                        <option value="MARKET">Market</option>-->
                                                         <!--                                                    <option>StopLimit</option>-->
                                                         <!--                                                    <option>OCO</option>-->
                                                     </select>
@@ -100,13 +103,14 @@
                                             </tr>
                                             <tr>
                                                 <td>قیمت</td>
-                                                <td><input class="paramsInput" type="number" id="price" placeholder="قیمت">
+                                                <td><input class="paramsInput" type="number" id="price"
+                                                        placeholder="قیمت">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>تعداد</td>
                                                 <td><input class="paramsInput" type="number" id="quantity"
-                                                           placeholder="تعداد"></td>
+                                                        placeholder="تعداد"></td>
                                             </tr>
                                             <tr>
                                                 <td></td>
@@ -188,7 +192,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
 
 
                     <!--                        <div class="xyz" id="costs" style="min-width:100%;min-height: 100%">-->
@@ -234,15 +238,16 @@
                     <!--                        </div>-->
                 </div>
             </div>
-            
+
         </div>
-        
+
     </div>
-<!--    <br>-->
+    <!--    <br>-->
     <div class="row">
         <div class="col-12 col-lg-6" style="padding: 0px 13px 0px 0px !important;">
-            <div class="xyz" style="overflow: scroll;  max-height: 100px;width: 101%;min-height: 18vh;margin-right:-5px;"
-                 id="portfo">
+            <div class="xyz"
+                style="overflow: scroll;  max-height: 100px;width: 101%;min-height: 18vh;margin-right:-5px;"
+                id="portfo">
                 <div class="divTable">
                     <div>سبد دارایی</div>
                     <div class="divTableBody" id="pportfo">
@@ -256,8 +261,9 @@
             </div>
         </div>
         <div class="col-12 col-lg-6" style="padding: 0px 10px 0px 0px !important;">
-            <div class="xyz" style="overflow: scroll;  max-height: 100px;min-height: 18vh;width: 100%;margin-right: -5px"
-                 id="hotlist">
+            <div class="xyz"
+                style="overflow: scroll;  max-height: 100px;min-height: 18vh;width: 100%;margin-right: -5px"
+                id="hotlist">
                 <div class="divTable">
                     <div>سفارشات</div>
                     <div class="divTableBody" id="orders_place">
@@ -271,10 +277,9 @@
                         </div>
                     </div>
                     <style>
-                            i:hover {
-                                cursor: pointer;
-                            }
-
+                        i:hover {
+                            cursor: pointer;
+                        }
                     </style>
                 </div>
             </div>
