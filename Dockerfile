@@ -73,7 +73,6 @@ RUN mkdir -p /xtrader/migrations/userena && \
 USER xtrader
 
 # Expose port
-EXPOSE 9000
+EXPOSE 8000
 
-# Specify the default command (modified for Conda)
-CMD ["conda", "run", "-n", "xtrader-env", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["/scripts/entrypoint.sh"]

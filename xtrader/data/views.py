@@ -6,7 +6,7 @@ from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 
 import data.redis as redis
-import data.stockwatch as stockwatchModel
+import data.stock_watch as stockwatchModel
 from data.models import StockWatch as Symbol
 from finance.models import Strategy
 
@@ -29,8 +29,8 @@ def history(request):
     return HttpResponse(json.dumps(histories))
 
 
-def stockwatch(request, SymbolId):
-    stock = stockwatchModel.stockWatchInfo(SymbolId, eps=True)
+def stockwatch(request, symbol_id):
+    stock = stockwatchModel.stock_watch_info(symbol_id, eps=True)
     return HttpResponse(json.dumps(stock))
 
 

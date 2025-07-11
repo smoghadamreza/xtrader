@@ -5,7 +5,8 @@ module tasks:
 
 import time
 
-from data import backup, redis
+import data.backup as backup
+import data.redis as redis
 from data.models import StockWatch
 from finance import oms
 
@@ -14,21 +15,21 @@ wrong_symbol_ids = []
 new_group = {}
 
 
-def createStockWatchTables(num=0):
+def create_stock_watch_tables(num=0):
     for i, symbol_id in enumerate(symbol_ids):
         if i >= num:
             print("stock watch for index: {}".format(i))
-            info = stockWatchInfo(symbol_id)
+            info = stock_watch_info(symbol_id)
             if info:
                 try:
-                    addStockWatchTable(info)
+                    add_stock_watch_table(info)
                 except Exception:
                     wrong_symbol_ids.append(
                         dict(id=symbol_id, problem="on save")
                     )
 
 
-def stockWatchInfo(symbol_id, eps=True):
+def stock_watch_info(symbol_id, eps=True):
     depth = oms.Binance.get_depth(symbol_id, limit=10)
     int(time.time() * 1000)
     symbol = redis.hget("exchangeInfo", symbol_id)
@@ -49,7 +50,7 @@ def stockWatchInfo(symbol_id, eps=True):
     return data
 
 
-def addStockWatchTable(info):
+def add_stock_watch_table(info):
     try:
         StockWatch(**info).save()
         print("successful progress")
@@ -57,16 +58,16 @@ def addStockWatchTable(info):
         print("This symbol doesn't exist.")
 
 
-def cleanduplicate():
+def delete_duplicate():
     for row in StockWatch.objects.all():
-        if StockWatch.objects.filter(SymbolId=row.SymbolId).count() > 1:
+        if StockWatch.objects.filter(symbol_id=row.symbol_id).count() > 1:
             row.delete()
 
 
 class Stock_Watch:
     @staticmethod
     def create_tables():
-        createStockWatchTables()
+        create_stock_watch_tables()
 
     def update(self, num=0):
         update_stock_watch(num)
@@ -76,20 +77,20 @@ def update_stock_watch(num=0):
     stocks = StockWatch.objects.all()
     for i, stock in enumerate(stocks):
         if i >= num:
-            symbol_id = stock.SymbolId
+            symbol_id = stock.symbol_id
             print("update stock watch for index: {}".format(i))
-            info = stockWatchInfo(symbol_id)
+            info = stock_watch_info(symbol_id)
             if info:
                 try:
-                    updateStockWatchTable(stock, info)
+                    update_stock_watch_table(stock, info)
                 except Exception:
                     wrong_symbol_ids.append(
                         dict(id=symbol_id, problem="on update stock watch")
                     )
 
 
-def updateStockWatchTable(model, data):
+def update_stock_watch_table(model, data):
     for key in data:
         model.__setattr__(key, data[key])
     model.save()
-    print("{} updated successfully".format(model.InstrumentName))
+    print("{} updated successfully".format(model.instrument_name))

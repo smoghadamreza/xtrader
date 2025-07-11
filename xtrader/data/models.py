@@ -83,7 +83,7 @@ class StockWatch(models.Model):
     exchange_code = models.CharField(max_length=50, blank=True, null=True)
 
     # TODO: change default value  to constant
-    last_trade_data = models.DateField(
+    last_trade_date = models.DateField(
         default=timezone.now, blank=True, null=True
     )
 
@@ -159,7 +159,7 @@ class StockWatch(models.Model):
 
     def dict(self, keys, date):
         d = {}
-        if str(self.last_trade_data) == date:
+        if str(self.last_trade_date) == date:
             for key in keys:
                 try:
                     d[key] = float(self.__getattribute__(key))

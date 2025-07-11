@@ -6,12 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: xtrader-app
-    command: >
-      sh -c "conda run -n xtrader-env python manage.py wait_for_db &&
-             conda run -n xtrader-env python manage.py collectstatic --noinput &&
-             conda run -n xtrader-env python manage.py makemigrations &&
-             conda run -n xtrader-env python manage.py migrate &&
-             conda run -n xtrader-env python manage.py runserver 0.0.0.0:8000"
+    command: []
     ports:
       - 8000:8000
     volumes:

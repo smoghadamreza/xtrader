@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from collections import OrderedDict
+from typing import cast
 
 from django import forms
 from django.contrib.auth import (
@@ -17,7 +18,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 from userena import settings as userena_settings
 from userena.forms import SignupForm, identification_field_factory
-from userena.models import UserenaSignup
+from userena.models import UserenaSignup, UserenaManager
 from userena.utils import get_profile_model
 
 from accounts.models import Profile
@@ -75,8 +76,8 @@ class SignupFormExtra(SignupForm):
             self.cleaned_data["email"],
             self.cleaned_data["password1"],
         )
-
-        new_user = UserenaSignup.objects.create_user(
+        userena_signup = cast(UserenaManager, UserenaSignup.objects)
+        new_user = userena_signup.create_user(
             username,
             email,
             password,

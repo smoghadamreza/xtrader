@@ -5,16 +5,6 @@ from userena import settings as userena_settings
 import accounts.views as userena_views
 
 
-def merged_dict(dict_a, dict_b):
-    """Merges two dicts and returns output.
-
-    It's purpose is to ease use of
-    ``auth_views_compat_quirks``
-    """
-    dict_a.update(dict_b)
-    return dict_a
-
-
 urlpatterns = [
     re_path(r"^getTelegram/$", userena_views.get_telegram, name="getTelegram"),
     re_path(r"^newDeposit/$", userena_views.new_deposit, name="newDeposit"),
@@ -24,7 +14,7 @@ urlpatterns = [
     ),
     re_path(r"^getDeposits/$", userena_views.get_deposits, name="getDeposits"),
     re_path(r"^signup/$", userena_views.signupsample, name="userena_signup"),
-    re_path(r"^signup/$", userena_views.signup, name="userena_signup"),
+    # re_path(r"^signup-useless/$", userena_views.signup, name="userena_signup"),
     re_path(r"^signin/$", userena_views.signin, name="userena_signin"),
     re_path(
         r"^signout/$",

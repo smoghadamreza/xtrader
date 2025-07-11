@@ -210,7 +210,7 @@ def display(request):
     return render(
         request,
         "back.html",
-        {"SymbolId": "BTCUSDT", **get_user(request=request)},
+        {"symbol_id": "BTCUSDT", **get_user(request=request)},
     )
 
 

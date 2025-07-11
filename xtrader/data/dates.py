@@ -1,7 +1,8 @@
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
-from data import jalali, redis
+import data.jalali as jalali
+import data.redis as redis
 from data.models import StockWatch
 
 
@@ -77,7 +78,9 @@ class Check:
 
     def last_market(self):
         last_day = StockWatch.objects.order_by("-LastTradeDate").first()
-        last_day = to_str(last_day.LastTradeDate)
+        if last_day is None:
+            raise ValueError("No stock market data found in the database")
+        last_day = to_str(last_day.last_trade_date)
         return last_day
 
     def find_the_last_day(self):
@@ -93,10 +96,12 @@ class Check:
 
     def is_history_updated(self):
         last_market = StockWatch.objects.order_by("-LastTradeDate").first()
-        SymbolId = last_market.SymbolId
-        last_market_date = to_str(last_market.LastTradeDate)
-        last_historical_date = redis.hget(SymbolId, "date")[-1]
+        if last_market is None:
+            raise ValueError("last_market of type StockWatch cannot be None")
+        symbol_id = last_market.symbol_id
+        last_market_date = to_str(last_market.last_trade_date)
+        last_historical_date = redis.hget(symbol_id, "date")[-1]
         last_historical_date *= 0.001
-        last_historical_date = datetime.utcfromtimestamp(last_historical_date)
+        last_historical_date = datetime.fromtimestamp(last_historical_date, tz=timezone.utc)
         last_historical_date = to_str(last_historical_date)
         return last_historical_date == last_market_date

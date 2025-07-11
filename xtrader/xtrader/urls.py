@@ -17,21 +17,21 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, re_path
+from django.urls import include, path
 
 urlpatterns = [
-    re_path(
-        r"^accounts/",
-        include(("accounts.urls", "accounts"), namespace="accounts"),
+    path(
+        'accounts/',
+        include(('accounts.urls', 'accounts'), namespace='accounts'),
     ),
-    re_path(r"^admin/", admin.site.urls),
-    re_path(r"^", include(("finance.urls", "finance"), namespace="finance")),
-    re_path(r"^data/", include(("data.urls", "data"), namespace="data")),
-    re_path(
-        r"^social/", include(("social.urls", "social"), namespace="social")
+    path('admin/', admin.site.urls),
+    path('', include(('finance.urls', 'finance'), namespace='finance')),
+    path('data/', include(('data.urls', 'data'), namespace='data')),
+    path(
+        'social/', include(('social.urls', 'social'), namespace='social')
     ),
-    re_path(r"^assetManagement/", include(("aum.urls", "aum"))),
-    re_path(r"^sales/", include(("sales.urls", "sales"), namespace="sales")),
+    path('assetManagement/', include(('aum.urls', 'aum'))),
+    path('sales/', include(('sales.urls', 'sales'), namespace='sales')),
 ]
 if settings.DEBUG:
     urlpatterns += static(

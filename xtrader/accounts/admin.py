@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin.sites import NotRegistered
 
 from .models import Deposit, Profile, Wallet
 

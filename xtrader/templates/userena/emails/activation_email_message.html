@@ -1,0 +1,19 @@
+{% load i18n %}{% autoescape off %}
+<html>
+
+<body>
+    {% if not without_usernames %}<p>{{ user.username }}عزیز</p>{% endif %}
+    <p>{% site.name %}با تشکر از ثبت نام در سایت</p>
+    <p>
+        برای فعال سازی حساب کاربری خود لینک زیر را کلیک کنید <br />
+        {{ protocol }}://{{ site.domain }}{% url 'accounts:userena_activate' activation_key=activation_key %}
+    </p>
+    <p>
+        با تشکر <br />
+        <br />
+        {{ site.name }}
+    </p>
+</body>
+
+</html>
+{% endautoescape %}
