@@ -225,44 +225,44 @@ class Fund(models.Model):
         age = 0
         while age <= history:
             age += 1
-            portfo = {"age": history - age + 1, "nav": max(assets["USDT"], 0)}
+            portfolio = {"age": history - age + 1, "nav": max(assets["USDT"], 0)}
             for asset, quantity in assets.items():
                 if not asset == "USDT":
                     price = float(historical[asset][-age][4])
                     age_timestamp = int(historical[asset][-age][0] / 1000)
                     value = price * quantity
-                    portfo[asset] = {
+                    portfolio[asset] = {
                         "value": value,
                     }
-                    portfo["nav"] += value
-                    portfo["date"] = timezone.datetime.fromtimestamp(
+                    portfolio["nav"] += value
+                    portfolio["date"] = timezone.datetime.fromtimestamp(
                         age_timestamp
                     ).date()
 
             for asset, quantity in assets.items():
                 if not asset == "USDT":
-                    portfo[asset]["ratio"] = (
-                        portfo[asset]["value"] / portfo["nav"]
+                    portfolio[asset]["ratio"] = (
+                        portfolio[asset]["value"] / portfolio["nav"]
                     )
                 else:
-                    portfo[asset] = {
-                        "ratio": quantity / portfo["nav"],
+                    portfolio[asset] = {
+                        "ratio": quantity / portfolio["nav"],
                         "value": quantity,
                     }
-                if "date" not in portfo:
+                if "date" not in portfolio:
                     usdt_date = timezone.datetime.today() - timedelta(
                         days=age - 2
                     )
-                    portfo["date"] = usdt_date.date()
+                    portfolio["date"] = usdt_date.date()
                 FundUnitSnapshot(
                     fund=self,
                     asset=asset,
                     quantity=quantity,
-                    value=portfo[asset]["value"],
-                    ratio=portfo[asset]["ratio"],
-                    insert_date=portfo["date"],
-                    age=portfo["age"],
-                    nav=portfo["nav"],
+                    value=portfolio[asset]["value"],
+                    ratio=portfolio[asset]["ratio"],
+                    insert_date=portfolio["date"],
+                    age=portfolio["age"],
+                    nav=portfolio["nav"],
                 ).save()
 
     def fund_daily_snapshot(self):

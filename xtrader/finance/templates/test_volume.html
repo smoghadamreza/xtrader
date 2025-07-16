@@ -418,7 +418,7 @@
         var data = { 'index': date, 'stoploss': Number($('#sl').val()), 'takeprofit': Number($('#tp').val()), 'symbol_id': symbol_id };
         $.ajax({
             type: 'GET',
-            url: "/volume",
+            url: "/manage-volume",
             data: {
                 param: JSON.stringify(data),
             },

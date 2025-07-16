@@ -10,14 +10,14 @@
 
     <!-- Needed stylesheets start -->
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/semantic.min.css"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}"/>
+    <link rel="stylesheet" href="/static/css/semantic.min.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
     <!-- Needed stylesheets end -->
 
 
 
     <!-- Needed scripts start -->
-<!--    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>-->
+    <!--    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>-->
     <script src="/static/js/jquery-3.2.1.min.js"></script>
     <script src="/static/js/popper.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
@@ -49,14 +49,14 @@
         </div>
     </div>
     <div class="ui container" id="search-bar" dir="rtl"
-         style="position: relative;top:2.4%; left:0; right:0;text-align:center; display:none;">
+        style="position: relative;top:2.4%; left:0; right:0;text-align:center; display:none;">
         <div id="search" class="ui fluid category search">
             <div class="ui icon input" style="width:50%;">
                 <input class="prompt" type="search" placeholder="جستجو نماد">
                 <i class="search icon"></i>
             </div>
             <div class="results" style="width:50%; margin-left: 25%; display:none; z-index:1000; position:absolute"
-                 dir="ltr"></div>
+                dir="ltr"></div>
         </div>
     </div>
 
@@ -70,36 +70,29 @@
         <li class="main-btns" id="search-btn" title="جستجو نماد"></li>
 
 
-<!--        <a id="copytradingIcon" href="{% url 'social:copytrading' %}">-->
-<!--            <li class="main-btns" id="marketwatch-btn" title="کپی تریدیگ"></li>-->
-<!--        </a>-->
+        <!--        <a id="copytradingIcon" href="{% url 'social:copy-trading' %}">-->
+        <!--            <li class="main-btns" id="marketwatch-btn" title="کپی تریدیگ"></li>-->
+        <!--        </a>-->
         <a href="{% url 'finance:backtest' %}" title="بک تست">
             <li class="main-btns" id="backtest-btn"></li>
         </a>
     </ul>
-<!--    <script>-->
-<!--        let hostName = window.location.host.split('.')[0];-->
-<!--        if ([127, 'uat', '127', 'test'].indexOf(hostName) === -1){-->
-<!--            console.log('not show copytrade');-->
-<!--            document.getElementById('copytradingIcon').style.display = 'none';-->
-<!--        }-->
-<!--    </script>-->
+    <!--    <script>-->
+    <!--        let hostName = window.location.host.split('.')[0];-->
+    <!--        if ([127, 'uat', '127', 'test'].indexOf(hostName) === -1){-->
+    <!--            console.log('not show copytrade');-->
+    <!--            document.getElementById('copytradingIcon').style.display = 'none';-->
+    <!--        }-->
+    <!--    </script>-->
 
     <!-- left menu buttons -->
 
     <ul id="left-btns">
-        <a href="/profile/setup">
+        <a href="/profile-setup">
 
             <li class="main-btns" id="setting-btn" title="تنظیمات"></li>
         </a>
-<!--{#        <a href="{% url 'accounts:settings' %}">#}-->
-<!--{##}-->
-<!--{#            <li class="main-btns" id="setting-btn"></li>#}-->
-<!--{#        </a>#}-->
-<!--{#        <a href="/profile/setup">#}-->
-<!--{#            <li class="main-btns" id="info-btn" title="پروفایل"></li>#}-->
-<!--{#        </a>#}-->
-        <a href="{% url 'accounts:userena_signout' %}" title="خروج">
+        <a href="{% url 'accounts:userena_sign_out' %}" title="خروج">
             <li class="main-btns" id="logout-btn"></li>
         </a>
     </ul>

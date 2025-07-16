@@ -16,7 +16,7 @@ from django.conf import settings
 
 settings_dir = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -36,8 +36,8 @@ ALLOWED_HOSTS.extend(
 )
 # Settings used by Userena
 LOGIN_REDIRECT_URL = "/accounts/%(username)s/"
-LOGIN_URL = "/accounts/signin/"
-LOGOUT_URL = "/accounts/signout/"
+LOGIN_URL = "/accounts/sign-in/"
+LOGOUT_URL = "/accounts/sign-out/"
 AUTH_PROFILE_MODULE = "accounts.Profile"
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_MUGSHOT_SIZE = 140

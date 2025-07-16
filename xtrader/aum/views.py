@@ -8,13 +8,13 @@ from django.views.decorators.csrf import csrf_exempt
 from aum.models import Fund, FundInvestor
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def management(request):
     return render(request, "fundManagement.html")
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def issue_redeem_unit(request):
     if request.method == "POST":
         params = json.loads(request.body.decode())
@@ -34,7 +34,7 @@ def issue_redeem_unit(request):
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def redeem_unit(request):
     if request.method == "POST":
         return JsonResponse({"msg": "ok"})
@@ -43,7 +43,7 @@ def redeem_unit(request):
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def add_investor(request):
     if request.method == "POST":
         params = json.loads(request.body.decode())
@@ -67,7 +67,7 @@ def add_investor(request):
         return JsonResponse({"msg": "bad request"}, status=403)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def investors(request):
     if request.method == "GET":
         fund = Fund.objects.filter(manager=request.user).first()
@@ -89,7 +89,7 @@ def investors(request):
         return JsonResponse({"msg": "bad request"}, status=403)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def get_fund(request):
     if request.method == "GET":
         fund = Fund.objects.filter(manager=request.user).first()
@@ -102,7 +102,7 @@ def get_fund(request):
         return JsonResponse({"msg": "bad request"}, status=403)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def transactions_history(request):
     if request.method == "GET":
         fund = Fund.objects.filter(manager=request.user).first()
@@ -114,7 +114,7 @@ def transactions_history(request):
         return JsonResponse({"msg": "bad request"}, status=403)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def init_fund_performance(request):
     if request.method == "GET":
         if not request.GET.get("pass", "") == "XTreasury":
@@ -128,7 +128,7 @@ def init_fund_performance(request):
         return JsonResponse({"msg": "bad request"}, status=403)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def get_fund_performance(request):
     if request.method == "GET":
         fund = Fund.objects.filter(manager=request.user).first()

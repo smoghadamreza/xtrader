@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block bodyContent %}
-    <div class="ui container" dir="rtl" style="color: white">
-        {% block content %}
-        {% endblock %}
-    </div>
-    <script type="text/javascript">
-        $( "form" ).attr("class", "ui form" );
-        $( "input" ).not(":submit").css( "background-color", "#555" );
-        $( "input" ).not(":submit").css( "color", "white" );
-        $( "input:submit" ).attr("class", "ui button" );
-    </script>
+<div class="ui container" dir="rtl" style="color: white">
+    {% block content %}
+    {% endblock %}
+</div>
+<script type="text/javascript">
+    $("form").attr("class", "ui form");
+    $("input").not(":submit").css("background-color", "#555");
+    $("input").not(":submit").css("color", "white");
+    $("input:submit").attr("class", "ui button");
+</script>
 {% endblock %}

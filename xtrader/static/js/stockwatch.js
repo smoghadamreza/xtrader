@@ -70,7 +70,7 @@ var ids = {
 };
 var candleIntervals = [];
 var userTimeFrame = '4h';
-var orderTypes = {'LIMIT': ['price', 'quantity'], 'MARKET':['quantity']};
+var orderTypes = { 'LIMIT': ['price', 'quantity'], 'MARKET': ['quantity'] };
 function makeDepth() {
     let depth_div = document.getElementById('depth');
     let depth = '<div class="divTableRow">\n' +
@@ -106,18 +106,18 @@ $(document).ready(function () {
     makeDepth();
     update_stockwatch();
     portfo();
-//    orders();
-//    setCandleIntervals();
+    //    orders();
+    //    setCandleIntervals();
 });
 
-function setCandleIntervals(){
+function setCandleIntervals() {
     $.ajax({
         url: '/data/intervals',
-        success: function (result){
+        success: function (result) {
             let intervalsDiv = '';
-            Object.keys(result.intervals).forEach(function (interval){
+            Object.keys(result.intervals).forEach(function (interval) {
                 candleIntervals.push(interval);
-                intervalsDiv += '<button onclick="changeInterval(this.id)" id="'+interval+'">'+interval+'</button>';
+                intervalsDiv += '<button onclick="changeInterval(this.id)" id="' + interval + '">' + interval + '</button>';
             });
             document.getElementById('intervals').innerHTML = intervalsDiv;
             changeInterval(getSetInterval('get'));
@@ -125,34 +125,34 @@ function setCandleIntervals(){
         },
     });
 }
-function changeInterval(newInterval){
-    candleIntervals.forEach(function (interval){
+function changeInterval(newInterval) {
+    candleIntervals.forEach(function (interval) {
         document.getElementById(interval).style.backgroundColor = '';
         document.getElementById(interval).style.color = 'black';
     });
     document.getElementById(newInterval).style.backgroundColor = '#1c1f32';
     document.getElementById(newInterval).style.color = 'white';
-    if (newInterval !== getSetInterval('get')){
+    if (newInterval !== getSetInterval('get')) {
         getSetInterval('set', newInterval);
         draw_chart();
     }
 }
-function getSetInterval(action, interval){
-    if (action === 'get'){
+function getSetInterval(action, interval) {
+    if (action === 'get') {
         let candleInterval = window.localStorage.candleInterval;
-        if (candleInterval){
+        if (candleInterval) {
             return candleInterval
-        }else {
+        } else {
             getSetInterval('set', '4h');
             return getSetInterval('get')
         }
-    }else if (action === 'set'){
-         if (interval){
+    } else if (action === 'set') {
+        if (interval) {
             window.localStorage.candleInterval = interval;
-         }else{
+        } else {
             console.log("no interval");
-         }
-    }else{
+        }
+    } else {
         console.log('invalid action');
     }
 }
@@ -195,7 +195,7 @@ function insert(data) {
 }
 
 function effect(obj, status) {
-    var color = {'positive': '#26A65B', 'negative': '#C3272B'},
+    var color = { 'positive': '#26A65B', 'negative': '#C3272B' },
         current_color = obj.style.background,
         timer = 1;
     obj.style.background = color[status];
@@ -215,17 +215,17 @@ function update_stockwatch() {
     console.log('updating');
     $.ajax({
         type: 'GET',
-        url: "/data/stockwatch/" + SymbolId,
+        url: "/data/stock-watch/" + SymbolId,
         success: function (result) {
             result = JSON.parse(result);
-//            result['InstrumentName'] = '(' + result['InstrumentName'] + ')';
+            //            result['InstrumentName'] = '(' + result['InstrumentName'] + ')';
             result['InstrumentName'] = result['InstrumentName'];
-            let book_depth =result.depth.length;
-            for (let i=0; i< book_depth; i++){
-                result['bp'+i] = result.depth[i].bp;
-                result['bq'+i] = result.depth[i].bq;
-                result['ap'+i] = result.depth[i].ap;
-                result['aq'+i] = result.depth[i].aq;
+            let book_depth = result.depth.length;
+            for (let i = 0; i < book_depth; i++) {
+                result['bp' + i] = result.depth[i].bp;
+                result['bq' + i] = result.depth[i].bq;
+                result['ap' + i] = result.depth[i].ap;
+                result['aq' + i] = result.depth[i].aq;
             }
             // result['TotalBuy'] = result['BuyIndividualCount'] + result['BuyFirmCount'];
             // result['TotalSell'] = result['SellIndividualCount'] + result['SellFirmCount'];
@@ -242,15 +242,15 @@ function update_stockwatch() {
 window.ODate = Date;
 window.Date = JDate;
 
-function draw_chart(){}
+function draw_chart() { }
 function draw_chart1() {
     waiting('wait');
     $.ajax({
-        url:'/data/get-data/' + SymbolId +'/'+getSetInterval('get'),
-        success: function(data){
+        url: '/data/get-data/' + SymbolId + '/' + getSetInterval('get'),
+        success: function (data) {
             data = JSON.parse(data);
             var close = [],
-    //            name = data['per_name'];
+                //            name = data['per_name'];
                 name = SymbolId;
             data = JSON.parse(data['items']);
             var dataLength = data.length;
@@ -285,7 +285,7 @@ function draw_chart1() {
                 },
                 series: [{
                     color: {
-                        linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
+                        linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
                         stops: [
                             [0, '#f3f774'],
                             [0.25, '#aae98e'],
@@ -300,65 +300,65 @@ function draw_chart1() {
             });
             waiting('default');
         },
-        error: function(e){
+        error: function (e) {
             waiting('default');
         }
     });
-//    $.getJSON('/data/get-data/' + SymbolId +'/'+getSetInterval('get'), function (data) {
-//        // $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function (data) {
-//        data = JSON.parse(data);
-//        var close = [],
-////            name = data['per_name'];
-//            name = SymbolId;
-//        data = JSON.parse(data['items']);
-//        var dataLength = data.length;
-//        for (var i = 0; i < dataLength; i++) {
-//            close.push([
-//                data[i][0], // date
-//                data[i][4], // close
-//                // Math.ceil(data[i][4]), // close
-//            ]);
-//        }
-//        Highcharts.stockChart('chart', {
-//
-//
-//            rangeSelector: {
-//                enabled: false,
-//                inputEnabled: false,
-//                // selected: 1
-//            },
-//            credits: {
-//                enabled: false,
-//            },
-//            yAxis: [{
-//                gridLineWidth: 0,
-//                minorGridLineWidth: 0,
-//                opposite: false,
-//            }],
-//            scrollbar: {
-//                enabled: false
-//            },
-//            navigator: {
-//                enabled: false
-//            },
-//            series: [{
-//                color: {
-//                    linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
-//                    stops: [
-//                        [0, '#f3f774'],
-//                        [0.25, '#aae98e'],
-//                        [0.50, '#09cac8'],
-//                        [0.75, '#aae98e'],
-//                        [1, '#f3f774']
-//                    ]
-//                },
-//                name: name,
-//                data: close,
-//            }]
-//        });
-//        waiting('default');
-//
-//    });
+    //    $.getJSON('/data/get-data/' + SymbolId +'/'+getSetInterval('get'), function (data) {
+    //        // $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function (data) {
+    //        data = JSON.parse(data);
+    //        var close = [],
+    ////            name = data['per_name'];
+    //            name = SymbolId;
+    //        data = JSON.parse(data['items']);
+    //        var dataLength = data.length;
+    //        for (var i = 0; i < dataLength; i++) {
+    //            close.push([
+    //                data[i][0], // date
+    //                data[i][4], // close
+    //                // Math.ceil(data[i][4]), // close
+    //            ]);
+    //        }
+    //        Highcharts.stockChart('chart', {
+    //
+    //
+    //            rangeSelector: {
+    //                enabled: false,
+    //                inputEnabled: false,
+    //                // selected: 1
+    //            },
+    //            credits: {
+    //                enabled: false,
+    //            },
+    //            yAxis: [{
+    //                gridLineWidth: 0,
+    //                minorGridLineWidth: 0,
+    //                opposite: false,
+    //            }],
+    //            scrollbar: {
+    //                enabled: false
+    //            },
+    //            navigator: {
+    //                enabled: false
+    //            },
+    //            series: [{
+    //                color: {
+    //                    linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
+    //                    stops: [
+    //                        [0, '#f3f774'],
+    //                        [0.25, '#aae98e'],
+    //                        [0.50, '#09cac8'],
+    //                        [0.75, '#aae98e'],
+    //                        [1, '#f3f774']
+    //                    ]
+    //                },
+    //                name: name,
+    //                data: close,
+    //            }]
+    //        });
+    //        waiting('default');
+    //
+    //    });
 
 
 
@@ -624,8 +624,8 @@ var modal,
     order_type;
 
 function trade(kind, type, order_id) {
-//    modal = document.getElementById(kind + 'Modal');
-//    modal.style.display = "block";
+    //    modal = document.getElementById(kind + 'Modal');
+    //    modal.style.display = "block";
     order_type = type;
     if (type === 'order') {
         OrderId = '';
@@ -654,113 +654,113 @@ function trade(kind, type, order_id) {
 //
 //});
 
-function showMessage(msg, status){
+function showMessage(msg, status) {
     let msgBox = document.getElementById('orderMessage');
     msgBox.innerHTML = '<div id="msgPop">' + msg + '</div>';
-    if (status === 'error'){
+    if (status === 'error') {
         msgBox.style.color = '#e74c3c';
-    }else {
+    } else {
         msgBox.style.color = '#09cac8';
     }
     $('#msgPop').delay(2000).fadeOut('slow');
 }
 
 function sendorder(order) {
-    var side = {'buy': 1, 'sell': 2};
+    var side = { 'buy': 1, 'sell': 2 };
     var data = {
         SymbolId: SymbolId,
         Quantity: Number($('#' + 'quantity').val()),
         OrderSide: side[order],
         type: document.getElementById('orderType').value,
     };
-    if (["LIMIT"].indexOf(data.type) > -1){
+    if (["LIMIT"].indexOf(data.type) > -1) {
         data.Price = Number($('#' + 'price').val());
-        if (!data.Price){
+        if (!data.Price) {
             showMessage('لطفا قیمت را وارد کنید', 'error');
             return false
         }
     }
-    if (!data.Quantity){
+    if (!data.Quantity) {
         showMessage('لطفا تعداد را وارد کنید', 'error');
         return false
     }
     // console.log(order_type);
 
-        waiting('wait');
-            $.ajax({
-                type: 'POST',
-                url: '/trade',
-                data: {
-                    order: JSON.stringify(data),
-                },
-                success: function (result) {
-                    if (result.error) {
-//                        alert();
-                        showMessage(result.msg, 'error');
+    waiting('wait');
+    $.ajax({
+        type: 'POST',
+        url: '/trade',
+        data: {
+            order: JSON.stringify(data),
+        },
+        success: function (result) {
+            if (result.error) {
+                //                        alert();
+                showMessage(result.msg, 'error');
 
-                    } else {
-//                        orders();
-                        portfo();
-                        showMessage('سفارش ارسال شد', '');
-                    }
-                    waiting('default');
+            } else {
+                //                        orders();
+                portfo();
+                showMessage('سفارش ارسال شد', '');
+            }
+            waiting('default');
 
-//                    document.getElementById(order + 'Modal').style.display = 'none';
-                },
-                error: function (e) {
-                    alert(e.responseJSON.msg);
-                    waiting('default');
-                },
-            });
+            //                    document.getElementById(order + 'Modal').style.display = 'none';
+        },
+        error: function (e) {
+            alert(e.responseJSON.msg);
+            waiting('default');
+        },
+    });
 
 
-//    switch (order_type) {
-//        case 'order':
-//        waiting('wait');
-//            $.ajax({
-//                type: 'POST',
-//                url: '/trade',
-//                data: {
-//                    order: JSON.stringify(data),
-//                },
-//                success: function (result) {
-//                    if (result.error) {
-//                        alert(result.msg);
-//                    } else {
-//                        orders();
-//                        portfo();
-//                    }
-//                    waiting('default');
-//                    document.getElementById(order + 'Modal').style.display = 'none';
-//                },
-//                error: function (e) {
-//                    alert(e.responseJSON.msg);
-//                    waiting('default');
-//                },
-//            });
-//            break;
-//        case 'edit':
-//            data['OrderId'] = OrderId;
-//            delete data['SymbolId'];
-//            delete data['OrderSide'];
-//            $.ajax({
-//                type: 'GET',
-//                url: '/edit',
-//                data: {
-//                    order: JSON.stringify(data),
-//                },
-//                success: function (result) {
-//                    console.log(result);
-//                    orders();
-//                    portfo();
-//                    document.getElementById(order + 'Modal').style.display = 'none';
-//                },
-//                error: function (e) {
-//                    console.log(e);
-//                },
-//            });
-//            break;
-//    }
+    //    switch (order_type) {
+    //        case 'order':
+    //        waiting('wait');
+    //            $.ajax({
+    //                type: 'POST',
+    //                url: '/trade',
+    //                data: {
+    //                    order: JSON.stringify(data),
+    //                },
+    //                success: function (result) {
+    //                    if (result.error) {
+    //                        alert(result.msg);
+    //                    } else {
+    //                        orders();
+    //                        portfo();
+    //                    }
+    //                    waiting('default');
+    //                    document.getElementById(order + 'Modal').style.display = 'none';
+    //                },
+    //                error: function (e) {
+    //                    alert(e.responseJSON.msg);
+    //                    waiting('default');
+    //                },
+    //            });
+    //            break;
+    //        case 'edit':
+    //            data['OrderId'] = OrderId;
+    //            delete data['SymbolId'];
+    //            delete data['OrderSide'];
+    //            $.ajax({
+    //                type: 'GET',
+    //                url: '/edit',
+    //                data: {
+    //                    order: JSON.stringify(data),
+    //                },
+    //                success: function (result) {
+    //                    console.log(result);
+    //                    orders();
+    //                    portfo();
+    //                    document.getElementById(order + 'Modal').style.display = 'none';
+    //                },
+    //                error: function (e) {
+    //                    console.log(e);
+    //                },
+    //            });
+    //            break;
+    //    }
     getAccountStatus();
 }
 
@@ -768,7 +768,7 @@ function sendorder(order) {
 function portfo() {
     $.ajax({
         type: 'GET',
-        url: '/portfo',
+        url: '/portfolio',
         success: function (result) {
             let portfolio_div = document.getElementById('pportfo');
             portfolio_div.innerHTML = '';
@@ -785,19 +785,19 @@ function portfo() {
                     usdt = asset['free'];
                     row = '<div class="divTableCell">' + asset.symbol + '</div>';
                 } else {
-                    row = '<div class="divTableCell"><a href="/spot/'+asset.symbol + 'USDT' +'">' + asset.symbol + '</a></div>';
+                    row = '<div class="divTableCell"><a href="/spot/' + asset.symbol + 'USDT' + '">' + asset.symbol + '</a></div>';
                 }
                 row += '<div class="divTableCell">' + asset['free'] + '</div>';
                 row += '<div class="divTableCell">' + asset.locked + '</div>';
                 rows += '<div class="divTableRow">' + row + '</div>';
             });
             portfolio_div.innerHTML = head + rows;
-//            document.getElementById('BuyingPower').innerHTML = usdt.toFixed(2) + ' usdt';
+            //            document.getElementById('BuyingPower').innerHTML = usdt.toFixed(2) + ' usdt';
             orders();
         },
         error: function (e) {
             let portfolio_div = document.getElementById('pportfo');
-            portfolio_div.innerHTML = '<h1><a href="/profile/setup/"><div style="font-family: IRANSans">ابتدا اکسچنج خود را متصل کنید</div></a></h1>';
+            portfolio_div.innerHTML = '<h1><a href="/profile-setup/"><div style="font-family: IRANSans">ابتدا اکسچنج خود را متصل کنید</div></a></h1>';
         }
     })
 }
@@ -839,12 +839,12 @@ function orders() {
                     order_side = 'فروش';
                 }
                 let price = parseFloat(order.price);
-                if (price === 0){
+                if (price === 0) {
                     price = 'بازار';
                 }
                 let row = '<div class="divTableCell">' + order_side + '</div>';
                 row += '<div class="divTableCell">' + order.symbol + '</div>';
-//                row += '<div class="divTableCell"><a href="/spot/' + order.symbol + '">' + order.symbol + '</a></div>';
+                //                row += '<div class="divTableCell"><a href="/spot/' + order.symbol + '">' + order.symbol + '</a></div>';
                 row += '<div class="divTableCell">' + parseFloat(order.origQty) + '</div>';
                 row += '<div class="divTableCell">' + price + '</div>';
                 row += '<div class="divTableCell">' + parseFloat(order.executedQty) + '</div>';
@@ -867,20 +867,20 @@ function orders() {
             });
             orders_div.innerHTML = head + rows;
         },
-        error: function (err){
+        error: function (err) {
             let orders_div = document.getElementById('orders_place');
-            orders_div.innerHTML = '<h1><a href="/profile/setup/"><div style="font-family: IRANSans">ابتدا اکسچنج خود را متصل کنید</div></a></h1>';
+            orders_div.innerHTML = '<h1><a href="/profile-setup/"><div style="font-family: IRANSans">ابتدا اکسچنج خود را متصل کنید</div></a></h1>';
         }
     });
     // getAccountStatus();
-//    portfo();
+    //    portfo();
 }
 
 function getAccountStatus() {
     // portfo();
     // $.ajax({
     //     type: 'GET',
-    //     url: '/statusaccount',
+    //     url: '/account-status',
     //     success: function (result) {
     //         // result = JSON.parse(result);
     //         document.getElementById('BuyingPower').innerHTML = numberSeparator(result['BuyingPower']);
@@ -894,7 +894,7 @@ function cancelOrder(OrderId, order_symbol) {
     waiting('wait');
     $.ajax({
         type: 'GET',
-        url: '/cancelOrder?OrderId=' + OrderId + '&symbol=' + ordersIDS[OrderId],
+        url: '/cancel-order?OrderId=' + OrderId + '&symbol=' + ordersIDS[OrderId],
         // params: {
         //     OrderId: OrderId,
         //     symbol: ordersIDS[OrderId]
@@ -903,10 +903,10 @@ function cancelOrder(OrderId, order_symbol) {
             showMessage('سفارش حذف شد', '');
             console.log(result);
             portfo();
-//            orders();
+            //            orders();
             waiting('default');
         },
-        error: function (err){
+        error: function (err) {
             waiting('default');
         }
     });
@@ -930,16 +930,16 @@ function checkTime() {
     // }
 }
 
-function changeOrderType(elm){
+function changeOrderType(elm) {
     console.log(elm.value);
     document.getElementById('price').disabled = true;
     document.getElementById('price').placeholder = 'بازار';
     document.getElementById('price').value = '';
     document.getElementById('quantity').disabled = true;
-    orderTypes[elm.value].forEach(function (param){
+    orderTypes[elm.value].forEach(function (param) {
         document.getElementById(param).disabled = false;
-        if (param === 'price'){
-        document.getElementById(param).placeholder = 'قیمت';
+        if (param === 'price') {
+            document.getElementById(param).placeholder = 'قیمت';
         }
     });
 }

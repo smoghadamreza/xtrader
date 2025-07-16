@@ -30,7 +30,7 @@ urlpatterns = [
     path(
         'social/', include(('social.urls', 'social'), namespace='social')
     ),
-    path('assetManagement/', include(('aum.urls', 'aum'))),
+    path('asset-management/', include(('aum.urls', 'aum'))),
     path('sales/', include(('sales.urls', 'sales'), namespace='sales')),
 ]
 if settings.DEBUG:

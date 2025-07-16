@@ -29,7 +29,7 @@ def history(request):
     return HttpResponse(json.dumps(histories))
 
 
-def stockwatch(request, symbol_id):
+def stock_watch(request, symbol_id):
     stock = stockwatchModel.stock_watch_info(symbol_id, eps=True)
     return HttpResponse(json.dumps(stock))
 

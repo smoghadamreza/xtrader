@@ -485,47 +485,47 @@ class Binance:
             return last_price
 
     @staticmethod
-    def get_portfo_snapshots(actions):
-        portfo_history = []
-        portfo = {"assets": {}}
+    def get_portfolio_snapshots(actions):
+        portfolio_history = []
+        portfolio = {"assets": {}}
         assets = []
         for action in actions:
             if action["action"] == "deposit":
                 asset = action["asset"]
                 amount = action["amount"]
-                portfo["assets"][asset] = (
-                    portfo["assets"].get(asset, 0) + amount
+                portfolio["assets"][asset] = (
+                    portfolio["assets"].get(asset, 0) + amount
                 )
                 assets.append(asset)
             elif action["action"] == "withdraw":
                 asset = action["asset"]
                 amount = action["amount"]
-                portfo["assets"][asset] -= amount
+                portfolio["assets"][asset] -= amount
             elif action["action"] == "trade":
                 asset = action["symbol"][:-4]
                 amount = float(action["qty"])
                 value = float(action["quoteQty"])
                 if action["isBuyer"]:
-                    portfo["assets"][asset] = (
-                        portfo["assets"].get(asset, 0) + amount
+                    portfolio["assets"][asset] = (
+                        portfolio["assets"].get(asset, 0) + amount
                     )
-                    portfo["assets"]["USDT"] = max(
-                        portfo["assets"]["USDT"] - value, 0
+                    portfolio["assets"]["USDT"] = max(
+                        portfolio["assets"]["USDT"] - value, 0
                     )
                     assets.append(asset)
                 else:
-                    portfo["assets"][asset] = max(
-                        portfo["assets"][asset] - amount, 0
+                    portfolio["assets"][asset] = max(
+                        portfolio["assets"][asset] - amount, 0
                     )
-                    portfo["assets"]["USDT"] = (
-                        portfo["assets"].get("USDT", 0) + value
+                    portfolio["assets"]["USDT"] = (
+                        portfolio["assets"].get("USDT", 0) + value
                     )
-            portfo["action"] = action["action"]
-            portfo["time"] = action["actionTime"]
-            portfo_history.append(json.dumps(portfo))
+            portfolio["action"] = action["action"]
+            portfolio["time"] = action["actionTime"]
+            portfolio_history.append(json.dumps(portfolio))
         assets = list(set(assets))
-        portfo_history = [json.loads(p) for p in portfo_history]
-        return [assets, portfo_history]
+        portfolio_history = [json.loads(p) for p in portfolio_history]
+        return [assets, portfolio_history]
 
     @staticmethod
     def get_actions(history):
@@ -625,7 +625,7 @@ class OMSManager:
             conn.close()
 
     @staticmethod
-    def copytrade(trader, new_order, followers=[], open_orders=[]):
+    def copy_trade(trader, new_order, followers=[], open_orders=[]):
         exchange_followers = Exchange.objects.filter(
             trader__in=[follower.follower for follower in followers]
         )

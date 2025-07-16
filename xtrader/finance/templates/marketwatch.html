@@ -52,7 +52,7 @@
     var filters_data;
     $(document).ready(function () {
         $.ajax({
-            url: '/getfilters',
+            url: '/get-filters',
             success: function (givenfilters) {
                 filters_data = JSON.parse(givenfilters);
                 insertfilters(filters_data);

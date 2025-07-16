@@ -35,119 +35,68 @@
         <div onclick="sortTable(16,'stockwatch')" class="divTableCell">بیشترین</div>
     </div>
     {% for stock in stocks %}
-        <div class="divTableRow" style="background:{% cycle '#4d5068' '#1c1f32' %}">
-            <div class="divTableCell"><a
-                    href="/stockwatch/{{ stock.stockWatch.SymbolId }}">{{ stock.stockWatch.InstrumentName }}</a>
-            </div>
-            <div class="divTableCell">{{ stock.stockWatch.InstrumentTitle }}</div>
-            <div class="divTableCell">{{ stock.stockWatch.TotalNumberOfTrades }}</div>
-            <div class="divTableCell">{{ stock.stockWatch.TotalNumberOfSharesTraded }}</div>
-            <div class="divTableCell">{{ stock.stockWatch.TotalTradeValue }}</div>
-            <div class="divTableCell">{{ stock.stockWatch.PreviousDayPrice }}</div>
-            <div class="divTableCell">{{ stock.stockWatch.FirstTradePrice }}</div>
-            <div class="divTableCell" dir="ltr">{{ stock.stockWatch.Eps }}</div>
-            <div class="divTableCell" dir="ltr">{{ stock.stockWatch.PricePerEarning }}</div>
-            <div class="divTableCell">{{ stock.stockWatch.LastTradePrice }}</div>
-            <div class="divTableCell" dir="ltr">{{ stock.stockWatch.ReferencePriceVariationPercent }}</div>
-            <div class="divTableCell" dir="ltr">{{ stock.stockWatch.ReferencePriceVariation }}</div>
-            {#            {% if stock.stockWatch.ReferencePriceVariation == 0 %}#}
-            {#                <div class="divTableCell" dir="ltr">{{ stock.stockWatch.ReferencePriceVariationPercent }}</div>#}
-            {#                <div class="divTableCell" dir="ltr">{{ stock.stockWatch.ReferencePriceVariation }}</div>#}
-            {#            {% elif stock.stockWatch.ReferencePriceVariation > 0 %}#}
-            {#                <div class="divTableCell" dir="ltr" style="background:green">{{ stock.stockWatch.ReferencePriceVariationPercent }}</div>#}
-            {#                <div class="divTableCell" dir="ltr" style="background:green">{{ stock.stockWatch.ReferencePriceVariation }}</div>#}
-            {#            {% elif stock.stockWatch.ReferencePriceVariation < 0 %}#}
-            {#                <div class="divTableCell" dir="ltr" style="background:red">{{ stock.stockWatch.ReferencePriceVariationPercent }}</div>#}
-            {#                <div class="divTableCell" dir="ltr" style="background:red">{{ stock.stockWatch.ReferencePriceVariation }}</div>#}
-            {#            {% endif %}#}
-            <div class="divTableCell">{{ stock.stockWatch.ClosingPrice }}</div>
-            <div class="divTableCell" dir="ltr">{{ stock.stockWatch.ClosingPriceVariation }}</div>
-            <div class="divTableCell" dir="ltr">{{ stock.stockWatch.ClosingPriceVariationPercent }}</div>
-            <div class="divTableCell">{{ stock.stockWatch.LowestTradePrice }}</div>
-            <div class="divTableCell">{{ stock.stockWatch.HighestTradePrice }}</div>
+    <div class="divTableRow" style="background:{% cycle '#4d5068' '#1c1f32' %}">
+        <div class="divTableCell"><a href="/stock-watch/{{ stock.stock_watch.symbold_id }}">{{
+                stock.stock_watch.instrument_name }}</a>
         </div>
-    {% endfor %}
-</div>
-
-
-<!--
-<div id="table_ratio" style="display: none">
-    <div class="divTableRow main-nav" style="background-color: #1c1f32">
-        <div class="divTableCell">نماد</div>
-        <div class="divTableCell">نام</div>
-        <div onclick="sortTable(2,'ratio')" class="divTableCell">تعداد</div>
+        <div class="divTableCell">{{ stock.stock_watch.instrument_title }}</div>
+        <div class="divTableCell">{{ stock.stock_watch.total_number_of_trades }}</div>
+        <div class="divTableCell">{{ stock.stock_watch.total_number_of_shares_traded }}</div>
+        <div class="divTableCell">{{ stock.stock_watch.total_trade_value }}</div>
+        <div class="divTableCell">{{ stock.stock_watch.previous_day_price }}</div>
+        <div class="divTableCell">{{ stock.stock_watch.first_trade_price }}</div>
+        <div class="divTableCell" dir="ltr">{{ stock.stock_watch.eps }}</div>
+        <div class="divTableCell" dir="ltr">{{ stock.stock_watch.price_per_earning }}</div>
+        <div class="divTableCell">{{ stock.stock_watch.last_trade_price }}</div>
+        <div class="divTableCell" dir="ltr">{{ stock.stock_watch.reference_price_variation_percentage }}</div>
+        <div class="divTableCell" dir="ltr">{{ stock.stock_watch.reference_price_variation }}</div>
+        {# {% if stock.stock_watch.reference_price_variation == 0 %}#}
+        {# <div class="divTableCell" dir="ltr">{{ stock.stock_watch.reference_price_variation_percentage }}</div>#}
+        {# <div class="divTableCell" dir="ltr">{{ stock.stock_watch.reference_price_variation }}</div>#}
+        {# {% elif stock.stock_watch.reference_price_variation > 0 %}#}
+        {# <div class="divTableCell" dir="ltr" style="background:green">{{
+            stock.stock_watch.reference_price_variation_percentage }}</div>#}
+        {# <div class="divTableCell" dir="ltr" style="background:green">{{ stock.stock_watch.reference_price_variation
+            }}
+        </div>#}
+        {# {% elif stock.stock_watch.reference_price_variation < 0 %}#} {# <div class="divTableCell" dir="ltr"
+            style="background:red">{{ stock.stock_watch.reference_price_variation_percentage }}
+    </div>#}
+    {# <div class="divTableCell" dir="ltr" style="background:red">{{ stock.stock_watch.reference_price_variation }}
     </div>
-    {% for stock in stocks %}
-        <div class="divTableRow" style="background:{% cycle '#4d5068' '#1c1f32' %}">
-            <div class="divTableCell"><a
-                    href="/stockwatch/{{ stock.stockWatch.SymbolId }}">{{ stock.stockWatch.InstrumentName }}</a>
-            </div>
-            <div class="divTableCell">{{ stock.stockWatch.InstrumentTitle }}</div>
-            <div class="divTableCell">{{ stock.ratio.da }}</div>
-        </div>
-    {% endfor %}
+    #}
+    {# {% endif %}#}
+    <div class="divTableCell">{{ stock.stock_watch.closing_price }}</div>
+    <div class="divTableCell" dir="ltr">{{ stock.stock_watch.closing_price_variation }}</div>
+    <div class="divTableCell" dir="ltr">{{ stock.stock_watch.closing_price_variation_percentage }}</div>
+    <div class="divTableCell">{{ stock.stock_watch.lowest_trade_price }}</div>
+    <div class="divTableCell">{{ stock.stock_watch.highest_trade_price }}</div>
 </div>
-
-
-<div id="table_income" style="display: none">
-    <div class="divTableRow main-nav" style="background-color: #1c1f32">
-        <div class="divTableCell">نماد</div>
-        <div class="divTableCell">نام</div>
-        <div onclick="sortTable(2,'ratio')" class="divTableCell">تعداد</div>
-    </div>
-    {% for stock in stocks %}
-        <div class="divTableRow" style="background:{% cycle '#4d5068' '#1c1f32' %}">
-            <div class="divTableCell"><a
-                    href="/stockwatch/{{ stock.stockWatch.SymbolId }}">{{ stock.stockWatch.InstrumentName }}</a>
-            </div>
-            <div class="divTableCell">{{ stock.stockWatch.InstrumentTitle }}</div>
-            <div class="divTableCell">{{ stock.ratio.da }}</div>
-        </div>
-    {% endfor %}
+{% endfor %}
 </div>
-
-
-<div id="table_balanceSheet" style="display: none">
-    <div class="divTableRow main-nav" style="background-color: #1c1f32">
-        <div class="divTableCell">نماد</div>
-        <div class="divTableCell">نام</div>
-        <div onclick="sortTable(2,'ratio')" class="divTableCell">تعداد</div>
-    </div>
-    {% for stock in stocks %}
-        <div class="divTableRow" style="background:{% cycle '#4d5068' '#1c1f32' %}">
-            <div class="divTableCell"><a
-                    href="/stockwatch/{{ stock.stockWatch.SymbolId }}">{{ stock.stockWatch.InstrumentName }}</a>
-            </div>
-            <div class="divTableCell">{{ stock.stockWatch.InstrumentTitle }}</div>
-            <div class="divTableCell">{{ stock.ratio.da }}</div>
-        </div>
-    {% endfor %}
-</div>
-
--->
 
 <div class="pagination" style="margin-left:42%;direction:ltr;">
     <span class="step-links">
         {% if stocks.has_previous %}
-            <a style="cursor: pointer" onclick="read_filters({{ stocks.previous_page_number }})"><i
-                    class="angle double left icon"></i></a>
+        <a style="cursor: pointer" onclick="read_filters({{ stocks.previous_page_number }})"><i
+                class="angle double left icon"></i></a>
         {% endif %}
         {% if stocks.number != 2 and stocks.number != 1 %}
-            <a onclick="read_filters(1)">
-                <div class="ui icon buttons">
-                    <button class="ui icon button">1</button>
-                </div>
-            </a>
+        <a onclick="read_filters(1)">
+            <div class="ui icon buttons">
+                <button class="ui icon button">1</button>
+            </div>
+        </a>
 
         {% endif %}
         {% if stocks.number >= 3 %}
-            <div class="ui icon buttons">
-                    <button class="ui icon button">...</button>
-                </div>
+        <div class="ui icon buttons">
+            <button class="ui icon button">...</button>
+        </div>
         {% endif %}
         {% if stocks.has_previous %}
-            <a onclick="read_filters({{ stocks.previous_page_number }})"><button
-                    class="ui icon button">{{ stocks.previous_page_number }}</button></a>
+        <a onclick="read_filters({{ stocks.previous_page_number }})"><button class="ui icon button">{{
+                stocks.previous_page_number }}</button></a>
         {% endif %}
         <span class="current">
             <div class="ui icon buttons">
@@ -157,22 +106,21 @@
 
         </span>
         {% if stocks.has_next %}
-            <a onclick="read_filters({{ stocks.next_page_number }})"><button
-                    class="ui icon button">{{ stocks.next_page_number }}</button></a>
+        <a onclick="read_filters({{ stocks.next_page_number }})"><button class="ui icon button">{{
+                stocks.next_page_number }}</button></a>
         {% endif %}
-        {% if stocks.number <= former2 %}
-            <div class="ui icon buttons">
-                    <button class="ui icon button">...</button>
-                </div>
-        {% endif %}
-        {% if stocks.number != former and stocks.number != last %}
-            <a onclick="read_filters({{ stocks.page_range | length }})"><button
-                    class="ui icon button">{{ stocks.paginator.num_pages }}</button></a>
-        {% endif %}
-        {% if stocks.has_next %}
-            <a style="cursor: pointer" onclick="read_filters({{ stocks.next_page_number }})"><i
-                    class="angle double right icon"></i></a>
-        {% endif %}
-    </span>
+        {% if stocks.number <= former2 %} <div class="ui icon buttons">
+            <button class="ui icon button">...</button>
+</div>
+{% endif %}
+{% if stocks.number != former and stocks.number != last %}
+<a onclick="read_filters({{ stocks.page_range | length }})"><button class="ui icon button">{{ stocks.paginator.num_pages
+        }}</button></a>
+{% endif %}
+{% if stocks.has_next %}
+<a style="cursor: pointer" onclick="read_filters({{ stocks.next_page_number }})"><i
+        class="angle double right icon"></i></a>
+{% endif %}
+</span>
 </div>
 <!-- صفحه {{ stocks.number }} از {{ stocks.paginator.num_pages }} -->

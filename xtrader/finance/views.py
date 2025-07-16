@@ -33,9 +33,9 @@ def calculate_indicators(request, interval):
     return JsonResponse(result, safe=False)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 @csrf_exempt
-def add_new_watchlist(request):
+def add_new_watch_list(request):
     if not request.method == "POST":
         return JsonResponse({}, status=403)
     watchlist_limit = cast(
@@ -45,7 +45,7 @@ def add_new_watchlist(request):
     if watchlist_count >= watchlist_limit:
         return JsonResponse(
             {
-                "redirect": "/profile/setup/?s=packages",
+                "redirect": "/profile-setup/?s=packages",
                 "m": "برای ساخت واچ‌لیست جدید نیاز به ارتقا اشتراک دارید",
                 "s": 302,
             }
@@ -63,8 +63,8 @@ def add_new_watchlist(request):
     return JsonResponse({"id": watchlist.pk, "s": 200})
 
 
-@login_required(login_url="accounts:userena_signin")
-def get_watchlists(request):
+@login_required(login_url="accounts:userena_sign_in")
+def get_watch_lists(request):
     if not request.method == "GET":
         return JsonResponse({}, status=403)
     user = request.user
@@ -105,8 +105,8 @@ def get_watchlists(request):
             )
 
 
-@login_required(login_url="accounts:userena_signin")
-def update_symbol2watchlist(request: HttpRequest) -> JsonResponse:
+@login_required(login_url="accounts:userena_sign_in")
+def update_symbol_to_watch_list(request: HttpRequest) -> JsonResponse:
     if not request.method == "GET":
         return JsonResponse({}, status=403)
 
@@ -192,7 +192,7 @@ def update_indicators(request):
         return JsonResponse("only GET", safe=False)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def market_watch(request):
     profile = Profile.objects.get(
         user=User.objects.get_by_natural_key(request.user)
@@ -205,7 +205,7 @@ def market_watch(request):
     return render(request, "marketwatch.html", get_user(request))
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def display(request):
     return render(
         request,
@@ -214,11 +214,11 @@ def display(request):
     )
 
 
-def getfilters(request):
+def get_filters(request):
     return HttpResponse(json.dumps(filters_data))
 
 
-def filtermarket(request):
+def filter_market(request):
     filters = json.loads(request.GET["filters"])
     import data.dates as d
 
@@ -288,14 +288,14 @@ def index(request):
     return render(request, "newindex.html")
 
 
-@login_required(login_url="accounts:userena_signin")
-def stockwatch(request, SymbolId=None):
-    if not SymbolId:
+@login_required(login_url="accounts:userena_sign_in")
+def stock_watch(request, symbold_id=None):
+    if not symbold_id:
         return redirect("/spot/BTCUSDT")
-    return redirect("/spot/" + SymbolId)
+    return redirect("/spot/" + symbold_id)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def spot(request, symbol_id):
     if not symbol_id:
         return redirect("/spot/BTCUSDT")
@@ -356,7 +356,7 @@ def trade(request):
         )
 
 
-def portfo(request):
+def portfolio(request):
     exchange, exchange_class = oms.OMSManager.get_exchange(request)
     if exchange_class is None:
         raise ValueError("exchange_class cannot be None")
@@ -388,7 +388,7 @@ def account_status(request):
     return JsonResponse(account)
 
 
-def cancelOrder(request):
+def cancel_order(request):
     exchange, exchange_class = oms.OMSManager.get_exchange(request)
     if exchange_class is None:
         raise ValueError("exchange_class cannot be None")
@@ -419,7 +419,7 @@ def manage_volume(request):
     return render(request, "volumetest.html", result)
 
 
-def testAPI(request):
+def test_api(request):
     return render(request, "testAPI.html", {"SymbolId": "IRO1IKCO0001"})
 
 
@@ -459,7 +459,7 @@ def remove_exchange(request):
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def trading_view(request):
     if request.method == "GET":
         tw, _ = TradingView.objects.get_or_create(
@@ -508,7 +508,7 @@ def trading_view(request):
 
 
 @csrf_exempt
-def tradingview_trade(request, token):
+def trading_view_trade(request, token):
     """
     curl -H 'Content-Type: text/plain; charset=utf-8' -d 'binance spot buy
       btcusdt 0.001 m' -X POST http://127.0.0.1:8000/webhook/3pMoxlHtXT5R
@@ -635,7 +635,7 @@ def telegram_webhook(request):
       },
       "text":"ON0rtC"
     }
-    }' "http://127.0.0.1:8000/telegram/webhook"
+    }' "http://127.0.0.1:8000/telegram-webhook"
     """
     if request.method == "POST":
         data = request.body.decode()

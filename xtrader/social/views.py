@@ -46,13 +46,13 @@ def pro_traders(request):
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_signin")
-def follow_unfollow(request):
+@login_required(login_url="accounts:userena_sign_in")
+def follow_toggle(request):
     if request.method == "POST":
         data = json.loads(request.body.decode())
         protrader_brand = data["protrader_brand"]
         action = data["action"]
-        result = Follow.copytrade(
+        result = Follow.copy_trade(
             user=request.user, brand=protrader_brand, action=action
         )
     else:
@@ -61,7 +61,7 @@ def follow_unfollow(request):
 
 
 @csrf_exempt
-def getpublics(request):
+def get_publics(request):
 
     result = []
     for pro in ProTrader.objects.all():
@@ -88,7 +88,7 @@ def copy_order(request):
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def promote(request):
     if request.method == "POST":
         ex_obj, ex = oms.OMSManager.get_exchange(request, trader=request.user)
@@ -167,9 +167,9 @@ def get_profile(request, pro_id):
     try:
         pro = ProTrader.objects.filter(id=pro_id).first()
         if not pro:
-            return JsonResponse({"s": 302, "href": "/social/copytrading"})
+            return JsonResponse({"s": 302, "href": "/social/copy-trading"})
     except Exception:
-        return JsonResponse({"s": 302, "href": "/social/copytrading"})
+        return JsonResponse({"s": 302, "href": "/social/copy-trading"})
     history = ProTrader.get_records(trader=pro.trader)
     if not request.user:
         status = 0  # unknown
@@ -193,8 +193,8 @@ def get_profile(request, pro_id):
     )
 
 
-@login_required(login_url="accounts:userena_signin")
-def copytrading(request):
+@login_required(login_url="accounts:userena_sign_in")
+def copy_trading(request):
     return render(request, "copytrading.html", get_user(request=request))
 
 
@@ -202,7 +202,7 @@ def league(request):
     return render(request, "leagueLanding.html", get_user(request=request))
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 @csrf_exempt
 def exchange(request):
     if request.method == "GET":

@@ -1,81 +1,178 @@
 @font-face {
-	font-family: IRANSans;
-	font-style: normal;
-	font-weight: bold;
-	src: url('../fonts/eot/IRANSansWeb_Bold.eot');
-	src: url('../fonts/eot/IRANSansWeb_Bold.eot?#iefix') format('embedded-opentype'),  /* IE6-8 */
-		 url('../fonts/woff2/IRANSansWeb_Bold.woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/
-		 url('../fonts/woff/IRANSansWeb_Bold.woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
-		 url('../fonts/ttf/IRANSansWeb_Bold.ttf') format('truetype');
+    font-family: IRANSans;
+    font-style: normal;
+    font-weight: bold;
+    src: url('../fonts/eot/IRANSansWeb_Bold.eot');
+    src: url('../fonts/eot/IRANSansWeb_Bold.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+        url('../fonts/woff2/IRANSansWeb_Bold.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+        url('../fonts/woff/IRANSansWeb_Bold.woff') format('woff'),
+        /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+        url('../fonts/ttf/IRANSansWeb_Bold.ttf') format('truetype');
 }
+
 @font-face {
-	font-family: IRANSans;
-	font-style: normal;
-	font-weight: 500;
-	src: url('../fonts/eot/IRANSansWeb_Medium.eot');
-	src: url('../fonts/eot/IRANSansWeb_Medium.eot?#iefix') format('embedded-opentype'),  /* IE6-8 */
-		 url('../fonts/woff2/IRANSansWeb_Medium.woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/
-		 url('../fonts/woff/IRANSansWeb_Medium.woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
-		 url('../fonts/ttf/IRANSansWeb_Medium.ttf') format('truetype');
+    font-family: IRANSans;
+    font-style: normal;
+    font-weight: 500;
+    src: url('../fonts/eot/IRANSansWeb_Medium.eot');
+    src: url('../fonts/eot/IRANSansWeb_Medium.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+        url('../fonts/woff2/IRANSansWeb_Medium.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+        url('../fonts/woff/IRANSansWeb_Medium.woff') format('woff'),
+        /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+        url('../fonts/ttf/IRANSansWeb_Medium.ttf') format('truetype');
 }
+
 @font-face {
-	font-family: IRANSans;
-	font-style: normal;
-	font-weight: 300;
-	src: url('../fonts/eot/IRANSansWeb_Light.eot');
-	src: url('../fonts/eot/IRANSansWeb_Light.eot?#iefix') format('embedded-opentype'),  /* IE6-8 */
-		 url('../fonts/woff2/IRANSansWeb_Light.woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/
-		 url('../fonts/woff/IRANSansWeb_Light.woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
-		 url('../fonts/ttf/IRANSansWeb_Light.ttf') format('truetype');
+    font-family: IRANSans;
+    font-style: normal;
+    font-weight: 300;
+    src: url('../fonts/eot/IRANSansWeb_Light.eot');
+    src: url('../fonts/eot/IRANSansWeb_Light.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+        url('../fonts/woff2/IRANSansWeb_Light.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+        url('../fonts/woff/IRANSansWeb_Light.woff') format('woff'),
+        /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+        url('../fonts/ttf/IRANSansWeb_Light.ttf') format('truetype');
 }
+
 @font-face {
-	font-family: IRANSans;
-	font-style: normal;
-	font-weight: 200;
-	src: url('../fonts/eot/IRANSansWeb_UltraLight.eot');
-	src: url('../fonts/eot/IRANSansWeb_UltraLight.eot?#iefix') format('embedded-opentype'),  /* IE6-8 */
-		 url('../fonts/woff2/IRANSansWeb_UltraLight.woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/
-		 url('../fonts/woff/IRANSansWeb_UltraLight.woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
-		 url('../fonts/ttf/IRANSansWeb_UltraLight.ttf') format('truetype');
+    font-family: IRANSans;
+    font-style: normal;
+    font-weight: 200;
+    src: url('../fonts/eot/IRANSansWeb_UltraLight.eot');
+    src: url('../fonts/eot/IRANSansWeb_UltraLight.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+        url('../fonts/woff2/IRANSansWeb_UltraLight.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+        url('../fonts/woff/IRANSansWeb_UltraLight.woff') format('woff'),
+        /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+        url('../fonts/ttf/IRANSansWeb_UltraLight.ttf') format('truetype');
 }
+
 @font-face {
-	font-family: IRANSans;
-	font-style: normal;
-	font-weight: normal;
-	src: url('../fonts/eot/IRANSansWeb.eot');
-	src: url('../fonts/eot/IRANSansWeb.eot?#iefix') format('embedded-opentype'),  /* IE6-8 */
-		 url('../fonts/woff2/IRANSansWeb.woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/
-		 url('../fonts/woff/IRANSansWeb.woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
-		 url('../fonts/ttf/IRANSansWeb.ttf') format('truetype');
+    font-family: IRANSans;
+    font-style: normal;
+    font-weight: normal;
+    src: url('../fonts/eot/IRANSansWeb.eot');
+    src: url('../fonts/eot/IRANSansWeb.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+        url('../fonts/woff2/IRANSansWeb.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+        url('../fonts/woff/IRANSansWeb.woff') format('woff'),
+        /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+        url('../fonts/ttf/IRANSansWeb.ttf') format('truetype');
 }
 
 
 /* CSS RESET BEGIN */
 
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	vertical-align: baseline;
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
 }
+
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
 }
 
 a {
@@ -84,22 +181,30 @@ a {
 }
 
 body {
-	line-height: 1;
+    line-height: 1;
 }
-ol, ul {
-	list-style: none;
+
+ol,
+ul {
+    list-style: none;
 }
-blockquote, q {
-	quotes: none;
+
+blockquote,
+q {
+    quotes: none;
 }
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: '';
+    content: none;
 }
+
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 
 
@@ -111,9 +216,9 @@ html {
     font-size: 16px;
 }
 
-body{
+body {
     background: #1c1f32;
-    overflow-y:hidden;
+    overflow-y: hidden;
     font-family: IRANSans, sans-serif;
     color: white;
 }
@@ -121,10 +226,12 @@ body{
 #top-right-elements-container {
     position: fixed;
     height: 5.4vh;
-    top: 2vh; right: 4vw;
+    top: 2vh;
+    right: 4vw;
 }
+
 #user-info {
-    background:#292d48;
+    background: #292d48;
     position: relative;
     width: 22vw;
     height: 5.4vh;
@@ -133,9 +240,10 @@ body{
     vertical-align: middle;
     display: inline-block;
 }
+
 @media only screen and (max-width: 600px) {
     #user-info {
-      width: 42vw !important;
+        width: 42vw !important;
     }
 }
 
@@ -144,7 +252,7 @@ body{
     float: right;
     border-radius: 50%;
     right: 1.5vh;
-    top:50%;
+    top: 50%;
     margin-top: -2vh;
     height: 4vh;
     width: auto;
@@ -154,14 +262,14 @@ body{
     display: inline-block;
     position: absolute;
     float: left;
-    font-size: calc( 0.6rem + 0.3vw);
+    font-size: calc(0.6rem + 0.3vw);
     top: 0.1vh;
     left: 0.8vh;
     color: white;
 
 }
 
-#notif-btn{
+#notif-btn {
     border-radius: 3px;
     position: relative;
     width: 5.4vh;
@@ -179,14 +287,15 @@ body{
     left: 8vh;
     height: 7vh !important;
 }
+
 @media only screen and (max-width: 600px) {
     #logo-svg {
-     display: none !important;
+        display: none !important;
     }
 }
 
 .main-btns {
-    background:#292d48 no-repeat center;
+    background: #292d48 no-repeat center;
     background-size: 3vh;
     border-radius: 3px;
     width: 5.4vh;
@@ -197,22 +306,24 @@ body{
 
 #top-btns {
     position: fixed;
-    list-style : none;
+    list-style: none;
     top: 2vh;
     left: 30vh;
 }
+
 @media only screen and (max-width: 600px) {
     #top-btns {
-      left: 0vh !important;
+        left: 0vh !important;
     }
 }
+
 #top-btns li {
     float: right;
 }
 
 #left-btns {
     position: fixed;
-    list-style : none;
+    list-style: none;
     bottom: 5vh;
     left: 1vw;
 }
@@ -224,38 +335,44 @@ body{
 #home-btn {
     background-image: url(/media/icons/binance.png)
 }
-#search-btn{
+
+#search-btn {
     background-image: url(/media/icons/search.svg)
 }
-#marketwatch-btn{
+
+#marketwatch-btn {
     background-image: url(/media/icons/stockwatch.svg)
 }
-#backtest-btn{
+
+#backtest-btn {
     background-image: url(/media/icons/backtest.svg);
- //   background-image: url(/media/icons/bott.png);
 }
-#setting-btn{
+
+#setting-btn {
     background-image: url(/media/icons/setting.svg)
 }
-#info-btn{
+
+#info-btn {
     background-image: url(/media/icons/info.svg)
 }
-#logout-btn{
+
+#logout-btn {
     background-image: url(/media/icons/logout.svg)
 }
 
-#master__wrapper {       /****************Have TO FIX*****************/
+#master__wrapper {
+    /****************Have TO FIX*****************/
     position: relative;
     margin: 0 auto;
-    background:#292d48;
+    background: #292d48;
     max-width: 92vw;
     height: 92vh;
     left: 0;
     right: 0;
-    top:8vh;
+    top: 8vh;
     text-align: center;
-    overflow-y:scroll;
-    overflow-x:hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
     direction: ltr;
 }
 
@@ -273,12 +390,12 @@ body{
     top: 1%;
 }
 
-#navbar__title{
+#navbar__title {
     display: inline-block;
-    color:white;
+    color: white;
     font-size: 3vh;
     margin-top: 1rem;
-    margin-right:2rem;
+    margin-right: 2rem;
     float: right;
 }
 
@@ -286,29 +403,33 @@ body{
 
 @media only screen and (max-width: 1380px) {
     #left-btns {
-    left: 0.9vw;
+        left: 0.9vw;
     }
 }
 
 
 /* ****************************************************** */
 
-.divTable{
-	display: table;
-	width: 100%;
-    padding: 0.5em 0.4em 0 0.45em ;
+.divTable {
+    display: table;
+    width: 100%;
+    padding: 0.5em 0.4em 0 0.45em;
 }
+
 .divTableRow {
-	display: table-row;
+    display: table-row;
 }
+
 .divTableHeading {
-	background-color: #EEE;
-	display: table-header-group;
+    background-color: #EEE;
+    display: table-header-group;
 }
-.divTableCell, .divTableHead {
-	border: none;
-	display: table-cell;
-	padding: 5px 10px;
+
+.divTableCell,
+.divTableHead {
+    border: none;
+    display: table-cell;
+    padding: 5px 10px;
     text-align: center;
     font-size: 1.5vh;
 }
@@ -316,46 +437,53 @@ body{
 .divTableHead {
     padding-top: 1vh;
 }
+
 .divTableHeading {
-	background-color: red;
-	display: table-header-group;
-	font-weight: bold;
+    background-color: red;
+    display: table-header-group;
+    font-weight: bold;
 }
+
 .divTableFoot {
-	background-color: #EEE;
-	display: table-footer-group;
-	font-weight: bold;
+    background-color: #EEE;
+    display: table-footer-group;
+    font-weight: bold;
 }
+
 .divTableBody {
-	display: table-row-group;
+    display: table-row-group;
 }
 
 
 
 /***************************************************************/
 
-.ui.button, a{
-	font-family: IranSans;
+.ui.button,
+a {
+    font-family: IranSans;
 }
 
 .flex-container {
-  display: flex;
-  flex-wrap: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
 }
 
-.flex-container > div {
-  width: 100px;
-  margin: 10px;
-  text-align: center;
-  line-height: 75px;
-  font-size: 30px;
+.flex-container>div {
+    width: 100px;
+    margin: 10px;
+    text-align: center;
+    line-height: 75px;
+    font-size: 30px;
 }
-.customColumnsX{
-width: 25%;
+
+.customColumnsX {
+    width: 25%;
 }
-button{
-font-family: IranSans;
+
+button {
+    font-family: IranSans;
 }
-body{
-font-family: IranSans;
+
+body {
+    font-family: IranSans;
 }

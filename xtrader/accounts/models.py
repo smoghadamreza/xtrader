@@ -173,7 +173,7 @@ class Wallet(models.Model):
         params = {
             "address": settings.USDT_WALLET,
             "callback": settings.SITE_ADDRESS
-            + "/accounts/newDeposit/"
+            + "/accounts/new-deposit/"
             + "?nonce={}".format(self.nonce),
             "priority": "economic",
             "post": 1,
@@ -192,7 +192,7 @@ class Wallet(models.Model):
     def check_deposit(self):
         params = {
             "callback": settings.SITE_ADDRESS
-            + "/accounts/newDeposit/"
+            + "/accounts/new-deposit/"
             + "?nonce={}".format(self.nonce),
         }
         logs = requests.get(

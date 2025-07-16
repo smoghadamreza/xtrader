@@ -982,7 +982,7 @@ function save_filters(pointer) {
     if (!isStrategySaved && strategy_name) {
         $.ajax({
             type: 'POST',
-            url: "/save_strategy",
+            url: "/save-strategy",
             data: {
                 param: JSON.stringify(strategy),
 
@@ -1066,7 +1066,7 @@ function load_strategy_names() {
     delete_all(['indicators'], false);
     $.ajax({
         type: 'GET',
-        url: "/get_strategy_names",
+        url: "/get-strategy-names",
         success: function (result) {
             let strategyNames = '';
             result.strategies.forEach(function (strategy) {
@@ -1101,14 +1101,14 @@ function getSelectedStrategyName(selectedStrategyId) {
 }
 function load_strategy() {
     let selectedStrategyId = getSelectedStrategyId();
-    console.log("load strategy", selectedStrategyId, currentStrategyId);
+    console.log("load-strategy", selectedStrategyId, currentStrategyId);
     waiting('wait');
     //    selectedStrategyId = parseInt(selectedStrategyId);
     if (selectedStrategyId > 0) {
         console.log('here');
         $.ajax({
             type: 'GET',
-            url: "/load_strategy",
+            url: "/load-strategy",
             data: {
                 id: selectedStrategyId,
             },
@@ -1163,7 +1163,7 @@ function scan() {
         waiting('wait');
         $.ajax({
             type: 'GET',
-            url: "/scan_market",
+            url: "/scan-market",
             data: {
                 strategyId: getSelectedStrategyId(),
                 //                interval: userTimeFrame,
@@ -1842,7 +1842,7 @@ function calculate_indicators(strategy, saving_status) {
     waiting('wait');
     $.ajax({
         type: 'GET',
-        url: "/calculate_filter/" + userTimeFrame,
+        url: "/calculate-filter/" + userTimeFrame,
         data: {
             param: JSON.stringify(strategy),
             //            interval: userTimeFrame;
@@ -2545,7 +2545,7 @@ function changeIsStrategySaved(saving_status) {
 
 
 function getWatchLists() {
-    let url = '/getWatchLists'
+    let url = '/get-watchlists'
     $.ajax({
         url: url,
         success: function (result) {

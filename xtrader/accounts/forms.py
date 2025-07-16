@@ -76,8 +76,8 @@ class SignupFormExtra(SignupForm):
             self.cleaned_data["email"],
             self.cleaned_data["password1"],
         )
-        userena_signup = cast(UserenaManager, UserenaSignup.objects)
-        new_user = userena_signup.create_user(
+        userena_sign_up = cast(UserenaManager, UserenaSignup.objects)
+        new_user = userena_sign_up.create_user(
             username,
             email,
             password,
@@ -98,7 +98,8 @@ class SignupFormExtra(SignupForm):
         p.cellPhone = self.cleaned_data["cellPhone"]
         p.save()
         # TODO: Send activation email
-        new_user.userena_signup.send_activation_email()
+        signup: UserenaSignup = getattr(new_user, "userena_signup")
+        signup.send_activation_email()
 
         # Userena expects to get the new user from this form, so return the new
         return new_user
@@ -415,7 +416,8 @@ class ChangeEmailForm(forms.Form):
         """Save method calls :func:`user.change_email()` method which sends out
         an email with an verification key to verify and with it enable this new
         email address."""
-        return self.user.userena_signup.change_email(
+        signup: UserenaSignup = getattr(self.user, "userena_signup")
+        return signup.change_email(
             self.cleaned_data["email"]
         )
 

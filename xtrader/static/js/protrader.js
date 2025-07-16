@@ -1,9 +1,9 @@
 let words = window.location.href.split('/');
 let proTraderBrand = '';
-const proTraderId = words[words.length - 1 ];
+const proTraderId = words[words.length - 1];
 
 window.onload = initPage;
-function initPage(){
+function initPage() {
     Highcharts.theme = {
         colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee',
             '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
@@ -246,11 +246,11 @@ function initPage(){
     getProfile();
 }
 
-function getProfile(){
+function getProfile() {
     $.ajax({
-        url: '/social/getProfile/' + proTraderId,
-        success: function(result){
-            if (result.s === 302){
+        url: '/social/get-profile/' + proTraderId,
+        success: function (result) {
+            if (result.s === 302) {
                 window.location = result.href;
             }
             waiting('default');
@@ -258,110 +258,110 @@ function getProfile(){
             document.getElementById('traderBrand').value = proTraderBrand;
             document.getElementById('subsFee').value = result.subsFee;
             let status = 'لاگین کنید';
-            if (result.status === 1){
+            if (result.status === 1) {
                 status = 'دنبال شده';
                 document.getElementById('unfollow').style.display = 'inline';
                 document.getElementById('follow').style.display = 'none';
             }
             document.getElementById('status').value = status;
-            if (result.status === 2){
+            if (result.status === 2) {
                 status = 'دنبال نشده';
                 document.getElementById('status').value = status;
                 document.getElementById('status').style.color = 'rgb(227, 92, 103)';
             }
-            if (result.status === 3){
+            if (result.status === 3) {
                 status = 'تریدر دیگری دارید';
                 document.getElementById('status').value = status;
                 document.getElementById('status').style.color = 'rgb(227, 92, 103)';
             }
             var seriesOptions = [
-            {
-                name: 'btc',
-                data: result.history.btc,
-            },
-            {
-                name: proTraderBrand,
-                data: result.history.trader,
-            },
-        ];
+                {
+                    name: 'btc',
+                    data: result.history.btc,
+                },
+                {
+                    name: proTraderBrand,
+                    data: result.history.trader,
+                },
+            ];
             Highcharts.stockChart('container', {
 
-        rangeSelector: {
-            selected: 4
-        },
+                rangeSelector: {
+                    selected: 4
+                },
 
-        yAxis: {
-            labels: {
-                formatter: function () {
-                    return (this.value > 0 ? ' + ' : '') + this.value + '%';
-                }
-            },
-            plotLines: [{
-                value: 0,
-                width: 2,
-                color: 'silver'
-            }]
-        },
+                yAxis: {
+                    labels: {
+                        formatter: function () {
+                            return (this.value > 0 ? ' + ' : '') + this.value + '%';
+                        }
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 2,
+                        color: 'silver'
+                    }]
+                },
 
-        plotOptions: {
-            series: {
-                compare: 'percent',
-                showInNavigator: true
-            }
-        },
+                plotOptions: {
+                    series: {
+                        compare: 'percent',
+                        showInNavigator: true
+                    }
+                },
 
-        tooltip: {
-            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-            valueDecimals: 2,
-            split: true
+                tooltip: {
+                    pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+                    valueDecimals: 2,
+                    split: true
+                },
+                title: {
+                    text: 'مقایسه عملکرد تریدر با بیت‌کوین'
+                },
+                subtitle: {
+                    text: proTraderBrand.toUpperCase() + ' VS ' + 'BTCUSDT' // dummy text to reserve space for dynamic subtitle
+                },
+                series: seriesOptions,
+            });
         },
-        title: {
-            text: 'مقایسه عملکرد تریدر با بیت‌کوین'
-        },
-        subtitle: {
-            text: proTraderBrand.toUpperCase() +' VS ' + 'BTCUSDT' // dummy text to reserve space for dynamic subtitle
-        },
-        series: seriesOptions,
-    });
-        },
-        error: function (e){
+        error: function (e) {
             waiting('default');
         },
     });
 }
 
-function showRiskModal(action){
-    if (action === 1){
+function showRiskModal(action) {
+    if (action === 1) {
         $('#followRisk').modal('show');
-    }else{
+    } else {
         $('#unfollowRisk').modal('show');
     }
 }
-function copytrade(action){
-//  console.log(action, protrader_id);
-//  if (action === 1){
-//    showRiskModal();
-//  }
-  $.ajax({
-    'url': '/social/copytrade',
-    'method': 'POST',
-    'data': JSON.stringify({
-      action: action,
-      protrader_brand: proTraderBrand,
-    }),
-    success: function(result){
-      console.log(result);
-      if (result.c === 200){
-        window.location = '/social/trader/'+proTraderBrand;
-      }else if (result.c === 302){
-        alert(result.msg);
-        window.location = result.href;
-      }else{
-        alert(result.msg);
-      }
-    },
-    error: function(){
+function copytrade(action) {
+    //  console.log(action, protrader_id);
+    //  if (action === 1){
+    //    showRiskModal();
+    //  }
+    $.ajax({
+        'url': '/social/copy-trade/follow-toggle',
+        'method': 'POST',
+        'data': JSON.stringify({
+            action: action,
+            protrader_brand: proTraderBrand,
+        }),
+        success: function (result) {
+            console.log(result);
+            if (result.c === 200) {
+                window.location = '/social/trader/' + proTraderBrand;
+            } else if (result.c === 302) {
+                alert(result.msg);
+                window.location = result.href;
+            } else {
+                alert(result.msg);
+            }
+        },
+        error: function () {
 
-    }
-  })
+        }
+    })
 }

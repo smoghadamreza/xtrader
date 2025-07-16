@@ -109,7 +109,7 @@ class ProTrader(models.Model):
         )
         if not followings:
             return 0
-        oms.OMSManager.copytrade(
+        oms.OMSManager.copy_trade(
             trader=self.trader, new_order=new_order, followers=followings
         )
 
@@ -168,7 +168,7 @@ class Follow(models.Model):
         return True
 
     @staticmethod
-    def copytrade(user, brand, action):
+    def copy_trade(user, brand, action):
         if ProTrader.objects.filter(trader=user).first():
             action = -1
         following = Follow.objects.filter(
@@ -194,7 +194,7 @@ class Follow(models.Model):
                             result = {
                                 "c": 302,
                                 "msg": "موجودی شما کافی نیست",
-                                "href": "/profile/setup/?s=wallet",
+                                "href": "/profile-setup/?s=wallet",
                             }
                     else:
                         result = {"c": 403, "msg": "تریدر یافت نشد"}

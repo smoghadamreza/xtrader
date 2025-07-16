@@ -6,20 +6,20 @@ import accounts.views as userena_views
 
 
 urlpatterns = [
-    re_path(r"^getTelegram/$", userena_views.get_telegram, name="getTelegram"),
-    re_path(r"^newDeposit/$", userena_views.new_deposit, name="newDeposit"),
-    re_path(r"^getWallet/$", userena_views.get_wallet, name="getWallet"),
+    re_path(r"^get-telegram/$", userena_views.get_telegram, name="get-telegram"),
+    re_path(r"^new-deposit/$", userena_views.new_deposit, name="new-deposit"),
+    re_path(r"^get-wallet/$", userena_views.get_wallet, name="get-wallet"),
     re_path(
-        r"^checkDeposits/$", userena_views.check_deposits, name="checkDeposits"
+        r"^check-deposits/$", userena_views.check_deposits, name="check-deposits"
     ),
-    re_path(r"^getDeposits/$", userena_views.get_deposits, name="getDeposits"),
-    re_path(r"^signup/$", userena_views.signupsample, name="userena_signup"),
+    re_path(r"^get-deposits/$", userena_views.get_deposits, name="get-deposits"),
+    re_path(r"^sign-up/$", userena_views.signup_sample, name="userena_sign-up"),
     # re_path(r"^signup-useless/$", userena_views.signup, name="userena_signup"),
-    re_path(r"^signin/$", userena_views.signin, name="userena_signin"),
+    re_path(r"^sign-in/$", userena_views.sign_in, name="userena_sign_in"),
     re_path(
-        r"^signout/$",
-        userena_views.signout,
-        name="userena_signout",
+        r"^sign-out/$",
+        userena_views.sign_out,
+        name="userena_sign_out",
     ),
     re_path(
         r"^password/reset/$",
@@ -58,10 +58,10 @@ urlpatterns = [
         name="userena_password_reset_complete",
     ),
     re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/signup/complete/$",
+        r"^(?P<username>[\@\.\+\w-]+)/sign-up/complete/$",
         userena_views.direct_to_user_template,
         {
-            "template_name": "userena/signup_complete.html",
+            "template_name": "userena/sign_up_complete.html",
             "extra_context": {
                 "userena_activation_required": (
                     userena_settings.USERENA_ACTIVATION_REQUIRED
@@ -69,7 +69,7 @@ urlpatterns = [
                 "userena_activation_days": userena_settings.USERENA_ACTIVATION_DAYS,
             },
         },
-        name="userena_signup_complete",
+        name="userena_sign_up_complete",
     ),
     re_path(
         r"^activate/(?P<activation_key>\w+)/$",
@@ -130,7 +130,7 @@ urlpatterns = [
         name="userena_profile_edit",
     ),
     re_path(
-        r"^(?P<username>(?!(signout|signup|signin)/)[\@\.\+\w-]+)/$",
+        r"^(?P<username>(?!(sign-out|sign-up|sign-in)/)[\@\.\+\w-]+)/$",
         userena_views.profile_detail,
         name="userena_profile_detail",
     ),

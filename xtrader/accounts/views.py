@@ -134,7 +134,7 @@ def signup(
     :param success_url:
         String containing the URI which should be redirected to after a
         successful signup. If not supplied will redirect to
-        ``userena_signup_complete`` view.
+        ``userena_sign_up_complete`` view.
 
     :param extra_context:
         Dictionary containing variables which are added to the template
@@ -162,7 +162,7 @@ def signup(
                 redirect_to = success_url
             else:
                 redirect_to = reverse(
-                    "accounts:userena_signup_complete",
+                    "accounts:userena_sign_up_complete",
                     kwargs={"username": user.username},
                 )
 
@@ -171,7 +171,7 @@ def signup(
                 logout(request)
 
             if (
-                userena_settings.USERENA_SIGNIN_AFTER_SIGNUP
+                userena_settings.USERENA_SIGN_IN_AFTER_SIGNUP
                 and not userena_settings.USERENA_ACTIVATION_REQUIRED
             ):
                 user = authenticate(
@@ -326,7 +326,7 @@ def activate_pending(
     # user is now not active, it is safe to assume that the user was
     # actually disabled after completion of activation.  In that
     # case, we will redirect to ``userena_disabled``.
-    signup: UserenaSignup = getattr(user, "userena_signup")
+    signup: UserenaSignup = getattr(user, "userena_sign_up")
     if signup.activation_completed:
         return redirect(
             reverse("userena_disabled", kwargs={"username": user.username})
@@ -653,7 +653,7 @@ def landing(
 
 
 @secure_required
-def signin(
+def sign_in(
     request,
     auth_form=AuthenticationForm,
     template_name="userena/signin_form.html",
@@ -778,7 +778,7 @@ def signin(
 
 
 @secure_required
-def signout(
+def sign_out(
     request,
     next_page=userena_settings.USERENA_REDIRECT_ON_SIGNOUT,
     template_name="userena/signout.html",
@@ -1185,7 +1185,7 @@ def profile_list(
 
 @secure_required
 @csrf_exempt
-def signupsample(
+def signup_sample(
     request,
     signup_form=SignupFormExtra,
     template_name="userena/signuphtml.html",
@@ -1209,7 +1209,7 @@ def signupsample(
     :param success_url:
         String containing the URI which should be redirected to after a
         successful signup. If not supplied will redirect to
-        ``userena_signup_complete`` view.
+        ``userena_sign_up_complete`` view.
 
     :param extra_context:
         Dictionary containing variables which are added to the template
@@ -1249,7 +1249,7 @@ def signupsample(
                 logout(request)
 
             if (
-                userena_settings.USERENA_SIGNIN_AFTER_SIGNUP
+                userena_settings.USERENA_SIGN_IN_AFTER_SIGNUP
                 and not userena_settings.USERENA_ACTIVATION_REQUIRED
             ):
                 user = authenticate(
@@ -1329,7 +1329,7 @@ def new_deposit(request):
     return JsonResponse({"m": result})
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def get_wallet(request):
     if not request.method == "GET":
         return JsonResponse({"msg": "bad request"})
@@ -1343,7 +1343,7 @@ def get_wallet(request):
     return JsonResponse(result)
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def check_deposits(request):
     if not request.method == "GET":
         return JsonResponse({"status": 403, "msg": "bad request"})
@@ -1355,7 +1355,7 @@ def check_deposits(request):
     return JsonResponse({"status": 200, "newDeposit": result})
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def get_deposits(request):
     if not request.method == "GET":
         return JsonResponse({"status": 403, "msg": "bad request"})
@@ -1365,7 +1365,7 @@ def get_deposits(request):
     return JsonResponse({"data": deposits})
 
 
-@login_required(login_url="accounts:userena_signin")
+@login_required(login_url="accounts:userena_sign_in")
 def account_status(request):
     user = request.user
     status = {

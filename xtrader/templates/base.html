@@ -5,21 +5,21 @@
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!--    <link rel="icon" type="image/png" href="/media/icons/backtest.png">-->
+    <!--    <link rel="icon" type="image/png" href="/media/icons/backtest.png">-->
     <link rel="icon" type="image/png" href="/media/img/sign.png">
 
 
 
     <!-- Needed stylesheets start -->
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/semantic.min.css"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}?v=1"/>
+    <link rel="stylesheet" href="/static/css/semantic.min.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}?v=1" />
     <!-- Needed stylesheets end -->
 
 
 
     <!-- Needed scripts start -->
-<!--    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>-->
+    <!--    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>-->
     <script src="/static/js/jquery-3.2.1.min.js"></script>
     <script src="/static/js/popper.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
@@ -51,33 +51,33 @@
         <div id="user-info" style="text-align: center">
             {{ name }}
         </div>
-{#        <a href="#" id="notif-btn"></a>#}
+        {# <a href="#" id="notif-btn"></a>#}
     </div>
 
 
     <!-- Search box whith semantic UI -->
 
     <div class="ui container" id="search-bar" dir="rtl"
-         style="position: relative;top:2.4%; left:0; right:0;text-align:center; display:none;">
+        style="position: relative;top:2.4%; left:0; right:0;text-align:center; display:none;">
         <div id="search" class="ui fluid category search">
             <div class="ui icon input" style="width:50%;">
                 <input class="prompt" type="search" placeholder="جستجو نماد">
                 <i class="search icon"></i>
             </div>
             <div class="results" style="width:50%; margin-left: 25%; display:none; z-index:1000; position:absolute"
-                 dir="ltr"></div>
+                dir="ltr"></div>
         </div>
     </div>
 
 
     <!-- Logo and top left menu buttons -->
 
-<!--{#    <img src="/media/pictures/logo.svg" id="logo-svg">#}-->
-<!--{#    <img src="/media/pictures/logon.png" id="logo-svg" >#}-->
-    <img src="/media/icons/farsi.tag.png" id="logo-svg" >
+    <!--{#    <img src="/media/pictures/logo.svg" id="logo-svg">#}-->
+    <!--{#    <img src="/media/pictures/logon.png" id="logo-svg" >#}-->
+    <img src="/media/icons/farsi.tag.png" id="logo-svg">
     <ul id="top-btns">
         <li class="main-btns" id="search-btn" title="جستجو نماد"></li>
-        <a id="copytradingIcon" href="{% url 'social:copytrading' %}">
+        <a id="copytradingIcon" href="{% url 'social:copy-trading' %}">
             <li class="main-btns" id="marketwatch-btn" title="شبکه اجتماعی ترید"></li>
         </a>
         <a href="{% url 'finance:stockwatch' %}" title="بایننس">
@@ -86,10 +86,10 @@
         <a href="{% url 'finance:backtest' %}" title="ربات">
             <li class="main-btns" id="backtest-btn"></li>
         </a>
-        <a href="/profile/setup">
+        <a href="/profile-setup">
             <li class="main-btns" id="setting-btn" title="تنظیمات"></li>
         </a>
-        <a href="{% url 'accounts:userena_signout' %}" title="خروج">
+        <a href="{% url 'accounts:userena_sign_out' %}" title="خروج">
             <li class="main-btns" id="logout-btn"></li>
         </a>
     </ul>
@@ -98,52 +98,6 @@
 
 
     <div id="master__wrapper">
-
-<!--&lt;!&ndash; TradingView Widget BEGIN &ndash;&gt;-->
-<!--<div class="tradingview-widget-container">-->
-<!--  <div class="tradingview-widget-container__widget"></div>-->
-<!--&lt;!&ndash;  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com" rel="noopener" target="_blank"><span class="blue-text">Ticker Tape</span></a> by TradingView</div>&ndash;&gt;-->
-<!--  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>-->
-<!--  {-->
-<!--  "symbols": [-->
-<!--    {-->
-<!--      "description": "Bitcoin",-->
-<!--      "proName": "BINANCE:BTCUSDT"-->
-<!--    },-->
-<!--    {-->
-<!--      "description": "Ethereum",-->
-<!--      "proName": "BINANCE:ETHUSDT"-->
-<!--    },-->
-<!--    {-->
-<!--      "description": "Cardano",-->
-<!--      "proName": "BINANCE:ADAUSDT"-->
-<!--    },-->
-<!--    {-->
-<!--      "description": "Ripple",-->
-<!--      "proName": "BINANCE:XRPUSDT"-->
-<!--    },-->
-<!--    {-->
-<!--      "description": "BinanceCoin",-->
-<!--      "proName": "BINANCE:BNBUSDT"-->
-<!--    },-->
-<!--    {-->
-<!--      "description": "Polkadot",-->
-<!--      "proName": "BINANCE:DOTUSDT"-->
-<!--    },-->
-<!--    {-->
-<!--      "description": "Tron",-->
-<!--      "proName": "BINANCE:TRXUSDT"-->
-<!--    }-->
-<!--  ],-->
-<!--  "showSymbolLogo": false,-->
-<!--  "colorTheme": "dark",-->
-<!--  "isTransparent": false,-->
-<!--  "displayMode": "regular",-->
-<!--  "locale": "en"-->
-<!--}-->
-<!--  </script>-->
-<!--</div>-->
-<!-- TradingView Widget END -->
 
 
         {% block bodyContent %}

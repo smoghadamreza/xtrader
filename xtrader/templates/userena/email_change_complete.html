@@ -5,6 +5,7 @@
 {% block content_title %}<h2>ایمیل خود را تایید کنید </h2>{% endblock %}
 
 {% block content %}
-<p>یک ایمیل به این ادرس فرستاده شد {{ viewed_user.userena_signup.email_unconfirmed }}</p>
-<p>{% blocktrans with viewed_user.username as username %}برای تایید ایمیل برای حساب کاربری شما ، بر روی لینکی که در این ایمیل امده است کلیک کنید .{% endblocktrans %}</p>
+<p>یک ایمیل به این ادرس فرستاده شد {{ viewed_user.userena_sign_up.email_unconfirmed }}</p>
+<p>{% blocktrans with viewed_user.username as username %}برای تایید ایمیل برای حساب کاربری شما ، بر روی لینکی که در این
+    ایمیل امده است کلیک کنید .{% endblocktrans %}</p>
 {% endblock %}

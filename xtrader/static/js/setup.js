@@ -33,7 +33,7 @@ function saveExchange() {
 
 function removeExchange() {
     $.ajax({
-        url: '/removeExchange',
+        url: '/remove-exchange',
         method: 'DELETE',
         success: function (result) {
             if (result.status) {
@@ -42,7 +42,7 @@ function removeExchange() {
                 document.getElementById('removeExchange').style.display = 'none';
                 document.getElementById('saveExchange').style.display = 'block';
                 changeExchangeSetup('enabled');
-            }else{
+            } else {
                 alert("برای پاک کردن اکسچنج ابتدا اتصال ترید در تنظیمات تردینگ ویو را حذف کنید");
             }
 
@@ -53,7 +53,7 @@ function removeExchange() {
 
 function getExchange() {
     $.ajax({
-        url: '/getExchanges',
+        url: '/get-exchanges',
         method: 'GET',
         success: function (result) {
             if (result.api_key) {
@@ -80,16 +80,16 @@ function changeExchangeSetup(status) {
     }
 }
 
-function getWatchList(){
+function getWatchList() {
     $.ajax({
-    url: '/data/symbols',
-    success: function (result){
-//        let watchListSymbols = document.getElementById('watchListSymbols');
-//        watchListSymbols.innerHTML = '';
-//        result.symbols.forEach(function (symbol){
-//            watchListSymbols.innerHTML += '<li><a href="/spot/'+symbol+'">'+symbol+'</a></li><br>';
-//        });
-    },
+        url: '/data/symbols',
+        success: function (result) {
+            //        let watchListSymbols = document.getElementById('watchListSymbols');
+            //        watchListSymbols.innerHTML = '';
+            //        result.symbols.forEach(function (symbol){
+            //            watchListSymbols.innerHTML += '<li><a href="/spot/'+symbol+'">'+symbol+'</a></li><br>';
+            //        });
+        },
     });
 }
 
@@ -176,17 +176,17 @@ function initSetup() {
         }
     });
 }
-function setSettingItems(){
+function setSettingItems() {
     let options = document.getElementById('settingMenu').children;
-    for (let i=0; i<options.length; i++){
+    for (let i = 0; i < options.length; i++) {
         settingItems.push(options[i].value);
     };
 }
-function go2Setting(){
+function go2Setting() {
     var url_string = window.location.href;
     var url = new URL(url_string);
     var s = url.searchParams.get("s");
-    if (settingItems.indexOf(s) > -1){
+    if (settingItems.indexOf(s) > -1) {
         toggleSetup(s);
     }
 }
@@ -201,7 +201,7 @@ function toggleSetup(itemId) {
 
 function webhookSave() {
     $.ajax({
-        url: '/tradingview',
+        url: '/trading-view',
         method: 'POST',
         data: JSON.stringify({
             'trading': document.getElementById('webhookTrading').checked,
@@ -215,7 +215,7 @@ function webhookSave() {
             document.getElementById('webhookNotification').checked = result.notification;
             if (result.msg !== "") {
                 alert(result.msg);
-            }else{
+            } else {
                 alert('تغییرات انجام شد.');
             }
         },
@@ -225,7 +225,7 @@ function webhookSave() {
 
 function getWebhook() {
     $.ajax({
-        url: '/tradingview',
+        url: '/trading-view',
         method: 'GET',
         success: function (result) {
             let webhook = document.getElementById('webhook');
@@ -239,34 +239,34 @@ function getWebhook() {
 
 function getTelegram() {
     $.ajax({
-        url: '/accounts/getTelegram/',
+        url: '/accounts/get-telegram/',
         method: 'GET',
         success: function (result) {
-            if(result.telegram_id){
+            if (result.telegram_id) {
                 document.getElementById('telegramStatus').innerHTML = 'اتصال حساب شما به تلگرام انجام شده است.'
                 document.getElementById('TelegramActivationCode').style.display = 'none';
                 document.getElementById('TelegramActivationGuide').style.display = 'none';
                 document.getElementById('telegramCheckButton').style.display = 'none';
-            }else{
+            } else {
                 document.getElementById('TelegramActivationCodePlace').value = result.activation_code;
                 // document.getElementById('TelegramActivationCodePlace').setAttribute("disabled", "");
             }
         }
     });
 }
-function watchlistMsg(msg, status){
+function watchlistMsg(msg, status) {
     let msgBox = document.getElementById('watchlistMsgs');
     msgBox.innerHTML = '<div id="msgPop">' + msg + '</div>';
-    if (status === 'error'){
+    if (status === 'error') {
         msgBox.style.color = '#e74c3c';
-    }else {
+    } else {
         msgBox.style.color = '#09cac8';
     }
     $('#msgPop').delay(1000).fadeOut('slow');
 }
 function getWallet() {
     $.ajax({
-        url: '/accounts/getWallet/',
+        url: '/accounts/get-wallet/',
         method: 'GET',
         success: function (result) {
             console.log(result);
@@ -280,12 +280,12 @@ function getWallet() {
     });
 }
 
-function updateWallet(){
+function updateWallet() {
     $.ajax({
-        url: '/accounts/checkDeposits',
-        success: function (result){
-            if (result.status === 200){
-                if (result.newDeposit){
+        url: '/accounts/check-deposits',
+        success: function (result) {
+            if (result.status === 200) {
+                if (result.newDeposit) {
                     getWallet();
                     getDeposits();
                 }
@@ -294,231 +294,231 @@ function updateWallet(){
     });
 }
 
-function getDeposits(){
-  document.getElementById('depositsContainer').innerHTML = '<br><table id="depositsTable" class="strip" style="width:99%;"></table>';
-  $('#depositsTable').DataTable( {
-    ajax: '/accounts/getDeposits',
-    order: [[ 0, "desc" ]],
-    columns: [
-      {
-        data: 'id',
-        title:'شناسه'
-      },
-      {
-        data: 'amount',
-        title:'مقدار',
-        render: $.fn.dataTable.render.number( ',', '.', 2, '' )
-      },
-      {
-        data: 'coin',
-        title:'کوین',
-      },
-      {
-        data: 'action',
-        title:'عملیات',
-      },
-      {
-        data: 'txid',
-        title:'شناسه تراکنش',
-      },
-      {
-        data: 'time',
-        title:'تاریخ',
-      },
-    ],
-  });
-  document.getElementById('depositsTable_length').style.display = 'none';
-  document.getElementById('depositsTable_info').style.display = 'none';
-  document.getElementById('depositsTable_paginate').style.display = 'none';
-  let label = document.querySelector('#depositsTable_filter > label');
-  label.style.display = 'none';
-  let input = label.children[0];
-  label.innerHTML = 'جستجو: ';
-  input.placeholder = 'سرمایه‌گذار';
-  input.style.display = 'none';
-  input.style.fontFamily = 'IranSans';
-  label.appendChild(input);
+function getDeposits() {
+    document.getElementById('depositsContainer').innerHTML = '<br><table id="depositsTable" class="strip" style="width:99%;"></table>';
+    $('#depositsTable').DataTable({
+        ajax: '/accounts/get-deposits',
+        order: [[0, "desc"]],
+        columns: [
+            {
+                data: 'id',
+                title: 'شناسه'
+            },
+            {
+                data: 'amount',
+                title: 'مقدار',
+                render: $.fn.dataTable.render.number(',', '.', 2, '')
+            },
+            {
+                data: 'coin',
+                title: 'کوین',
+            },
+            {
+                data: 'action',
+                title: 'عملیات',
+            },
+            {
+                data: 'txid',
+                title: 'شناسه تراکنش',
+            },
+            {
+                data: 'time',
+                title: 'تاریخ',
+            },
+        ],
+    });
+    document.getElementById('depositsTable_length').style.display = 'none';
+    document.getElementById('depositsTable_info').style.display = 'none';
+    document.getElementById('depositsTable_paginate').style.display = 'none';
+    let label = document.querySelector('#depositsTable_filter > label');
+    label.style.display = 'none';
+    let input = label.children[0];
+    label.innerHTML = 'جستجو: ';
+    input.placeholder = 'سرمایه‌گذار';
+    input.style.display = 'none';
+    input.style.fontFamily = 'IranSans';
+    label.appendChild(input);
 
 }
 window.onload = initSetup;
 
 
-function addNewWatchList(){
+function addNewWatchList() {
     let watchListName = document.getElementById('watchListName').value;
-    if (watchListName){
+    if (watchListName) {
         $.ajax({
-            url: '/addNewWatchList',
+            url: '/add-new-watchlist',
             method: 'POST',
-            data: {'name': watchListName},
-            success: function (result){
-                if (result.s === 200){
+            data: { 'name': watchListName },
+            success: function (result) {
+                if (result.s === 200) {
                     let watchListNamesDiv = document.getElementById('watchListNames');
-                    watchListNamesDiv.innerHTML = '<option value="'+result.id+'">'+watchListName+'</option>' + watchListNamesDiv.innerHTML;
+                    watchListNamesDiv.innerHTML = '<option value="' + result.id + '">' + watchListName + '</option>' + watchListNamesDiv.innerHTML;
                     getWatchLists(result.id);
                     watchlistMsg('واچ‌لیست ساخته شد', '');
-//                    console.log(result.id);
-                }else if (result.s === 302){
+                    //                    console.log(result.id);
+                } else if (result.s === 302) {
                     alert(result.m);
                     window.location = result.redirect;
-                }else {
+                } else {
                     alert(result.m);
                 }
             },
         });
-    }else {
+    } else {
         alert('اسم');
     }
 }
-function getWatchLists(watchListId, action){
-    let url = '/getWatchLists'
-    if (watchListId !== undefined){
-            url += '?id=' + watchListId;
-        if (action){
+function getWatchLists(watchListId, action) {
+    let url = '/get-watchlists'
+    if (watchListId !== undefined) {
+        url += '?id=' + watchListId;
+        if (action) {
             url += '&action=' + action;
         }
     }
     $.ajax({
         url: url,
-        success: function (result){
+        success: function (result) {
             console.log(result);
-            if (result.s === 200){
-                if (watchListId){
-                    if (action === 'remove'){
+            if (result.s === 200) {
+                if (watchListId) {
+                    if (action === 'remove') {
                         watchlistMsg('واچ‌لیست حذف شد', 'error');
                         getWatchLists();
-                    }else{
+                    } else {
                         showWatchlistSymbols(result.symbols);
                     }
-                }else{
+                } else {
                     insertWatchlists(result.watchlists);
                 }
-            }else{
+            } else {
                 alert(result.m);
             }
         },
     });
 }
-function showWatchlistSymbols(symbols){
+function showWatchlistSymbols(symbols) {
     let watchListSymbolsDiv = document.getElementById('watchListSymbols');
     watchListSymbolsDiv.innerHTML = '';
-    if (symbols.length > 0){
+    if (symbols.length > 0) {
         let counter = 0;
         console.log("ghe");
         let buttons = '<table style="width: 100%" id="qws"><tr>';
-        symbols.forEach(function (symbol){
-//            watchListSymbolsDiv.innerHTML += '<button class="ui labeled icon mini button"><i class="remove icon" style="background-color:red" onclick="updateSymbol2Watchlist(this.parentElement.innerText, \'remove\')"></i>'+symbol+'</button>';
+        symbols.forEach(function (symbol) {
+            //            watchListSymbolsDiv.innerHTML += '<button class="ui labeled icon mini button"><i class="remove icon" style="background-color:red" onclick="updateSymbol2Watchlist(this.parentElement.innerText, \'remove\')"></i>'+symbol+'</button>';
             buttons += '<td>';
-            buttons += '<button class="ui labeled icon mini button" style="width: 80%;"><i title="حذف" class="remove icon" style="background-color:#db2828" onclick="updateSymbol2Watchlist(this.parentElement.innerText, \'remove\')"></i>'+symbol+'</button>';
+            buttons += '<button class="ui labeled icon mini button" style="width: 80%;"><i title="حذف" class="remove icon" style="background-color:#db2828" onclick="updateSymbol2Watchlist(this.parentElement.innerText, \'remove\')"></i>' + symbol + '</button>';
             buttons += '</td>';
 
-            counter +=1;
-            if (counter % 3 === 0){
+            counter += 1;
+            if (counter % 3 === 0) {
                 buttons += '</tr><tr>';
             }
         });
         watchListSymbolsDiv.innerHTML = buttons + '</tr></table>';
-    }else{
+    } else {
         watchListSymbolsDiv.innerHTML = '<h2>هیچ نمادی انتخاب نشده است.</h2>';
     }
 }
-function insertWatchlists(watchlists){
+function insertWatchlists(watchlists) {
     let watchListNamesDiv = document.getElementById('watchListNames');
     watchListNamesDiv.innerHTML = '';
-    watchlists.forEach(function (watchlist){
-        watchListNamesDiv.innerHTML += '<option value="'+watchlist.id+'">'+watchlist.name+'</option>'
+    watchlists.forEach(function (watchlist) {
+        watchListNamesDiv.innerHTML += '<option value="' + watchlist.id + '">' + watchlist.name + '</option>'
     });
     getWatchLists(watchListNamesDiv.value);
 }
-function removeWatchlist(){
+function removeWatchlist() {
     let watchListId = document.getElementById('watchListNames').value;
     getWatchLists(watchListId, 'remove');
 }
-function setSymbols(){
+function setSymbols() {
     $.ajax({
-        url: '/data/allSymbols',
-        success: function (response){
+        url: '/data/all-symbols',
+        success: function (response) {
             $('#watchlistsearch').search({
-               source: response.symbols,
-               onSelect: function (result) {
+                source: response.symbols,
+                onSelect: function (result) {
                     console.log(this);
                     if (this.id == 'watchlistsearch') {
                         var value = result;
-                         console.log(value);
-                         updateSymbol2Watchlist(result.title, 'add');
-//                        symbol_id = value.symbol_id;
-//                        var backtest_state = '';
-//                        //document.getElementById('table_place').style.display;
-//                        window.location = '/spot/' + symbol_id;
-//                        //load_data('/data/get-data/' + symbol_id);
-//                        if (backtest_state == 'block') {
-//                            delete_all(['back test']);
-//                        }
+                        console.log(value);
+                        updateSymbol2Watchlist(result.title, 'add');
+                        //                        symbol_id = value.symbol_id;
+                        //                        var backtest_state = '';
+                        //                        //document.getElementById('table_place').style.display;
+                        //                        window.location = '/spot/' + symbol_id;
+                        //                        //load_data('/data/get-data/' + symbol_id);
+                        //                        if (backtest_state == 'block') {
+                        //                            delete_all(['back test']);
+                        //                        }
                     }
-                        // window.history.pushState('page2', 'Title', '/backtest/stock=' + symbol_id);
+                    // window.history.pushState('page2', 'Title', '/backtest/stock=' + symbol_id);
                 },
             });
         },
     });
 }
 
-function updateSymbol2Watchlist(symbol, action){
+function updateSymbol2Watchlist(symbol, action) {
     let watchListId = document.getElementById('watchListNames').value;
     $.ajax({
         url: '/updateSymbol2Watchlist',
-        data: {symbol:symbol, action:action, watchListId: watchListId},
-        success: function (result){
-            if (result.s === 200){
+        data: { symbol: symbol, action: action, watchListId: watchListId },
+        success: function (result) {
+            if (result.s === 200) {
                 getWatchLists(watchListId);
-                if (action === 'remove'){
+                if (action === 'remove') {
                     watchlistMsg('نماد از واچ لیست حذف شد', 'error');
-                }else{
+                } else {
                     watchlistMsg('نماد به واچ لیست اضافه شد', '');
                 }
-            }else{
+            } else {
                 alert(result.m);
             }
         },
     });
 }
 
-function getPackages(){
+function getPackages() {
     $.ajax({
         url: '/sales/packages',
-        success: function(result){
+        success: function (result) {
             document.getElementById('myPack').value = result.currentPack.name;
             document.getElementById('myPackEx').value = result.currentPack.expiry;
             document.getElementById('myGasFee').value = result.currentPack.gasFee;
             let packItems = document.getElementById('packageItems');
             packageItems.innerHTML = '';
             let counter = 0;
-            result.packages.forEach(function(pack){
+            result.packages.forEach(function (pack) {
                 let featured = '';
-                if (counter % 2 === 1){
+                if (counter % 2 === 1) {
                     featured = ' featured';
                 }
                 let watchListLimit = 0;
-                if (pack.price > 0){
+                if (pack.price > 0) {
                     watchListLimit = pack.limit;
                 }
-                let itemDiv = '<div class="plan col'+featured+'">';
+                let itemDiv = '<div class="plan col' + featured + '">';
                 itemDiv += '<div class="plan-title">' + pack.name + '</div>';
-//                itemDiv += '<h3 class="plan-title">' + pack.name + '</h3>';
+                //                itemDiv += '<h3 class="plan-title">' + pack.name + '</h3>';
                 itemDiv += '<div class="plan-cost"><span class="plan-price">$' + pack.monthPrice + '</span><span class="plan-type">/ ماهانه</span></div>';
                 itemDiv += '<ul class="plan-features">';
                 itemDiv += '<li class=""><i class="ion-checkmark"> </i>قیمت: ' + pack.price + ' تتر</li>';
                 itemDiv += '<li><i class="ion-checkmark"> </i>اشتراک: ' + pack.days + ' روزه</li>';
-                itemDiv += '<li><i class="ion-checkmark"> </i>'+pack.gasFee+' gasFee</li>';
-                itemDiv += '<li><i class="ion-checkmark"> </i>تعداد واچ‌لیست: '+watchListLimit+'</li>';
-                itemDiv += '<li><i class="ion-checkmark"> </i>تعداد استراتژی: '+pack.limit+'</li>';
-                if (pack.price === 0){
+                itemDiv += '<li><i class="ion-checkmark"> </i>' + pack.gasFee + ' gasFee</li>';
+                itemDiv += '<li><i class="ion-checkmark"> </i>تعداد واچ‌لیست: ' + watchListLimit + '</li>';
+                itemDiv += '<li><i class="ion-checkmark"> </i>تعداد استراتژی: ' + pack.limit + '</li>';
+                if (pack.price === 0) {
                     itemDiv += '<li class=""><button disabled style="width: 100%" class="positive ui button">رایگان استفاده کنید</button></li>';
-                }else{
-                    itemDiv += '<li class=""><button style="width: 100%" class="positive ui button" value="'+pack.id+'" onclick="buyPack(this)">خرید</button></li>';
+                } else {
+                    itemDiv += '<li class=""><button style="width: 100%" class="positive ui button" value="' + pack.id + '" onclick="buyPack(this)">خرید</button></li>';
                 }
 
                 itemDiv += '</ul>';
-//                itemDiv += '<div class="plan-select"><button style="width: 100%" class="positive ui button">خرید</button></div>';
-//                itemDiv += '<div class="plan-select"><a href="">خرید</a></div>';
+                //                itemDiv += '<div class="plan-select"><button style="width: 100%" class="positive ui button">خرید</button></div>';
+                //                itemDiv += '<div class="plan-select"><a href="">خرید</a></div>';
                 itemDiv += '</div>';
                 packageItems.innerHTML += itemDiv;
                 counter += 1;
@@ -527,16 +527,16 @@ function getPackages(){
     });
 }
 
-function buyPack(elm){
+function buyPack(elm) {
     $.ajax({
         url: '/sales/subscribe/',
         method: 'POST',
-        data: JSON.stringify({subscribe: parseInt(elm.value)}),
-        success: function(result){
+        data: JSON.stringify({ subscribe: parseInt(elm.value) }),
+        success: function (result) {
             console.log(result);
-            if (result.s === 403){
+            if (result.s === 403) {
                 alert(result.m);
-            }else{
+            } else {
                 location.reload();
             }
         },
@@ -545,26 +545,26 @@ function buyPack(elm){
 }
 
 
-function promote(){
+function promote() {
     let brand = document.getElementById('brand').value;
     let subscriptionFee = parseFloat(document.getElementById('subscriptionFee').value);
-    if (!brand){
+    if (!brand) {
         alert('لطفا یک نام نمایشی برای خود انتخاب کنید.');
         return 0
-    }else if (isNaN(subscriptionFee) ||subscriptionFee === null || subscriptionFee === undefined || subscriptionFee < 1){
+    } else if (isNaN(subscriptionFee) || subscriptionFee === null || subscriptionFee === undefined || subscriptionFee < 1) {
         alert('اشتراک ماهانه معتبر نیست.');
         return 0
     }
     $.ajax({
         url: '/social/promote',
         method: 'POST',
-        data: JSON.stringify({brand: brand, subscription: subscriptionFee}),
-        success: function (result){
-            if (result.s === 302){
+        data: JSON.stringify({ brand: brand, subscription: subscriptionFee }),
+        success: function (result) {
+            if (result.s === 302) {
                 alert(result.m);
-                window.location = '/profile/setup/?s='+result.href;
+                window.location = '/profile-setup/?s=' + result.href;
             }
-            else if(result.s === 200){
+            else if (result.s === 200) {
                 alert(result.m);
             }
         },
