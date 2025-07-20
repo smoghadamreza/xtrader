@@ -3,6 +3,7 @@ from typing import Any
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from accounts.models import Profile
 from data.models import StockWatch
@@ -82,15 +83,27 @@ class Strategy(models.Model):
             return self.watchlist.pk
         return 0
 
+class ExchangeType(models.TextChoices):
+    BINANCE = "BI", _("Binance")
+    KUCOIN = "KC", _("KuCoin")
+    COINBASE = "CB", _("Coinbase")
+
 
 class Exchange(models.Model):
     trader = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.CASCADE
     )
     name = models.CharField(max_length=80, default="myExchange")
-    exchange = models.CharField(max_length=80, default="BINANCE")
-    public = models.CharField(max_length=500, null=False, blank=False)
-    private = models.CharField(max_length=500, null=False, blank=False)
+    type = models.CharField(
+        max_length=20,
+        choices=ExchangeType.choices,
+        default=ExchangeType.BINANCE,
+    )
+    public_key = models.CharField(max_length=500, null=False, blank=False)
+    private_key = models.CharField(max_length=500, null=False, blank=False)
+
+    def __str__(self):
+        return f"{self.trader} - {self.name} ({self.type})"
 
 
 class TradingView(models.Model):

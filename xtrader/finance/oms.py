@@ -10,9 +10,9 @@ import requests
 from django.conf import settings
 from django.db import connections
 
+
 import data.redis as redis
 from finance.models import Exchange, TradingView
-
 
 class Binance:
     spot_base = "https://api.binance.com"
@@ -398,29 +398,6 @@ class Binance:
         return history
 
     @staticmethod
-    def get_last_nav(public, private):
-        return 0
-
-    @staticmethod
-    def get_prices(assets):
-        data = {}
-        for asset in assets:
-            if asset == "USDT":
-                continue
-            else:
-                symbol = asset + "USDT"
-            candles = requests.get(
-                "https://api.binance.com/api/v3/klines",
-                params={"symbol": symbol, "interval": "1d", "limit": 1000},
-            ).json()
-            for candle in candles:
-                t = candle[0]
-                if t not in data:
-                    data[t] = {}
-                data[t][asset] = float(candle[4])
-        return data
-
-    @staticmethod
     def get_prices_for_nav(assets):
         data = {}
         for asset in assets:
@@ -484,70 +461,8 @@ class Binance:
                     last_price = 0
             return last_price
 
-    @staticmethod
-    def get_portfolio_snapshots(actions):
-        portfolio_history = []
-        portfolio = {"assets": {}}
-        assets = []
-        for action in actions:
-            if action["action"] == "deposit":
-                asset = action["asset"]
-                amount = action["amount"]
-                portfolio["assets"][asset] = (
-                    portfolio["assets"].get(asset, 0) + amount
-                )
-                assets.append(asset)
-            elif action["action"] == "withdraw":
-                asset = action["asset"]
-                amount = action["amount"]
-                portfolio["assets"][asset] -= amount
-            elif action["action"] == "trade":
-                asset = action["symbol"][:-4]
-                amount = float(action["qty"])
-                value = float(action["quoteQty"])
-                if action["isBuyer"]:
-                    portfolio["assets"][asset] = (
-                        portfolio["assets"].get(asset, 0) + amount
-                    )
-                    portfolio["assets"]["USDT"] = max(
-                        portfolio["assets"]["USDT"] - value, 0
-                    )
-                    assets.append(asset)
-                else:
-                    portfolio["assets"][asset] = max(
-                        portfolio["assets"][asset] - amount, 0
-                    )
-                    portfolio["assets"]["USDT"] = (
-                        portfolio["assets"].get("USDT", 0) + value
-                    )
-            portfolio["action"] = action["action"]
-            portfolio["time"] = action["actionTime"]
-            portfolio_history.append(json.dumps(portfolio))
-        assets = list(set(assets))
-        portfolio_history = [json.loads(p) for p in portfolio_history]
-        return [assets, portfolio_history]
-
-    @staticmethod
-    def get_actions(history):
-        events = {}
-        for symbol, trades in history["trades"].items():
-            for trade in trades:
-                trade["action"] = "trade"
-                trade["actionTime"] = trade["time"]
-                events[trade["time"]] = trade
-        for deposit in history["deposits"]:
-            deposit["action"] = "deposit"
-            deposit["actionTime"] = deposit["insertTime"]
-            events[deposit["insertTime"]] = deposit
-        for withdraw in history["withdraws"]:
-            withdraw["action"] = "withdraw"
-            withdraw["actionTime"] = withdraw["applyTime"]
-            events[withdraw["applyTime"]] = withdraw
-        return [events[event_time] for event_time in sorted(events)]
-
-
 class OMSManager:
-    ex_name2obj = {
+    exchange_name_to_class = {
         "BINANCE": Binance,
     }
 
@@ -610,19 +525,7 @@ class OMSManager:
         return round(order_value / nav, 3)
 
     @staticmethod
-    def send_followers_order(follower_ex, ratio, order, quote_price):
-        new_order = order.copy()
-        ex = OMSManager.ex_name2obj[follower_ex.name]
-        assets = ex.get_portfolio(follower_ex)
-        nav = OMSManager.get_nav(assets)
 
-        value = max(nav * ratio, 0)
-        quantity = value / (order["price"] * quote_price)
-        if quantity * new_order["price"] * quote_price >= 10:
-            new_order["quantity"] = quantity
-            ex.send_order(follower_ex, new_order)
-        for conn in connections.all():
-            conn.close()
 
     @staticmethod
     def copy_trade(trader, new_order, followers=[], open_orders=[]):
@@ -676,7 +579,7 @@ class OMSManager:
             elif order_action == "CANCELED":
                 threads.append(
                     threading.Thread(
-                        target=OMSManager.ex_name2obj[
+                        target=OMSManager.exchange_name_to_class[
                             follower_ex.name.upper()
                         ].cancel_all_orders,
                         args=(follower_ex, new_order["s"]),
@@ -686,54 +589,6 @@ class OMSManager:
                 print("invalid action")
         for t in threads:
             t.start()
-
-    @staticmethod
-    def stop_limit_order(price, sprice, side="BUY", quantity=0.001):
-        public = (
-            "TZKgcNepxyESKfpmF67rjaSaLHD8DNN68y79wrYFuE62DAfoX90FleriYFatHV15"
-        )
-        private = (
-            "UtYnWh6Daqc3FG7PbbRokbLGWvjt0ToNUDb504ggxVZOLraYqoiZhBNEaOfVLNHo"
-        )
-        symbol = "BTCUSDT"
-        order = {
-            "price": price,
-            "stopPrice": sprice,
-            "symbol": symbol,
-            "side": side,
-            "quantity": quantity,
-            "type": "STOP_LOSS_LIMIT",
-            "timeInForce": "GTC",
-        }
-        return requests.post(
-            url="https://api.binance.com/api/v3/order?"
-            + Binance.sign(params=order, private=private),
-            headers=Binance.get_header(public),
-        ).json()
-
-    @staticmethod
-    def oco_order(price, sprice, slprice, side="SELL", quantity=0.001):
-        public = (
-            "TZKgcNepxyESKfpmF67rjaSaLHD8DNN68y79wrYFuE62DAfoX90FleriYFatHV15"
-        )
-        private = (
-            "UtYnWh6Daqc3FG7PbbRokbLGWvjt0ToNUDb504ggxVZOLraYqoiZhBNEaOfVLNHo"
-        )
-        symbol = "BTCUSDT"
-        order = {
-            "price": price,
-            "stopPrice": sprice,
-            "stopLimitPrice": slprice,
-            "symbol": symbol,
-            "side": side,
-            "quantity": quantity,
-            "stopLimitTimeInForce": "GTC",
-        }
-        return requests.post(
-            url="https://api.binance.com/api/v3/order/oco?"
-            + Binance.sign(params=order, private=private),
-            headers=Binance.get_header(public),
-        ).json()
 
     @staticmethod
     def verify_and_create_exchange(trader, name, public, private, exchange):

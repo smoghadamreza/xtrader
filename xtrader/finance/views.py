@@ -8,6 +8,7 @@ from typing import cast
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.views.decorators.http import require_POST, require_GET
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
@@ -21,6 +22,7 @@ from finance import data_handling
 from finance import data_handling as dh
 from finance import indicator, notification, oms, scan, strategy, volume
 from finance.models import TradingView, Watchlist, WatchlistSymbol
+from finance.exchange.factory import ExchangeServiceFactory
 
 all_functions = dict(inspect.getmembers(data_handling, inspect.isfunction))
 
@@ -33,11 +35,10 @@ def calculate_indicators(request, interval):
     return JsonResponse(result, safe=False)
 
 
+@require_POST
 @login_required(login_url="accounts:userena_sign_in")
 @csrf_exempt
 def add_new_watch_list(request):
-    if not request.method == "POST":
-        return JsonResponse({}, status=403)
     watchlist_limit = cast(
         int, strategy.get_pack_limit(request.user).get("watchlist", 0)
     )
@@ -63,10 +64,9 @@ def add_new_watch_list(request):
     return JsonResponse({"id": watchlist.pk, "s": 200})
 
 
+@require_GET
 @login_required(login_url="accounts:userena_sign_in")
 def get_watch_lists(request):
-    if not request.method == "GET":
-        return JsonResponse({}, status=403)
     user = request.user
     if not user:
         return JsonResponse({"m": "login required", "s": 403})
@@ -104,12 +104,9 @@ def get_watch_lists(request):
                 }
             )
 
-
+@require_GET
 @login_required(login_url="accounts:userena_sign_in")
 def update_symbol_to_watch_list(request: HttpRequest) -> JsonResponse:
-    if not request.method == "GET":
-        return JsonResponse({}, status=403)
-
     user = request.user
     if not user:
         return JsonResponse({"m": "login required", "s": 403})
@@ -183,13 +180,11 @@ def strategy_notif(request, interval):
     return JsonResponse({"s": "ok"})
 
 
+@require_GET
 def update_indicators(request):
-    if request.method == "GET":
-        data = json.loads(request.GET["param"])
-        result = data_handling.give_update_indicators(data)
-        return JsonResponse(result, safe=False)
-    else:
-        return JsonResponse("only GET", safe=False)
+    data = json.loads(request.GET["param"])
+    result = data_handling.give_update_indicators(data)
+    return JsonResponse(result, safe=False)
 
 
 @login_required(login_url="accounts:userena_sign_in")
@@ -255,24 +250,21 @@ def filter_market(request):
     return a
 
 
+@require_GET
 def indicators_api(request):
-    if request.method == "GET":
-        return JsonResponse(json.dumps(indicator.get_group_api()), safe=False)
-    else:
-        return JsonResponse(json.dumps({"api": "null"}), safe=False)
+    return JsonResponse(json.dumps(indicator.get_group_api()), safe=False)
 
 
+@require_GET
 def back_test(request):
-    if request.method == "GET":
-        data = json.loads(request.GET["param"])
-        name = data["name"]
-        res = json.loads(data["trades"])
-        interval = data["interval"]
-        result = dh.give_result_backtest(
-            name, res, data["config"], interval=interval
-        )
-        return JsonResponse(result, safe=False)
-    raise Http404("this view only supports GET requests")
+    data = json.loads(request.GET["param"])
+    name = data["name"]
+    res = json.loads(data["trades"])
+    interval = data["interval"]
+    result = dh.give_result_backtest(
+        name, res, data["config"], interval=interval
+    )
+    return JsonResponse(result, safe=False)
 
 
 def about_us(request):
@@ -307,12 +299,12 @@ def spot(request, symbol_id):
             request, "error.html", {"message": "getting symbol info failed."}
         )
 
-    stockWatchDict = {
+    stock_watch_dict = {
         "SymbolId": symbol_id,
         "title": result["baseAsset"],
         **get_user(request),
     }
-    return render(request, "stockwatch1.html", stockWatchDict)
+    return render(request, "stockwatch1.html", stock_watch_dict)
 
 
 def get_user(request):
@@ -344,13 +336,13 @@ def ssl(request):
 def trade(request):
     data = request.POST["order"]
     order = json.loads(data)
-    exchange, exchange_class = oms.OMSManager.get_exchange(request)
-    if exchange_class is None:
-        raise ValueError("exchange_class cannot be None")
-    if exchange:
-        result = exchange_class.send_order(exchange, order)
+    try:
+        exchange_service = ExchangeServiceFactory.get_service_from_request(
+            request=request
+        )
+        result = exchange_service.send_order(params=order)
         return JsonResponse(result)
-    else:
+    except ValueError:  # TODO: Use a precise exception
         return JsonResponse(
             {"msg": "ابتدا در تنظیمات اکسچنج خود را متصل کنید"}, status=403
         )
@@ -427,9 +419,9 @@ def get_exchanges(request):
     exs = oms.OMSManager.get_exchanges(request)
     return JsonResponse({"exchanges": exs})
 
-
+@require_POST
 @csrf_exempt
-def save_exchange(request):
+def save_exchange(request: HttpRequest):
     public = request.POST.get("public", None)
     private = request.POST.get("secret", None)
     name = request.POST.get("name", None)

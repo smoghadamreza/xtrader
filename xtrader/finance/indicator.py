@@ -25,7 +25,7 @@ class Indicator:
             self.inputs = dict()
 
     def set_symbol(self, name, tail=None):
-        self.SymbolId = name
+        self.symbold_id = name
         self.name = name
         self.df = self.load_db(tail)
         self.inputs = dict()
@@ -34,7 +34,7 @@ class Indicator:
                 self.inputs[c] = np.asarray(self.df[c], dtype="f8")
 
     def load_db(self, tail=None):
-        db = redis.load_history(self.SymbolId, self.interval)
+        db = redis.load_history(self.symbold_id, self.interval)
         if tail:
             for p in ["high", "low", "close", "open"]:
                 db[p][-1] = tail["price"][p]

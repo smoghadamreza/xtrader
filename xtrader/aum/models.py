@@ -1,11 +1,14 @@
 import time
+from datetime import datetime
+from typing import List
 from datetime import timedelta
+from finance.exchange.dataclasses import TransactionRecord, DepositRecord, WithdrawalRecord
 
 import requests
 from django.contrib.auth.models import User
 from django.db import connections, models
 from django.utils import timezone
-
+from utils import UnixMillis
 from finance import oms
 
 
@@ -20,7 +23,7 @@ class Fund(models.Model):
     last_update = models.FloatField(default=0, blank=True, null=True)
     brand = models.CharField(max_length=80, default="", blank=True, null=False)
     deposit = models.FloatField(default=0, blank=True, null=False)
-    withdraw = models.FloatField(default=0, blank=True, null=False)
+    withdrawal = models.FloatField(default=0, blank=True, null=False)
 
     def __str__(self):
         return self.brand
@@ -77,54 +80,11 @@ class Fund(models.Model):
         }
         return result
 
-    def get_transactions(self):
-        exchange, _ = oms.OMSManager.get_exchange(
-            request=None, trader=self.manager
-        )
-
-        if exchange is None:
-            raise ValueError("Exchange not found")
-
-        d = []
-        deposits = (
-            d
-            + oms.Binance.get_deposits(
-                params={"asset": "USDT"},
-                public=exchange.public,
-                private=exchange.private,
-            )["depositList"]
-        )
-        withdraws = oms.Binance.get_withdraws(
-            params={"asset": "USDT"},
-            public=exchange.public,
-            private=exchange.private,
-        )["withdrawList"]
-        trxs = {}
-        for deposit in deposits:
-            trxs[deposit["insertTime"]] = {
-                "time": deposit["insertTime"],
-                "amount": float(deposit["amount"]),
-                "action": "واریز",
-                "trx": "deposit",
-            }
-        for withdraw in withdraws:
-            trxs[withdraw["applyTime"]] = {
-                "time": withdraw["applyTime"],
-                "amount": float(withdraw["amount"]),
-                "action": "برداشت",
-                "trx": "withdraw",
-            }
-        result = []
-        for trx_time in sorted(trxs):
-            result.append(trxs[trx_time])
-            if (
-                trxs[trx_time]["trx"] == "deposit"
-                and trx_time > self.last_update
-            ):
-                self.deposit += trxs[trx_time]["amount"]
-                self.last_update = int(time.time() * 1000)
-                self.save()
-        return result
+    def update_fund_balance(self, transactions: List[TransactionRecord]):
+        self.deposit = sum(t.amount for t in transactions if t.record_type == DepositRecord)
+        self.withdrawal = sum(t.amount for t in transactions if t.record_type == WithdrawalRecord)
+        self.last_update = UnixMillis.to_ms(dt=datetime.now())
+        self.save(update_fields=["deposit", "withdrawal", "last_update"])
 
     def issue_redeem(self, investor, params):
         fund_info = self.get_fund_info()

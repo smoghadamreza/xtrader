@@ -665,26 +665,24 @@ function showMessage(msg, status) {
     $('#msgPop').delay(2000).fadeOut('slow');
 }
 
-function sendorder(order) {
-    var side = { 'buy': 1, 'sell': 2 };
+function sendOrder(orderSide) {
     var data = {
-        SymbolId: SymbolId,
-        Quantity: Number($('#' + 'quantity').val()),
-        OrderSide: side[order],
+        symbol: SymbolId,
+        quantity: Number($('#' + 'quantity').val()),
+        side: orderSide,
         type: document.getElementById('orderType').value,
     };
     if (["LIMIT"].indexOf(data.type) > -1) {
-        data.Price = Number($('#' + 'price').val());
-        if (!data.Price) {
+        data.price = Number($('#' + 'price').val());
+        if (!data.price) {
             showMessage('لطفا قیمت را وارد کنید', 'error');
             return false
         }
     }
-    if (!data.Quantity) {
+    if (!data.quantity) {
         showMessage('لطفا تعداد را وارد کنید', 'error');
         return false
     }
-    // console.log(order_type);
 
     waiting('wait');
     $.ajax({
@@ -695,72 +693,19 @@ function sendorder(order) {
         },
         success: function (result) {
             if (result.error) {
-                //                        alert();
                 showMessage(result.msg, 'error');
 
             } else {
-                //                        orders();
                 portfo();
                 showMessage('سفارش ارسال شد', '');
             }
             waiting('default');
-
-            //                    document.getElementById(order + 'Modal').style.display = 'none';
         },
         error: function (e) {
             alert(e.responseJSON.msg);
             waiting('default');
         },
     });
-
-
-    //    switch (order_type) {
-    //        case 'order':
-    //        waiting('wait');
-    //            $.ajax({
-    //                type: 'POST',
-    //                url: '/trade',
-    //                data: {
-    //                    order: JSON.stringify(data),
-    //                },
-    //                success: function (result) {
-    //                    if (result.error) {
-    //                        alert(result.msg);
-    //                    } else {
-    //                        orders();
-    //                        portfo();
-    //                    }
-    //                    waiting('default');
-    //                    document.getElementById(order + 'Modal').style.display = 'none';
-    //                },
-    //                error: function (e) {
-    //                    alert(e.responseJSON.msg);
-    //                    waiting('default');
-    //                },
-    //            });
-    //            break;
-    //        case 'edit':
-    //            data['OrderId'] = OrderId;
-    //            delete data['SymbolId'];
-    //            delete data['OrderSide'];
-    //            $.ajax({
-    //                type: 'GET',
-    //                url: '/edit',
-    //                data: {
-    //                    order: JSON.stringify(data),
-    //                },
-    //                success: function (result) {
-    //                    console.log(result);
-    //                    orders();
-    //                    portfo();
-    //                    document.getElementById(order + 'Modal').style.display = 'none';
-    //                },
-    //                error: function (e) {
-    //                    console.log(e);
-    //                },
-    //            });
-    //            break;
-    //    }
     getAccountStatus();
 }
 
