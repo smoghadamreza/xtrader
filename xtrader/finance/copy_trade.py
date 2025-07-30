@@ -9,7 +9,7 @@ from finance.exchange.dataclasses import AssetBalance
 from finance.exchange.base import BaseExchangeService
 from finance.exchange.data.order import ExchangeOrderData, CopyTradeOrderData, CopyTradeOrderAction, OrderType
 from finance.exchange.factory import ExchangeServiceFactory
-from finance.exchange.consts import ResponseKeys, Params
+from finance.consts import Params
 from django.db import connections
 
     
@@ -28,6 +28,7 @@ class CopyTradeService:
 
     def copy_trade(self, order_params: Dict[str, Any]):
         order = self._prepare_copy_trade_data(order_params=order_params)
+        self._apply_copy_trade_for_followers(order=order)
 
 
     def _apply_copy_trade_for_followers(self, order: CopyTradeOrderData):

@@ -3,6 +3,8 @@ from django.http import HttpRequest
 from finance.models import Exchange, ExchangeType
 from .base import BaseExchangeService
 from binance.service import BinanceService
+from .exception import NoConnectedExchangeException
+
 
 class ExchangeServiceFactory:
     @classmethod
@@ -15,11 +17,11 @@ class ExchangeServiceFactory:
     def get_service_for_user(cls, user) -> BaseExchangeService:
         exchange = Exchange.objects.filter(trader=user).first()
         if not exchange:
-            raise ValueError("No exchange configured for this user")
+            raise NoConnectedExchangeException(message="No exchange configured for this user")
         return cls.get_service(exchange)
 
     @classmethod
     def get_service_from_request(cls, request: HttpRequest) -> BaseExchangeService:
         if not request.user:
-            raise ValueError("can't offer service for empty user")
+            raise NoConnectedExchangeException(message="can't offer service for empty user")
         return cls.get_service_for_user(request.user)

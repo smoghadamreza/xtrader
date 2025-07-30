@@ -90,10 +90,11 @@ class ExchangeType(models.TextChoices):
 
 
 class Exchange(models.Model):
+
     trader = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.CASCADE
     )
-    name = models.CharField(max_length=80, default="myExchange")
+    name = models.CharField(max_length=80, default="myExchange", unique=True)
     type = models.CharField(
         max_length=20,
         choices=ExchangeType.choices,
@@ -101,6 +102,24 @@ class Exchange(models.Model):
     )
     public_key = models.CharField(max_length=500, null=False, blank=False)
     private_key = models.CharField(max_length=500, null=False, blank=False)
+
+    @classmethod
+    def create_and_verify(cls, trader: User, kwargs: dict):
+        from finance.exchange.factory import ExchangeServiceFactory
+
+
+
+    @classmethod
+    def get_exchanges(cls, trader: User):
+        exchanges = cls.objects.filter(trader=trader)
+        return [
+            {
+                "exchange": exchange.type,
+                "name": exchange.name,
+                "public": exchange.public_key,
+            } for exchange in exchanges
+        ]
+
 
     def __str__(self):
         return f"{self.trader} - {self.name} ({self.type})"

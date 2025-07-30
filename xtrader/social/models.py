@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from accounts.models import Wallet
 from finance import oms
+from finance.copy_trade import CopyTradeService
 from sales.models import Payment
 
 
@@ -30,12 +31,6 @@ class ProTrader(models.Model):
     total_performance = models.FloatField(null=True, blank=True)
     status = models.CharField(max_length=12, null=True, blank=True)
 
-    def create_pro(
-        self, ex, ex_obj, brand=None, page_kind=None, page_url=None
-    ):
-        public = ex_obj.public
-        private = ex_obj.private
-        return ex.get_historical_nav(public=public, private=private)
 
     @staticmethod
     def get_history(trader):
@@ -102,16 +97,6 @@ class ProTrader(models.Model):
                 }
             )
         return result
-
-    def copy_order(self, new_order):
-        followings = Follow.objects.filter(
-            proTrader=self, expiry__gte=timezone.now()
-        )
-        if not followings:
-            return 0
-        oms.OMSManager.copy_trade(
-            trader=self.trader, new_order=new_order, followers=followings
-        )
 
 
 class Follow(models.Model):

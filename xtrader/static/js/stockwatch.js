@@ -839,11 +839,7 @@ function cancelOrder(OrderId, order_symbol) {
     waiting('wait');
     $.ajax({
         type: 'GET',
-        url: '/cancel-order?OrderId=' + OrderId + '&symbol=' + ordersIDS[OrderId],
-        // params: {
-        //     OrderId: OrderId,
-        //     symbol: ordersIDS[OrderId]
-        // },
+        url: '/cancel-order?orderId=' + OrderId + '&symbol=' + ordersIDS[OrderId],
         success: function (result) {
             showMessage('سفارش حذف شد', '');
             console.log(result);

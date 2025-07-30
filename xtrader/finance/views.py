@@ -20,11 +20,27 @@ from aum.models import Fund
 from data.backup import filters_data
 from finance import data_handling
 from finance import data_handling as dh
-from finance import indicator, notification, oms, scan, strategy, volume
+from finance import indicator, notification, scan, strategy, volume
 from finance.models import TradingView, Watchlist, WatchlistSymbol
 from finance.exchange.factory import ExchangeServiceFactory
+from finance.exchange.base import BaseExchangeService
+from finance.exchange.exception import NoConnectedExchangeException
+from finance.exchange.binance.service import binance_market_service
+from finance.consts import Params
+from finance.models import Exchange
+from finance.oms import xtrader_exchange_service
 
 all_functions = dict(inspect.getmembers(data_handling, inspect.isfunction))
+
+
+def user_exchange_must_be_connected(handler_func):
+    def view(request: HttpRequest):
+        try:
+            exchange_service = ExchangeServiceFactory.get_service_for_user(request.user)
+            return handler_func(request, exchange_service)
+        except NoConnectedExchangeException as e:
+            return JsonResponse({"msg": e.message}, status=403)
+    return view
 
 
 def calculate_indicators(request, interval):
@@ -288,12 +304,12 @@ def stock_watch(request, symbold_id=None):
 
 
 @login_required(login_url="accounts:userena_sign_in")
-def spot(request, symbol_id):
+def spot(request, symbol_id: str):
     if not symbol_id:
         return redirect("/spot/BTCUSDT")
 
     try:
-        result = oms.Binance.get_symbol_info(symbol_id)
+        symbol_info = binance_market_service.get_symbol_info(symbol_id=symbol_id)
     except Exception:
         return render(
             request, "error.html", {"message": "getting symbol info failed."}
@@ -301,7 +317,7 @@ def spot(request, symbol_id):
 
     stock_watch_dict = {
         "SymbolId": symbol_id,
-        "title": result["baseAsset"],
+        "title": symbol_info.base_asset,
         **get_user(request),
     }
     return render(request, "stockwatch1.html", stock_watch_dict)
@@ -347,55 +363,35 @@ def trade(request):
             {"msg": "ابتدا در تنظیمات اکسچنج خود را متصل کنید"}, status=403
         )
 
-
-def portfolio(request):
-    exchange, exchange_class = oms.OMSManager.get_exchange(request)
-    if exchange_class is None:
-        raise ValueError("exchange_class cannot be None")
-    if exchange:
-        assets = exchange_class.get_portfolio(exchange)
-        return JsonResponse({"assets": assets})
-    else:
-        return JsonResponse({"msg": "NoExchange"}, status=403)
+@require_GET
+@user_exchange_must_be_connected
+def portfolio(_: HttpRequest, exchange_service: BaseExchangeService):
+    assets = exchange_service.get_portfolio()
+    return JsonResponse({"assets": assets})
 
 
-def get_orders(request):
-    exchange, exchange_class = oms.OMSManager.get_exchange(request)
-    if exchange_class is None:
-        raise ValueError("exchange_class cannot be None")
-    if exchange:
-        symbol = request.GET["symbol"]
-        orders = exchange_class.get_orders(exchange, symbol)
-        return JsonResponse({"orders": orders})
-    else:
-        return JsonResponse({"msg": "NoExchange"}, status=403)
+@require_GET
+@user_exchange_must_be_connected
+def get_orders(request: HttpRequest, exchange_service: BaseExchangeService):
+    orders = exchange_service.get_orders(
+        symbol_id = request.GET[Params.SYMBOL]
+    )
+    return JsonResponse({"orders": orders})
 
+@user_exchange_must_be_connected
+def account_status(_: HttpRequest, exchange_service: BaseExchangeService):
+    balance = exchange_service.get_balance()
+    return JsonResponse({"buying_power": balance.get("buying_power", None)})
 
-def account_status(request):
-    exchange, exchange_class = oms.OMSManager.get_exchange(request)
-    if exchange_class is None:
-        raise ValueError("exchange_class cannot be None")
-    balance = exchange_class.get_balance(exchange)
-    account = {"buying_power": balance.get("buying_power", None)}
-    return JsonResponse(account)
-
-
-def cancel_order(request):
-    exchange, exchange_class = oms.OMSManager.get_exchange(request)
-    if exchange_class is None:
-        raise ValueError("exchange_class cannot be None")
-    result = exchange_class.cancel_order(
-        exchange, symbol=request.GET["symbol"], order_id=request.GET["OrderId"]
+@user_exchange_must_be_connected
+def cancel_order(request: HttpRequest, exchange_service: BaseExchangeService):
+    result = exchange_service.cancel_order(
+        symbol_id=request.GET[Params.SYMBOL],
+        order_id=int(request.GET[Params.ORDER_ID])
     )
     if result is None:
         return HttpResponse("e", status=400)
-    return HttpResponse("OK")
-
-
-def editOrder(request):
-    output = "o"
-    return HttpResponse(output)
-
+    return HttpResponse("OK", status=200)
 
 def test_volume(request):
     return render(
@@ -405,46 +401,37 @@ def test_volume(request):
     )
 
 
-def manage_volume(request):
+def manage_volume(request: HttpRequest):
     data = json.loads(request.GET["param"])
     result = volume.run_test(data)
     return render(request, "volumetest.html", result)
 
 
-def test_api(request):
+def test_api(request: HttpRequest):
     return render(request, "testAPI.html", {"SymbolId": "IRO1IKCO0001"})
 
 
-def get_exchanges(request):
-    exs = oms.OMSManager.get_exchanges(request)
-    return JsonResponse({"exchanges": exs})
+def get_exchanges(request: HttpRequest):
+    trader = cast(User, request.user)
+    return JsonResponse({"exchanges": Exchange.get_exchanges(trader=trader)})
 
 @require_POST
 @csrf_exempt
 def save_exchange(request: HttpRequest):
-    public = request.POST.get("public", None)
-    private = request.POST.get("secret", None)
-    name = request.POST.get("name", None)
-    exchange = request.POST.get("exchange", None)
-    if public is None or private is None or name is None or exchange is None:
-        return JsonResponse({"status": False})
-    result = {
-        "status": oms.OMSManager.verify_and_create_exchange(
-            trader=request.user,
-            name=name,
-            public=public,
-            private=private,
-            exchange=exchange.upper(),
-        )
-    }
-    return JsonResponse(result)
-
+    request_data = cast(dict, request.POST)
+    trader = cast(User, request.user)
+    return JsonResponse(
+        {"status": xtrader_exchange_service.verify_and_create_exchange(
+            trader=trader, kwargs=request_data
+        )}
+    )
 
 @csrf_exempt
-def remove_exchange(request):
+def remove_exchange(request: HttpRequest):
+    trader = cast(User, request.user)
     result = {
-        "status": oms.OMSManager.remove_exchange(
-            trader=request.user, ex_name="BINANCE"
+        "status": xtrader_exchange_service.remove_exchange(
+            trader=trader, name=request.POST["name"]
         )
     }
     return JsonResponse(result)
@@ -519,76 +506,73 @@ def trading_view_trade(request, token):
             return JsonResponse({"msg": "invalid webhook"})
         order_result = ""
         if tw.trading:
-            exchange, exchange_class = oms.OMSManager.get_exchange(
-                request=None, trader=tw.trader
+            exchange_service = ExchangeServiceFactory.get_service_for_user(
+                user=request
             )
-            if exchange and exchange_class:
-                try:
-                    params = msg.split(" ")
-                    exchange = params[0].upper()
-                    if exchange not in ["BINANCE"]:
-                        order_result = "نام اکسچنج اشتباه است"
-                    market = params[1].upper()
-                    if not order_result and market not in ["SPOT"]:
-                        order_result = "نام بازار اشتباه است"
-                    action = params[2].upper()
-                    if not order_result and action not in ["BUY", "SELL"]:
-                        order_result = "دستور خرید یا فروش است"
-                    symbol = params[3].upper()
-                    volume_text = params[4]
-                    if "%" in volume_text:
-                        if "n" in volume_text:
+            try:
+                params = msg.split(" ")
+                exchange = params[0].upper()
+                if exchange not in ["BINANCE"]:
+                    order_result = "نام اکسچنج اشتباه است"
+                market = params[1].upper()
+                if not order_result and market not in ["SPOT"]:
+                    order_result = "نام بازار اشتباه است"
+                action = params[2].upper()
+                if not order_result and action not in ["BUY", "SELL"]:
+                    order_result = "دستور خرید یا فروش است"
+                symbol = params[3].upper()
+                volume_text = params[4]
+                if "%" in volume_text:
+                    if "n" in volume_text:
+                        quantity = 0
+                    else:
+                        assets = exchange_service.get_portfolio()
+                        ratio = float(volume_text.replace("%", ""))
+                        symbol_info = exchange_service.get_symbol_info(
+                            symbol_id=symbol
+                        )
+                        if action == "BUY":
+                            value = 12
+                            for asset in assets:
+                                if asset.symbol == symbol_info.quote_asset:
+                                    value = asset.free * (ratio / 100)
+                                    break
+                            last_price = exchange_service.get_last_price(
+                                symbol_id=symbol
+                            )  # ticker in legacy. ticker seems wrong.
+                            quantity = value / last_price 
+                        else:
                             quantity = 0
-                        else:
-                            assets = exchange_class.get_portfolio(exchange)
-                            ratio = float(volume_text.replace("%", ""))
-                            symbol_info = oms.Binance.get_symbol_info(
-                                symbol=symbol
-                            )
-                            base_asset = symbol_info["baseAsset"]
-                            quote_asset = symbol_info["quoteAsset"]
-                            if action == "BUY":
-                                value = 12
-                                for asset in assets:
-                                    if asset["symbol"] == quote_asset:
-                                        value = asset["free"] * (ratio / 100)
-                                        break
-                                ticker = oms.Binance.get_last_price(
-                                    symbol=symbol
-                                )
-                                quantity = value / ticker
-                            else:
-                                quantity = 0
-                                for asset in assets:
-                                    if asset["symbol"] == base_asset:
-                                        quantity = asset["free"] * (
-                                            ratio / 100
-                                        )
-                                        break
+                            for asset in assets:
+                                if asset.symbol == symbol_info.base_asset:
+                                    quantity = asset.free * (
+                                        ratio / 100
+                                    )
+                                    break
+                else:
+                    quantity = float(params[4])
+                price = params[5].upper()
+                order = {
+                    "symbol": symbol,
+                    "quantity": quantity,
+                    "side": action,
+                }
+                if price == "M":
+                    order["type"] = "MARKET"
+                else:
+                    order["price"] = float(price)
+                    order["type"] = "LIMIT"
+                if not order_result:
+                    result = exchange_service.send_order(order)
+                    if result["error"]:
+                        order_result = result["msg"]
                     else:
-                        quantity = float(params[4])
-                    price = params[5].upper()
-                    order = {
-                        "symbol": symbol,
-                        "quantity": quantity,
-                        "side": action,
-                    }
-                    if price == "M":
-                        order["type"] = "MARKET"
-                    else:
-                        order["price"] = float(price)
-                        order["type"] = "LIMIT"
-                    if not order_result:
-                        result = exchange_class.send_order(exchange, order)
-                        if result["error"]:
-                            order_result = result["msg"]
-                        else:
-                            order_result = "سفارش با موفقیت ارسال شد"
-                except Exception:
-                    order_result += "\n"
-                    order_result += (
-                        "دستور ارسال سفارش مشکل دارد، سفارشی ارسال نشد"
-                    )
+                        order_result = "سفارش با موفقیت ارسال شد"
+            except Exception:
+                order_result += "\n"
+                order_result += (
+                    "دستور ارسال سفارش مشکل دارد، سفارشی ارسال نشد"
+                )
         telegram_result = "در تلگرام ارسال نشد"
         if tw.notification:
             profile = Profile.objects.filter(user=tw.trader).first()

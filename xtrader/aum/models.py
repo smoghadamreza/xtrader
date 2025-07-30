@@ -1,4 +1,5 @@
 import time
+from cached_property import cached_property
 from datetime import datetime
 from typing import List
 from datetime import timedelta
@@ -8,9 +9,9 @@ import requests
 from django.contrib.auth.models import User
 from django.db import connections, models
 from django.utils import timezone
-from utils import UnixMillis
+from utils.unix_millis import UnixMillis
 from finance import oms
-
+from finance.copy_trade import NetAssetValueCalculator
 
 class Fund(models.Model):
     manager = models.ForeignKey(
@@ -55,6 +56,8 @@ class Fund(models.Model):
         self.get_transactions()
         other_assets = self.fee + self.deposit + self.withdraw
         usdt -= other_assets
+
+        nav = NetAssetValueCalculator.calculate_net_asset_value(a)
         self.aum = oms.OMSManager.get_nav(assets=assets) - other_assets
         self.save()
         return usdt

@@ -26,7 +26,7 @@ class BinanceService(BaseExchangeService):
         if exchange.type != ExchangeType.BINANCE:
             raise ValueError(f"invalid type {exchange.type} for BinanceExchange")
         self._exchange: Final[Exchange] = exchange
-        self._market_service = BinanceMarketService()
+        self._market_service = binance_market_service
 
         self._account_client = AccountAPIClient(user_exchange=exchange)
 
@@ -244,3 +244,5 @@ class BinanceMarketService(BaseExchangeMarketService):
             params=params
         )
         return response.json()
+
+binance_market_service = BinanceMarketService()

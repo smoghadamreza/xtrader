@@ -9,7 +9,8 @@ from urllib.parse import urlencode
 import requests
 from django.conf import settings
 from django.db import connections
-
+from django.contrib.auth.models import User
+from exchange.factory import ExchangeServiceFactory
 
 import data.redis as redis
 from finance.models import Exchange, TradingView
@@ -606,13 +607,32 @@ class OMSManager:
                 return True
         return False
 
+    
+
+class XtraderExchangeService:
+
     @staticmethod
-    def remove_exchange(trader, ex_name):
-        ex = Exchange.objects.filter(trader=trader, name="BINANCE").first()
-        if ex:
-            tw = TradingView.objects.filter(trader=trader).first()
-            if tw:
-                if tw.trading:
-                    return False
-            ex.delete()
+    def remove_exchange(trader: User, name: str) -> bool:
+        exchange = Exchange.objects.filter(trader=trader, name=name)
+        if not exchange.exists():
+            return False
+        
+        trading_vieww = TradingView.objects.filter(trader=trader)
+        if trading_vieww.exists():
+            return False
+        
+        exchange.delete()
         return True
+    
+    @staticmethod
+    def verify_and_create_exchange(trader: User, kwargs: dict) -> bool:
+        valid_fields = {k: v for k, v in kwargs.items() if hasattr(Exchange, k)}
+        exchange = Exchange.objects.create(trader=trader, **valid_fields)
+        exchange_service = ExchangeServiceFactory.get_service(exchange=exchange)
+        if exchange_service.has_spot_trading_permission():
+            return True
+        exchange.delete()
+        return False
+    
+
+xtrader_exchange_service = XtraderExchangeService()

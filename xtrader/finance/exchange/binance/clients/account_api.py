@@ -4,11 +4,12 @@ from datetime import datetime, timedelta, timezone
 from typing import cast, Dict, Any, List, Optional
 
 from .authenticated_api import AuthenticatedAPIClient
-from consts import ResponseKeys, Params, BUYING_POWER, SPOT
+from consts import ResponseKeys, BUYING_POWER, SPOT
 from finance.exchange.dataclasses import (
     AssetBalance, DepositRecord, WithdrawalRecord, TransactionRecord
 )
-from .data.order import OrderType
+from finance.consts import Params
+from finance.exchange.data.order import OrderType
 from utils.unix_millis import UnixMillis
 
 logger = logging.getLogger(__name__)

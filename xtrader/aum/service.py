@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from finance.exchange.base import BaseExchangeService
 from finance.exchange.factory import ExchangeServiceFactory
 from aum.models import Fund
-from finance.exchange.consts import Params
+from finance.consts import Params
 from xtrader.utils.consts import Symbol
 
 class FundService:

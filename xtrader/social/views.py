@@ -1,5 +1,8 @@
+from typing import cast
 import json
 
+from django.http import HttpRequest
+from django.views.decorators.http import require_POST, require_GET
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -9,10 +12,14 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import Profile
-from finance import notification, oms
+from finance import notification
 from finance.models import Exchange
 from finance.views import get_user
 from social.models import Follow, ProTrader
+from finance.exchange.factory import ExchangeServiceFactory, NoConnectedExchangeException
+from finance.oms import xtrader_exchange_service
+from finance.copy_trade import CopyTradeService
+
 
 
 @csrf_exempt
@@ -22,18 +29,12 @@ def pro_traders(request):
         try:
             data = json.loads(data)
             username = data["username"]
-            brand = data["brand"]
-            page_kind = data["page_kind"]
-            page_url = data["page_url"]
             subscription = data["subscription"]
             trader = User.objects.get_by_natural_key(username)
-            ex_obj, ex = oms.OMSManager.get_exchange(request, trader=trader)
-            if not ex_obj:
-                return JsonResponse({"o": "noEx"})
-            protrader = ProTrader(trader=trader, subscription=subscription)
-            protrader.create_pro(
-                ex, ex_obj, brand=brand, page_kind=page_kind, page_url=page_url
-            )
+            exchange_service = ExchangeServiceFactory.get_service_for_user(user=trader)
+
+            protrader = ProTrader.objects.create(trader=trader, subscription=subscription)
+            exchange_service.get_recent_nav_snapshots()
         except Exception as e:
             return JsonResponse({"e": str(e)})
         return JsonResponse({"e": protrader.pk})
@@ -60,39 +61,40 @@ def follow_toggle(request):
     return JsonResponse(result)
 
 
+@require_GET
 @csrf_exempt
-def get_publics(request):
+def get_publics(_: HttpRequest):
 
     result = []
     for pro in ProTrader.objects.all():
         ex = Exchange.objects.filter(trader=pro.trader).first()
         if ex:
-            result.append({"id": pro.pk, "public": ex.public})
+            result.append({"id": pro.pk, "public": ex.public_key})
     return JsonResponse({"publicKeys": result})
 
-
+@require_POST
 @transaction.atomic
 @csrf_exempt
-def copy_order(request):
-    if request.method == "POST":
+def copy_order(request: HttpRequest):
+    try:
         data = json.loads(request.body.decode())
-        pro_id = data.get("id", -1)
-        pro = ProTrader.objects.filter(id=pro_id).first()
-        if not pro:
-            return JsonResponse({"m": "no pro, wrong id"})
-        pro.copy_order(data["order"])
-        result = {"m": "ok"}
-    else:
-        result = {"m": "OK"}
-    return JsonResponse(result)
+        copy_trade_service = CopyTradeService(
+            pro_trader_id=int(data.get("id", -1))
+        )
+        copy_trade_service.copy_trade(order_params=data["order"])
+        return  JsonResponse({"m": "ok"})
+    except Exception:
+        pass
+    return JsonResponse({"m": "something went wrong"})
 
 
 @csrf_exempt
 @login_required(login_url="accounts:userena_sign_in")
-def promote(request):
+def promote(request: HttpRequest):
     if request.method == "POST":
-        ex_obj, ex = oms.OMSManager.get_exchange(request, trader=request.user)
-        if not ex_obj:
+        try:
+            exchange_service = ExchangeServiceFactory.get_service_for_user(user=request.user)
+        except NoConnectedExchangeException:
             return JsonResponse(
                 {
                     "s": 302,
@@ -204,30 +206,15 @@ def league(request):
 
 @login_required(login_url="accounts:userena_sign_in")
 @csrf_exempt
-def exchange(request):
+def exchange(request: HttpRequest):
+    trader = cast(User, request.user)
     if request.method == "GET":
-        exs = oms.OMSManager.get_exchanges(request)
-        return JsonResponse({"exchanges": exs})
+        return JsonResponse({"exchanges": Exchange.get_exchanges(trader=trader)})
     elif request.method == "POST":
-        public = request.POST.get("public", None)
-        private = request.POST.get("secret", None)
-        name = request.POST.get("name", None)
-        _exchange = request.POST.get("exchange", None)
-        if (
-            public is None
-            or private is None
-            or name is None
-            or _exchange is None
-        ):
-            return JsonResponse({"status": False})
+        request_data = cast(dict, request.POST)
         result = {
-            "status": oms.OMSManager.verify_and_create_exchange(
-                trader=request.user,
-                name=name,
-                public=public,
-                private=private,
-                exchange=_exchange.upper(),
-            )
+            "status": xtrader_exchange_service.verify_and_create_exchange(
+                trader=trader, kwargs=request_data)
         }
         return JsonResponse(result)
     else:
