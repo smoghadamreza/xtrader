@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from finance.exchange.base import BaseExchangeService
 from finance.exchange.factory import ExchangeServiceFactory
 from aum.models import Fund
-from finance.consts import Params
+from finance.exchange.constants.binance import BinanceRequestKeys
 from xtrader.utils.consts import Symbol
 
 class FundService:
@@ -21,6 +21,8 @@ class FundService:
         )
 
     def fetch_and_update_transactions(self, symbol_id: str = Symbol.USDT):  # replaces legacy Fund.get_transactions
-        transactions = self.exchange_service.get_transactions(params={Params.ASSET: symbol_id})
+        transactions = self.exchange_service.get_transactions(
+            params={BinanceRequestKeys.ASSET: symbol_id}
+        )
         self.fund.update_fund_balance(transactions=transactions)
         return transactions

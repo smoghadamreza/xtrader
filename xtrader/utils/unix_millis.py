@@ -12,3 +12,7 @@ class UnixMillis:
     @classmethod
     def from_ms(cls, ms: int) -> datetime:
         return datetime.fromtimestamp(ms / 1000, tz=timezone.utc)
+
+    @classmethod
+    def normalize_to_milli_second(cls, ts_ms: int) -> int:
+        return (ts_ms // 1000) * 1000

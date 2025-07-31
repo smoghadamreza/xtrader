@@ -5,8 +5,10 @@ from xtrader.finance.models import Exchange
 
 from .account_api import AccountAPIClient
 from .authenticated_api import AuthenticatedAPIClient
-from consts import Params
-from finance.exchange.dataclasses import TradeRecord, DepositRecord, WithdrawalRecord
+from xtrader.finance.exchange.constants.binance import BinanceRequestKeys
+from finance.exchange.data import (
+    DepositRecord, WithdrawalRecord, TradeRecord
+)
 from utils.unix_millis import UnixMillis
 
 
@@ -28,8 +30,8 @@ class HistoryAPIClient(AuthenticatedAPIClient):
             response_data = self.get(
                 endpoint = self.Endpoint.MY_TRADES,
                 params = {
-                    Params.SYMBOL: symbol_id,
-                    Params.FROM_ID: from_id,
+                    BinanceRequestKeys.SYMBOL: symbol_id,
+                    BinanceRequestKeys.FROM_ID: from_id,
                 }
             )
             if not response_data:
@@ -55,8 +57,8 @@ class HistoryAPIClient(AuthenticatedAPIClient):
                 list_a=deposits,
                 list_b=self._account_api_client.get_deposits(
                     params={
-                        Params.START_TIME: UnixMillis.to_ms(current_time),
-                        Params.END_TIME: UnixMillis.to_ms(end_time)
+                        BinanceRequestKeys.START_TIME: UnixMillis.to_ms(current_time),
+                        BinanceRequestKeys.END_TIME: UnixMillis.to_ms(end_time)
                     }
                 )
             )
@@ -73,8 +75,8 @@ class HistoryAPIClient(AuthenticatedAPIClient):
                 list_a=withdrawals,
                 list_b=self._account_api_client.get_withdrawals(
                     params={
-                        Params.START_TIME: UnixMillis.to_ms(current_time),
-                        Params.END_TIME: UnixMillis.to_ms(end_time)
+                        BinanceRequestKeys.START_TIME: UnixMillis.to_ms(current_time),
+                        BinanceRequestKeys.END_TIME: UnixMillis.to_ms(end_time)
                     }
                 )
             )

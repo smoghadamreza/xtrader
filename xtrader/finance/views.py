@@ -26,7 +26,7 @@ from finance.exchange.factory import ExchangeServiceFactory
 from finance.exchange.base import BaseExchangeService
 from finance.exchange.exception import NoConnectedExchangeException
 from finance.exchange.binance.service import binance_market_service
-from finance.consts import Params
+from finance.exchange.constants.binance import BinanceRequestKeys
 from finance.models import Exchange
 from finance.oms import xtrader_exchange_service
 
@@ -374,20 +374,20 @@ def portfolio(_: HttpRequest, exchange_service: BaseExchangeService):
 @user_exchange_must_be_connected
 def get_orders(request: HttpRequest, exchange_service: BaseExchangeService):
     orders = exchange_service.get_orders(
-        symbol_id = request.GET[Params.SYMBOL]
+        symbol_id = request.GET[BinanceRequestKeys.SYMBOL]
     )
     return JsonResponse({"orders": orders})
 
 @user_exchange_must_be_connected
 def account_status(_: HttpRequest, exchange_service: BaseExchangeService):
     balance = exchange_service.get_balance()
-    return JsonResponse({"buying_power": balance.get("buying_power", None)})
+    return JsonResponse({"buying_power": balance})
 
 @user_exchange_must_be_connected
 def cancel_order(request: HttpRequest, exchange_service: BaseExchangeService):
     result = exchange_service.cancel_order(
-        symbol_id=request.GET[Params.SYMBOL],
-        order_id=int(request.GET[Params.ORDER_ID])
+        symbol_id=request.GET[BinanceRequestKeys.SYMBOL],
+        order_id=int(request.GET[BinanceRequestKeys.ORDER_ID])
     )
     if result is None:
         return HttpResponse("e", status=400)

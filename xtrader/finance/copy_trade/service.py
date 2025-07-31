@@ -1,16 +1,16 @@
 import threading
 from django.utils import timezone
 from django.contrib.auth.models import User
-from typing import cast, List, Dict, Any, Optional
-from dataclasses import dataclass
+from typing import cast, List, Dict, Any
 from social.models import ProTrader, Follow
-from finance.models import Exchange
-from finance.exchange.dataclasses import AssetBalance
 from finance.exchange.base import BaseExchangeService
-from finance.exchange.data.order import ExchangeOrderData, CopyTradeOrderData, CopyTradeOrderAction, OrderType
+from finance.exchange.data import (
+    OrderRequestData, OrderType
+)
 from finance.exchange.factory import ExchangeServiceFactory
-from finance.consts import Params
+from finance.exchange.constants.binance import BinanceRequestKeys
 from django.db import connections
+from .data import CopyTradeOrderAction, CopyTradeOrderData
 
     
 class CopyTradeService:
@@ -45,7 +45,7 @@ class CopyTradeService:
                 threads.append(
                     threading.Thread(
                         target=follower_ex_svc.cancel_all_orders,
-                        args=(order.exchange_order_data.symbol),
+                        args=(order.request_data.symbol),
                     )
                 )
             else:
@@ -58,24 +58,24 @@ class CopyTradeService:
         nav = NetAssetValueCalculator.calculate_net_asset_value(exchange_service=follower_ex_svc)
 
         value = max(nav * order.nav_ratio, 0)
-        price = cast(float, order.exchange_order_data.price)
+        price = cast(float, order.request_data.price)
         quantity = value / (price * order.quote_price)
         if quantity * price * order.quote_price >= 10:
-            order.exchange_order_data.quantity = quantity
-            follower_ex_svc.send_order(params=order.exchange_order_data.to_dict())
+            order.request_data.quantity = quantity
+            follower_ex_svc.send_order(params=order.request_data.to_dict())
         for conn in connections.all():
             conn.close()
     
     def _prepare_copy_trade_data(self, order_params: dict) -> CopyTradeOrderData:
         order = CopyTradeOrderData()
 
-        exchange_order_data = ExchangeOrderData.loads(params=order_params)
-        exchange_order_data.validate()
+        request_data = OrderRequestData.loads(params=order_params)
+        request_data.validate()
 
-        order.exchange_order_data = exchange_order_data
+        order.request_data = request_data
 
         symbol_info = self._market_service.get_symbol_info(
-            symbol_id=exchange_order_data.symbol
+            symbol_id=request_data.symbol
         )
 
         order.base_asset = symbol_info.base_asset
@@ -85,16 +85,16 @@ class CopyTradeService:
         ).get(symbol_info.quote_asset, CopyTradeOrderData.UNAVAILABLE_PRICE)
 
         order_market_value = 0
-        if exchange_order_data.type == OrderType.MARKET:
-            exchange_order_data.price = self._market_service.get_last_price(symbol_id=exchange_order_data.symbol)
-            order_market_value = float(order_params[Params.ORDER_MARKET_VALUE])
-        elif exchange_order_data in {OrderType.STOP_LOSS, OrderType.TAKE_PROFIT}:
-            exchange_order_data.price = exchange_order_data.stop_price
-            order_market_value = float(order_params[Params.ORDER_MARKET_VALUE])
+        if request_data.type == OrderType.MARKET:
+            request_data.price = self._market_service.get_last_price(symbol_id=request_data.symbol)
+            order_market_value = float(order_params[BinanceRequestKeys.ORDER_MARKET_VALUE])
+        elif request_data in {OrderType.STOP_LOSS, OrderType.TAKE_PROFIT}:
+            request_data.price = request_data.stop_price
+            order_market_value = float(order_params[BinanceRequestKeys.ORDER_MARKET_VALUE])
 
         order.order_market_value = order_market_value
-        order.order_action = order_params[Params.ORDER_ACTION]
-        if order_params[Params.ORDER_ACTION] == CopyTradeOrderAction.NEW:
+        order.order_action = order_params[BinanceRequestKeys.ORDER_ACTION]
+        if order_params[BinanceRequestKeys.ORDER_ACTION] == CopyTradeOrderAction.NEW:
             order.nav_ratio = NetAssetValueCalculator.order_net_asset_value_ratio(
                 order=order, exchange_service=self._pro_trader_exchange_service
             )
@@ -144,7 +144,7 @@ class NetAssetValueCalculator:
         if order.order_market_value > 0:
             order_value = order.order_market_value
         else:
-            order_price = cast(float, order.exchange_order_data.price)
-            order_quantity = order.exchange_order_data.quantity
+            order_price = cast(float, order.request_data.price)
+            order_quantity = order.request_data.quantity
             order_value = order_quantity * order_price * order.quote_price
         return round(order_value / nav, 3)

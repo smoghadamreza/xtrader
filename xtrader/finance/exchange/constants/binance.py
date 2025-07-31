@@ -1,6 +1,3 @@
-SPOT = "SPOT"
-LOT_SIZE = "LOT_SIZE"
-
 MESSAGE = 'msg'
 ERROR = "error"
 STATUS_CODE = "code"
@@ -12,8 +9,38 @@ DEFAULT_ERROR_MESSAGE_TEMPLATE = "لطفا دوباره تلاش کنید کد {
 BUYING_POWER = "buying_power"
 
 
+class BinanceRequestKeys:
+    # General Params
+    TYPE = "type"
+    SYMBOL = "symbol"
+    ASSET = "asset"
+    LIMIT = "limit"
 
-class ResponseKeys:
+    # Account Service Params
+    START_TIME = "startTime"
+    END_TIME = "endTime"
+
+    # History Service Params
+    FROM_ID = "fromId"
+
+    # Order Service Params
+    QUANTITY = "quantity"  #  Might cause error in OrderAPIClient as it expects "Quantity"
+    SIDE = "side"  #  Might cause error in OrderAPIClient as it expects "orderSide"
+    PRICE = "price"  #  Might cause error in OrderAPIClient as it expects "Price"
+    STOP_PRICE = "stopPrice"  #  Might cause error in OrderAPIClient as it expects "stop_price", although this was not anywhere in the codebase. 
+    STOP_LIMIT_PRICE = "stopLimitPrice"
+    STOP_LIMIT_TIME_IN_FORCE = "stopLimitTimeInForce"
+    TIME_IN_FORCE = "timeInForce"
+    ORDER_ID = "orderId"
+
+    # Copy-Trade
+    # TODO: there is no other reference to this string so I can
+    # understand what is it. gonna keep it for backward compatibility.
+    ORDER_MARKET_VALUE = "Q"
+    ORDER_ACTION = "x"
+
+
+class BinanceResponseKeys:
     # General fields
     SYMBOL = "symbol"
     SYMBOLS = "symbols"
@@ -25,12 +52,15 @@ class ResponseKeys:
     ASSET = "asset"
     ADDRESS = "address"
     TRANSACTION_ID = "txId"
+    DATA = "data"
 
 
     # Account-related
     BALANCES = "balances"
     SNAPSHOT_VOLUME_OBJECTS = "snapshotVos"
     UPDATE_TIME = "updateTime"
+    TOTAL_ASSETS_OF_BTC = "totalAssetOfBtc"
+
 
     # Asset-related
     FREE = "free"
@@ -85,7 +115,6 @@ class ResponseKeys:
     MAX_QUANTITY = "maxQty"
     STEP_SIZE = "stepSize"
 
-
     # Market Depth
     LAST_UPDATE_ID = "lastUpdateId"
     BIDS = "bids"
@@ -118,4 +147,22 @@ class ResponseKeys:
     WITHDRAWAL_LIST = "withdrawList"
 
 
+class BinanceRequestValues:
+    # Order Type
+    LIMIT = "LIMIT"
+    LIMIT_MAKER = "LIMIT_MAKER"
+    STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"
+    TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
+    STOP_LOSS = "STOP_LOSS"
+    TAKE_PROFIT = "TAKE_PROFIT"
+    OCO = "OCO"
+    MARKET = "MARKET"
 
+    # Specific orders' time in force
+    GTC = "GTC"
+    SPOT = "SPOT"
+
+
+class BinanceResponseValues:
+    SPOT = "SPOT"
+    LOT_SIZE = "LOT_SIZE"

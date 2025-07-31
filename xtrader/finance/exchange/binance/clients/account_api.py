@@ -4,12 +4,12 @@ from datetime import datetime, timedelta, timezone
 from typing import cast, Dict, Any, List, Optional
 
 from .authenticated_api import AuthenticatedAPIClient
-from consts import ResponseKeys, BUYING_POWER, SPOT
-from finance.exchange.dataclasses import (
-    AssetBalance, DepositRecord, WithdrawalRecord, TransactionRecord
+from finance.exchange.constants.binance import BinanceRequestKeys, BinanceResponseKeys, BinanceResponseValues, BinanceRequestValues, BUYING_POWER
+from finance.exchange.data import (
+    AccountSnapshot, OrderType, DepositRecord, WithdrawalRecord,
+    TransactionRecord, AssetBalance
+
 )
-from finance.consts import Params
-from finance.exchange.data.order import OrderType
 from utils.unix_millis import UnixMillis
 
 logger = logging.getLogger(__name__)
@@ -41,15 +41,15 @@ class AccountAPIClient(AuthenticatedAPIClient):
 
         return [
             AssetBalance.loads(balance=balance)
-            for balance in account_data[ResponseKeys.BALANCES]
+            for balance in account_data[BinanceResponseKeys.BALANCES]
             if self._is_balance_non_zero(balance=balance)
         ]
     
-    def get_balance(self) -> Dict[str, int]:  # TODO: seems an extremely useless function.
+    def get_balance(self) -> int:  # TODO: seems an extremely useless function.
         assets = self.get_portfolio()
         if assets is None:
-            return {BUYING_POWER: 0}
-        return {BUYING_POWER: 2000}
+            return 0
+        return 2000
     
     def get_open_orders(self, symbol_id: str) -> List[Any]:
         """
@@ -57,7 +57,7 @@ class AccountAPIClient(AuthenticatedAPIClient):
         """
         response = self.get(
             endpoint=self.Endpoint.OPEN_ORDERS,
-            params={Params.SYMBOL: symbol_id}
+            params={BinanceRequestKeys.SYMBOL: symbol_id}
         )
         return cast(List[Any], response)
 
@@ -65,7 +65,7 @@ class AccountAPIClient(AuthenticatedAPIClient):
         all_orders = self._get_all_orders(symbol_id=symbol_id)
         return all_orders[:max_num_of_orders]
     
-    def get_recent_nav_snapshots(self, days: int = 2) -> List[Dict[str, Any]]:  # replaces get_historical_nav in legace oms.Binance
+    def get_recent_nav_snapshots(self, days: int = 2) -> List[AccountSnapshot]:  # replaces get_historical_nav in legace oms.Binance
         if days > 3:
             logger.warning(f"more than 3 days time window does not consider recent")
         history = []
@@ -77,7 +77,7 @@ class AccountAPIClient(AuthenticatedAPIClient):
                 break
 
             history = snapshots + history  # Prepend to maintain chronological order
-            earliest_time = UnixMillis.from_ms(snapshots[0][ResponseKeys.UPDATE_TIME])
+            earliest_time = snapshots[0].update_time
             end_time = earliest_time - timedelta(hours=25)  # TODO: Not sure why 25 instead of 24, But I guess extra hour buffer to prevent overlap
 
         return history
@@ -89,7 +89,7 @@ class AccountAPIClient(AuthenticatedAPIClient):
         )
         response_data = cast(Dict[str, Any], response_data)
 
-        deposits_data = response_data.get(ResponseKeys.DEPOSITS_LIST)
+        deposits_data = response_data.get(BinanceResponseKeys.DEPOSITS_LIST)
         deposits_data = cast(List[Dict[str, Any]], deposits_data)
         return [
             DepositRecord.loads(deposit) for deposit in deposits_data
@@ -102,7 +102,7 @@ class AccountAPIClient(AuthenticatedAPIClient):
         )
         response_data = cast(Dict[str, Any], response_data)
 
-        withdrawals_list = response_data.get(ResponseKeys.WITHDRAWAL_LIST)
+        withdrawals_list = response_data.get(BinanceResponseKeys.WITHDRAWAL_LIST)
         withdrawals_list = cast(List[Dict[str, Any]], withdrawals_list)
         return [
             WithdrawalRecord.loads(withdrawal) for withdrawal in withdrawals_list
@@ -123,8 +123,8 @@ class AccountAPIClient(AuthenticatedAPIClient):
         response = self.get(endpoint=self.Endpoint.ACCOUNT)
         response = cast(Dict[str, Any], response)
         return (
-            ResponseKeys.PERMISSIONS in response and
-            SPOT in response[ResponseKeys.PERMISSIONS]
+            BinanceResponseKeys.PERMISSIONS in response and
+            BinanceResponseValues.SPOT in response[BinanceResponseKeys.PERMISSIONS]
         )
 
     def _get_all_orders(self, symbol_id: str) -> List[Any]:
@@ -133,7 +133,7 @@ class AccountAPIClient(AuthenticatedAPIClient):
         """
         response = self.get(
             endpoint=self.Endpoint.ALL_ORDERS,
-            params={Params.SYMBOL: symbol_id}
+            params={BinanceRequestKeys.SYMBOL: symbol_id}
         )
         orders = cast(List[Dict[str, Any]], response)
         return [
@@ -144,15 +144,15 @@ class AccountAPIClient(AuthenticatedAPIClient):
     @staticmethod
     def _is_balance_non_zero(balance: Dict[str, Any]) -> bool:
         return (
-            float(balance[ResponseKeys.FREE]) > 0 or
-            float(balance[ResponseKeys.LOCKED]) > 0
+            float(balance[BinanceResponseKeys.FREE]) > 0 or
+            float(balance[BinanceResponseKeys.LOCKED]) > 0
         )
     
     @staticmethod
     def _is_order_meaningful(order: Dict[str, Any]) -> bool:
         return (
-            float(order.get(ResponseKeys.PRICE, 0)) > 0 or
-            order.get(ResponseKeys.TYPE) == OrderType.MARKET
+            float(order.get(BinanceResponseKeys.PRICE, 0)) > 0 or
+            order.get(BinanceResponseKeys.TYPE) == OrderType.MARKET
         )
 
     def _get_spot_account_snapshot(  # replaces get_daily_snapshots in legacy oms.Binance
@@ -160,16 +160,16 @@ class AccountAPIClient(AuthenticatedAPIClient):
         limit: int = 30,   
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None
-    ) -> List[Any]:
+    ) -> List[AccountSnapshot]:
         response = self.get(
             endpoint=self.Endpoint.SNAPSHOT,
             params={
-                Params.TYPE: SPOT,
-                Params.LIMIT: limit,  # Number of snapshots to get
-                Params.START_TIME: UnixMillis.to_ms(start_time),
-                Params.END_TIME: UnixMillis.to_ms(end_time)
+                BinanceRequestKeys.TYPE: BinanceRequestValues.SPOT,
+                BinanceRequestKeys.LIMIT: limit,  # Number of snapshots to get
+                BinanceRequestKeys.START_TIME: UnixMillis.to_ms(start_time),
+                BinanceRequestKeys.END_TIME: UnixMillis.to_ms(end_time)
             }
         )
         response = cast(Dict[str, Any], response)
-        snapshots = response.get(ResponseKeys.SNAPSHOT_VOLUME_OBJECTS, [])
-        return cast(List[Any], snapshots)
+        snapshots = response.get(BinanceResponseKeys.SNAPSHOT_VOLUME_OBJECTS, [])
+        return [AccountSnapshot.loads(snapshot=ss) for ss in snapshots]

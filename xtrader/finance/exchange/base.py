@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Union
 
-from .dataclasses import (
-    DepositRecord, WithdrawalRecord, SymbolInfo, Candlestick,
-    Ticker, BookTicker, MarketDepth, AssetBalance, TradeRecord,
-    TransactionRecord
+from finance.exchange.data import (
+    AccountSnapshot, DepositRecord, WithdrawalRecord, TransactionRecord,
+    SymbolInfo, Candlestick, Ticker, BookTicker, MarketDepth,
+    AssetBalance, TradeRecord
 )
 
 class BaseExchangeMarketService(ABC):
@@ -88,7 +88,7 @@ class BaseExchangeService(ABC):
         pass
 
     @abstractmethod
-    def get_balance(self) -> Dict[str, int]:
+    def get_balance(self) -> int:
         pass
 
     @abstractmethod
@@ -100,10 +100,8 @@ class BaseExchangeService(ABC):
         pass
 
     @abstractmethod
-    def get_recent_nav_snapshots(self) -> List[Dict[str, Any]]:
+    def get_recent_nav_snapshots(self) -> List[AccountSnapshot]:
         pass
-
-
 
     @abstractmethod
     def adjust_quantity_to_lot_size(self, symbol_id: str, quantity: float) -> str:

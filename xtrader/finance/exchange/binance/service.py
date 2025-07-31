@@ -3,11 +3,10 @@ from typing import Dict, Any, List, Union, Final, Optional
 
 from finance.models import Exchange, ExchangeType
 from finance.exchange.base import BaseExchangeMarketService, BaseExchangeService
-
-from finance.exchange.dataclasses import (
-    DepositRecord, WithdrawalRecord, SymbolInfo, Candlestick,
-    Ticker, BookTicker, MarketDepth, AssetBalance, TradeRecord, 
-    TransactionRecord
+from finance.exchange.data import (
+    DepositRecord, WithdrawalRecord, TransactionRecord,
+    SymbolInfo, Candlestick, Ticker, BookTicker, MarketDepth,
+    AssetBalance, TradeRecord, AccountSnapshot
 )
 from .clients import (
     AccountAPIClient, HistoryAPIClient, OrderAPIClient
@@ -16,8 +15,7 @@ from typing import cast, Dict, List, Any
 
 from data.redis import redis_wrapper as redis
 from data.redis.constants import RedisNameSpace, RedisTTL
-from finance.exchange.dataclasses import Candlestick, Ticker, BookTicker, MarketDepth, SymbolInfo
-from consts import Params, ResponseKeys
+from finance.exchange.constants.binance import BinanceRequestKeys, BinanceResponseKeys
 
 
 class BinanceService(BaseExchangeService):
@@ -59,7 +57,7 @@ class BinanceService(BaseExchangeService):
     def get_orders(self, symbol_id: str) -> List[Any]:
         return self._account_client.get_orders(symbol_id=symbol_id)
 
-    def get_balance(self) -> Dict[str, int]:
+    def get_balance(self) -> int:
         return self._account_client.get_balance()
 
     def get_portfolio(self) -> List[AssetBalance]:
@@ -68,7 +66,7 @@ class BinanceService(BaseExchangeService):
     def has_spot_trading_permission(self) -> bool:
         return self._account_client.has_spot_trading_permission()
 
-    def get_recent_nav_snapshots(self) -> List[Dict[str, Any]]:
+    def get_recent_nav_snapshots(self) -> List[AccountSnapshot]:
         return self._account_client.get_recent_nav_snapshots()
 
     def get_deposits(self, params: dict) -> List[DepositRecord]:
@@ -119,7 +117,7 @@ class BinanceMarketService(BaseExchangeMarketService):
         ticker_data = self._get(
             endpoint=self.Endpoint.TICKER_24HR,
             params={
-                Params.SYMBOL: symbol_id
+                BinanceRequestKeys.SYMBOL: symbol_id
             }
         )
         ticker_data = cast(Dict[str, Any], ticker_data)
@@ -129,7 +127,7 @@ class BinanceMarketService(BaseExchangeMarketService):
         book_ticker_data = self._get(
             endpoint=self.Endpoint.BOOK_TICKER,
             params={
-                Params.SYMBOL: symbol_id
+                BinanceRequestKeys.SYMBOL: symbol_id
             }
         )
         book_ticker_data = cast(Dict[str, Any], book_ticker_data)
@@ -144,7 +142,7 @@ class BinanceMarketService(BaseExchangeMarketService):
             market_depth_data = self._get(
                 endpoint=self.Endpoint.DEPTH,
                 params={
-                    Params.SYMBOL: symbol_id, Params.LIMIT: limit
+                    BinanceRequestKeys.SYMBOL: symbol_id, BinanceRequestKeys.LIMIT: limit
                 }
             )
             market_depth_data = cast(Dict[str, Any], market_depth_data)
@@ -165,18 +163,18 @@ class BinanceMarketService(BaseExchangeMarketService):
             last_price_data = self._get(
                 endpoint=self.Endpoint.PRICE,
                 params={
-                    Params.SYMBOL: symbol_id
+                    BinanceRequestKeys.SYMBOL: symbol_id
                 }
             )
             last_price_data = cast(Dict[str, Any], last_price_data)
             redis.hsetex(
                 namespace=RedisNameSpace.LAST_PRICE,
                 key=symbol_id,
-                value=float(last_price_data[ResponseKeys.PRICE]),
+                value=float(last_price_data[BinanceResponseKeys.PRICE]),
                 ttl=RedisTTL.LAST_PRICE
             )
 
-        return last_price_data.get(ResponseKeys.PRICE, 0)
+        return last_price_data.get(BinanceResponseKeys.PRICE, 0)
 
     def get_symbol_info(self, symbol_id: str) -> SymbolInfo:  # Make sure the symbol_id is only in upper case.
         exchange_symbol_info_data = redis.hget(
@@ -186,7 +184,7 @@ class BinanceMarketService(BaseExchangeMarketService):
         if exchange_symbol_info_data is None: 
             exchange_info_response = self._get(
                 endpoint=self.Endpoint.EXCHANGE_INFO,
-                params={Params.SYMBOL: symbol_id}
+                params={BinanceRequestKeys.SYMBOL: symbol_id}
             )
             exchange_symbol_info_data = self._extract_exchange_symbol_info_data(
                 exchange_info_response=exchange_info_response
@@ -227,9 +225,9 @@ class BinanceMarketService(BaseExchangeMarketService):
     @staticmethod
     def _extract_exchange_symbol_info_data(exchange_info_response: Any) -> Dict[str, Any]:
         data = cast(Dict[str, Any], exchange_info_response)
-        if ResponseKeys.SYMBOLS not in data:
+        if BinanceResponseKeys.SYMBOLS not in data:
             raise ValueError(f"the required key 'symbols' is not present in exchange_info")
-        data = data[ResponseKeys.SYMBOLS]
+        data = data[BinanceResponseKeys.SYMBOLS]
         data = cast(List[Any], data)
         if not data or len(data) != 1:
             raise ValueError(f"Unexpected symbol info response: {data}")

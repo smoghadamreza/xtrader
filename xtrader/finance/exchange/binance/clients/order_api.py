@@ -2,14 +2,15 @@
 from typing import cast, Dict, Any, Union, List
 
 from .authenticated_api import AuthenticatedAPIClient
-from consts import (
-    Params, MESSAGE, ERROR, STATUS_CODE,
+from xtrader.finance.exchange.constants.binance import (
+    BinanceRequestKeys, MESSAGE, ERROR, STATUS_CODE,
     INSUFFICIENT_FUNDS_STATUS_CODE, INSUFFICIENT_FUNDS_MESSAGE, 
     INVALID_INPUT_STATUS_CODES, INVALID_INPUT_MESSAGE,
     DEFAULT_ERROR_MESSAGE_TEMPLATE
 )
-from finance.exchange.dataclasses import SymbolInfo
-from exchange.data.order import ExchangeOrderData, OrderType
+from exchange.data import (
+    OrderRequestData, OrderType, SymbolInfo
+)
 
 
 class OrderAPIClient(AuthenticatedAPIClient):
@@ -22,7 +23,7 @@ class OrderAPIClient(AuthenticatedAPIClient):
         """
         Send a new order (MARKET, LIMIT, STOP, OCO, etc.)
         """
-        order_data = ExchangeOrderData.loads(params=params)
+        order_data = OrderRequestData.loads(params=params)
         order_data.validate()
         endpoint = self.Endpoint.OCO if order_data.type == OrderType.OCO else self.Endpoint.ORDER
         response = cast(Dict[str, Any], self.post(endpoint=endpoint, params=order_data.to_dict()))
@@ -33,8 +34,8 @@ class OrderAPIClient(AuthenticatedAPIClient):
         Cancel a specific order by ID
         """
         params = {
-            Params.SYMBOL: symbol_id,
-            Params.ORDER_ID: int(order_id)
+            BinanceRequestKeys.SYMBOL: symbol_id,
+            BinanceRequestKeys.ORDER_ID: int(order_id)
         }
         return self.delete(endpoint=self.Endpoint.ORDER, params=params)
 
@@ -43,7 +44,7 @@ class OrderAPIClient(AuthenticatedAPIClient):
         Cancel all open orders for a symbol
         """
         params = {
-            Params.SYMBOL: symbol_id.upper()
+            BinanceRequestKeys.SYMBOL: symbol_id.upper()
         }
         return self.delete(endpoint=self.Endpoint.OPEN_ORDERS, params=params)
 
