@@ -18,7 +18,9 @@ from finance.views import get_user
 from social.models import Follow, ProTrader
 from finance.exchange.factory import ExchangeServiceFactory, NoConnectedExchangeException
 from finance.oms import xtrader_exchange_service
-from finance.copy_trade import CopyTradeService
+from social.service import ProTraderService
+from social.exception import NoProTraderFound
+from finance.copy_trade.service import CopyTradeService
 
 
 
@@ -136,7 +138,9 @@ def promote(request: HttpRequest):
                 return JsonResponse(
                     {"s": 200, "m": "شما قبلا حساب خود را ارتقا داده اید."}
                 )
-        history = ProTrader.get_history(trader=request.user)
+        user = cast(User, request.user)
+        pro_trader_service = ProTraderService(pro_user=user)
+        history = pro_trader_service.get_recent_nav_snapshots()
         if len(history) < 28:
             return JsonResponse(
                 {"s": 200, "m": "سابقه شما در بایننس کمتر از ۳۰ روز است."}
@@ -166,19 +170,19 @@ def trader(request):
 
 
 def get_profile(request, pro_id):
+
     try:
-        pro = ProTrader.objects.filter(id=pro_id).first()
-        if not pro:
-            return JsonResponse({"s": 302, "href": "/social/copy-trading"})
-    except Exception:
+        pro_trader_service = ProTraderService(pro_id=pro_id)
+    except NoProTraderFound:
         return JsonResponse({"s": 302, "href": "/social/copy-trading"})
-    history = ProTrader.get_records(trader=pro.trader)
+    history = pro_trader_service.get_records()
+    pro_trader = pro_trader_service.pro_trader
     if not request.user:
         status = 0  # unknown
     else:
         followings = Follow.objects.filter(follower=request.user)
         if followings:
-            if followings.filter(proTrader=pro).first():
+            if followings.filter(pro_trader=pro_trader).first():
                 status = 1  # following
             else:
                 status = 3  # following someone else
@@ -187,8 +191,8 @@ def get_profile(request, pro_id):
     return JsonResponse(
         {
             "s": 200,
-            "proTraderBrand": pro.brand,
-            "subsFee": pro.subscription,
+            "proTraderBrand": pro_trader.brand,
+            "subsFee": pro_trader.subscription,
             "history": history,
             "status": status,
         }

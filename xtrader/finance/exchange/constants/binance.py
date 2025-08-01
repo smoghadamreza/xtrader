@@ -15,6 +15,7 @@ class BinanceRequestKeys:
     SYMBOL = "symbol"
     ASSET = "asset"
     LIMIT = "limit"
+    INTERVAL = "interval"
 
     # Account Service Params
     START_TIME = "startTime"
@@ -166,3 +167,6 @@ class BinanceRequestValues:
 class BinanceResponseValues:
     SPOT = "SPOT"
     LOT_SIZE = "LOT_SIZE"
+
+    class Interval:
+        ONE_DAY = "1d"

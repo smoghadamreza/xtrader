@@ -1,9 +1,8 @@
 import time
-from cached_property import cached_property
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Any
 from datetime import timedelta
-from finance.exchange.dataclasses import TransactionRecord, DepositRecord, WithdrawalRecord
+from finance.exchange.data import TransactionRecord, DepositRecord, WithdrawalRecord
 
 import requests
 from django.contrib.auth.models import User
@@ -11,7 +10,7 @@ from django.db import connections, models
 from django.utils import timezone
 from utils.unix_millis import UnixMillis
 from finance import oms
-from finance.copy_trade import NetAssetValueCalculator
+from finance.copy_trade.service import NetAssetValueCalculator
 
 class Fund(models.Model):
     manager = models.ForeignKey(
@@ -62,82 +61,35 @@ class Fund(models.Model):
         self.save()
         return usdt
 
-    def get_fund_info(self):
-        cash = self.get_cash()
-        units = self.get_units_count()
-        nav = 0
-        if units:
-            nav = round(self.aum / units, 2)
-        result = {
+    def get_fund_info(self, float_precision: int = 2) -> Dict[str, int|float|str]:
+        round_func = lambda x: round(x, float_precision)
+        return {
             "brand": self.brand,
-            "units": units,
-            "cash": round(cash, 2),
-            "aum": round(self.aum, 2),
+            "aum": round_func(self.aum),
             "manager": self.manager.username,
-            "nav": nav,
-            "fee": round(self.fee, 2),
-            "issue": round((1 + self.issue_fee) * nav, 2),
-            "redeem": round((1 - self.redeem_fee) * nav, 2),
-            "deposit": round(self.deposit, 2),
-            "withdraw": round(self.withdraw, 2),
+            "fee": round_func(self.fee),
+            "deposit": round_func(self.deposit),
+            "withdrawal": round_func(self.withdrawal),
         }
-        return result
+    
+    def save_fund_unit_snapshots(self, snapshot_data: Dict[str, Any], asset_quantities: Dict[str, float]):
+        for symbol_id, quantity in asset_quantities.items():
+            FundUnitSnapshot(
+                fund=self,
+                asset=symbol_id,
+                quantity=quantity,
+                value=snapshot_data[symbol_id]["value"],
+                ratio=snapshot_data[symbol_id]["ratio"],
+                insert_date=snapshot_data["date"],
+                age=snapshot_data["age"],
+                nav=snapshot_data["nav"],
+            ).save()
 
     def update_fund_balance(self, transactions: List[TransactionRecord]):
         self.deposit = sum(t.amount for t in transactions if t.record_type == DepositRecord)
         self.withdrawal = sum(t.amount for t in transactions if t.record_type == WithdrawalRecord)
-        self.last_update = UnixMillis.to_ms(dt=datetime.now())
+        self.last_update = UnixMillis.from_dt_to_ms(dt=datetime.now())
         self.save(update_fields=["deposit", "withdrawal", "last_update"])
-
-    def issue_redeem(self, investor, params):
-        fund_info = self.get_fund_info()
-        nav = fund_info["nav"]
-        result = {}
-        if params["action"] == "issue":
-            units = params["amount"]
-            issue_nav = fund_info["issue"]
-            if self.deposit >= units * issue_nav:
-                investor.units += units
-                value = units * issue_nav
-                self.deposit -= value
-                fee = units * (issue_nav - nav)
-                self.fee += fee
-                self.last_update = int(time.time() * 1000)
-                self.unit_transfer(
-                    investor=investor,
-                    units=units,
-                    action=params["action"],
-                    nav=nav,
-                    value=value,
-                    fee=fee,
-                )
-                result["c"] = 200
-            else:
-                result["msg"] = "موجودی واریزی صندوق کافی نیست"
-        elif params["action"] == "redeem":
-            units = params["amount"]
-            redeem_nav = fund_info["redeem"]
-            if investor.units >= units:
-                investor.units -= units
-                value = units * redeem_nav
-                self.withdraw += value
-                fee = units * (nav - redeem_nav)
-                self.fee += fee
-                self.last_update = int(time.time() * 1000)
-                self.unit_transfer(
-                    investor=investor,
-                    units=units,
-                    action=params["action"],
-                    value=value,
-                    nav=nav,
-                    fee=fee,
-                )
-                result["c"] = 200
-            else:
-                result["msg"] = "سرمایه‌گذار واحد‌های کمتری دارد"
-        else:
-            result["msg"] = "عملیات مشخص نشده است"
-        return result
 
     def unit_transfer(self, investor, units, action, value, nav, fee):
         UnitTransfer(
@@ -171,62 +123,6 @@ class Fund(models.Model):
             return "already exists"
         self.create_snapshots(assets=self.get_unit_assets(), history=history)
         return "created"
-
-    def create_snapshots(self, assets, history):
-        historical = {}
-        for asset in assets:
-            if not asset == "USDT":
-                candles = requests.get(
-                    "https://api.binance.com/api/v3/klines",
-                    params={
-                        "symbol": asset + "USDT",
-                        "interval": "1d",
-                        "limit": 500,
-                    },
-                ).json()
-                historical[asset] = candles[-history - 5 : -1]
-        age = 0
-        while age <= history:
-            age += 1
-            portfolio = {"age": history - age + 1, "nav": max(assets["USDT"], 0)}
-            for asset, quantity in assets.items():
-                if not asset == "USDT":
-                    price = float(historical[asset][-age][4])
-                    age_timestamp = int(historical[asset][-age][0] / 1000)
-                    value = price * quantity
-                    portfolio[asset] = {
-                        "value": value,
-                    }
-                    portfolio["nav"] += value
-                    portfolio["date"] = timezone.datetime.fromtimestamp(
-                        age_timestamp
-                    ).date()
-
-            for asset, quantity in assets.items():
-                if not asset == "USDT":
-                    portfolio[asset]["ratio"] = (
-                        portfolio[asset]["value"] / portfolio["nav"]
-                    )
-                else:
-                    portfolio[asset] = {
-                        "ratio": quantity / portfolio["nav"],
-                        "value": quantity,
-                    }
-                if "date" not in portfolio:
-                    usdt_date = timezone.datetime.today() - timedelta(
-                        days=age - 2
-                    )
-                    portfolio["date"] = usdt_date.date()
-                FundUnitSnapshot(
-                    fund=self,
-                    asset=asset,
-                    quantity=quantity,
-                    value=portfolio[asset]["value"],
-                    ratio=portfolio[asset]["ratio"],
-                    insert_date=portfolio["date"],
-                    age=portfolio["age"],
-                    nav=portfolio["nav"],
-                ).save()
 
     def fund_daily_snapshot(self):
         snapshot = (
@@ -349,7 +245,7 @@ class FundInvestor(models.Model):
         max_length=20, default="", blank=True, null=False
     )
     note = models.CharField(max_length=20, default="", blank=True, null=True)
-    units = models.FloatField(default=0, blank=True, null=True)
+    units = models.FloatField(default=0, blank=True, null=False)
 
     def __str__(self):
         return self.first_name + " " + self.last_name

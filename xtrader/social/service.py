@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from finance.exchange.data import AccountSnapshot
 from finance.exchange.factory import ExchangeServiceFactory
@@ -6,20 +6,25 @@ from finance.exchange.base import BaseExchangeService
 from django.contrib.auth.models import User
 from .models import ProTrader
 from finance.exchange.exception import NoConnectedExchangeException
-from .exception import NoProTraderForThisUser, NoExchangeServiceForProTrader
+from .exception import NoProTraderFound, NoExchangeServiceForProTrader
 from utils.unix_millis import UnixMillis
 
 
 class ProTraderService:
 
-    def __init__(self, user: User):
+    def __init__(self, pro_user: Optional[User] = None, pro_id: Optional[int] = None):
+        if not pro_user and not pro_id:
+            raise ValueError("Either 'pro_user' or 'pro_id' must be provided.")
+        self._pro_user = pro_user
+        self._pro_id = pro_id
+
         try:
-            self._pro_trader = ProTrader.objects.get(trader=user)
+            self._set_pro_trader()
             self._exchange_service = ExchangeServiceFactory.get_service_for_user(
-                user=user
+                user=self._pro_trader.trader
             )
         except ProTrader.DoesNotExist:
-            raise NoProTraderForThisUser
+            raise NoProTraderFound()
         except NoConnectedExchangeException:
             raise NoExchangeServiceForProTrader
 
@@ -44,3 +49,15 @@ class ProTraderService:
                 h.append([close_time, round(btc_total * candle.close_price, 2)])
                 btc.append([close_time, round(candle.close_price, 2)])
         return {"trader": h, "btc": btc}
+    
+    @property
+    def pro_trader(self) -> ProTrader:
+        return self._pro_trader
+
+    def _set_pro_trader(self) -> None:
+        if self._pro_id:
+            self._pro_trader = ProTrader.objects.get(pk=self._pro_id)
+        elif self._pro_user:
+             self._pro_trader = ProTrader.objects.get(trader=self)
+        else:
+            raise NoProTraderFound()

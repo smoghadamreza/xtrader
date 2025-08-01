@@ -7,8 +7,7 @@ from django.db import models
 from django.utils import timezone
 
 from accounts.models import Wallet
-from finance import oms
-from finance.copy_trade import CopyTradeService
+from finance.copy_trade.service import CopyTradeService
 from sales.models import Payment
 
 
@@ -30,48 +29,6 @@ class ProTrader(models.Model):
     one_months_performance = models.FloatField(null=True, blank=True)
     total_performance = models.FloatField(null=True, blank=True)
     status = models.CharField(max_length=12, null=True, blank=True)
-
-
-    @staticmethod
-    def get_history(trader):
-        from finance.oms import OMSManager
-
-        exchange, exchange_class = OMSManager.get_exchange(None, trader=trader)
-        if exchange_class is None:
-            raise ValueError("exchange_class cannot be None")
-        if exchange is None:
-            raise ValueError("exchange cannot be None")
-        return exchange_class.get_historical_nav(
-            exchange.public, exchange.private
-        )
-
-    @staticmethod
-    def get_records(trader):
-        from finance.oms import OMSManager
-
-        exchange, exchange_class = OMSManager.get_exchange(None, trader=trader)
-        if exchange_class is None:
-            raise ValueError("exchange_class cannot be None")
-        if exchange is None:
-            raise ValueError("exchange cannot be None")
-        history = exchange_class.get_historical_nav(
-            exchange.public, exchange.private
-        )
-        records = {
-            record["updateTime"]: float(record["data"]["totalAssetOfBtc"])
-            for record in history
-        }
-        params = {"symbol": "BTCUSDT", "interval": "1d", "limit": 50}
-        candles = exchange_class.get_candles(params)
-        h = []
-        btc = []
-        for candle in candles:
-            d = int(candle[6] / 1000)
-            d *= 1000
-            if d in records:
-                h.append([d, round(records[d] * float(candle[4]), 2)])
-                btc.append([d, round(float(candle[4]), 2)])
-        return {"trader": h, "btc": btc}
 
     @staticmethod
     def get_all(protrader_id=0):

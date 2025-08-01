@@ -9,7 +9,6 @@ urlpatterns = [
         views.issue_redeem_unit,
         name="issue-or-redeem-unit",
     ),
-    re_path(r"^redeem-unit", views.redeem_unit, name="redeem-unit"),
     re_path(r"^add-investor", views.add_investor, name="add-investor"),
     re_path(
         r"^transactions-history",

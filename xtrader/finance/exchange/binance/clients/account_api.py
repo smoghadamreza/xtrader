@@ -166,8 +166,8 @@ class AccountAPIClient(AuthenticatedAPIClient):
             params={
                 BinanceRequestKeys.TYPE: BinanceRequestValues.SPOT,
                 BinanceRequestKeys.LIMIT: limit,  # Number of snapshots to get
-                BinanceRequestKeys.START_TIME: UnixMillis.to_ms(start_time),
-                BinanceRequestKeys.END_TIME: UnixMillis.to_ms(end_time)
+                BinanceRequestKeys.START_TIME: UnixMillis.from_dt_to_ms(start_time),
+                BinanceRequestKeys.END_TIME: UnixMillis.from_dt_to_ms(end_time)
             }
         )
         response = cast(Dict[str, Any], response)

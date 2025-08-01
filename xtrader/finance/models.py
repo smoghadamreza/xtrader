@@ -143,7 +143,7 @@ class TradingView(models.Model):
         error = ""
         if trading:
             ex = Exchange.objects.filter(trader=self.trader).first()
-            if ex and ex.private and ex.public:
+            if ex and ex.private_key and ex.public_key:
                 self.trading = trading
             else:
                 error = (

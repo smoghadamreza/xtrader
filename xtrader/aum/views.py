@@ -10,6 +10,13 @@ from django.views.decorators.csrf import csrf_exempt
 
 from aum.models import Fund, FundInvestor
 from aum.service import FundService
+from aum.exception import (
+    FundInvestorNotFound, FundNotFound, InvalidAction,
+    InsufficientDepositInFund, InsufficientUnitsFromInvestor
+)
+from utils.consts import XtraderRequestKeys, XtraderResponseKeys
+from .consts import ResponseMessages
+
 
 @login_required(login_url="accounts:userena_sign_in")
 def management(request):
@@ -19,32 +26,42 @@ def management(request):
 @csrf_exempt
 @require_POST
 @login_required(login_url="accounts:userena_sign_in")
-def issue_redeem_unit(request):
-    params = json.loads(request.body.decode())
-    fund = Fund.objects.filter(manager=request.user).first()
-    investor = FundInvestor.objects.filter(
-        fund=fund, id=params["investor_id"]
-    ).first()
-    if fund and investor:
-        result = fund.issue_redeem(investor, params)
-        investor.save()
-        fund.save()
-    else:
-        result = {"msg": "شناسه سرمایه‌گذار اشتباه است"}
-    return JsonResponse(result)
+def issue_redeem_unit(request: HttpRequest):
+    message = ""
+    c = None
+    try:
+        params = json.loads(request.body.decode())
 
+        fund_manager = cast(User, request.user)
+        fund_service = FundService(fund_manager=fund_manager)
+        fund_service.issue_redeem_unit(
+            investor_id=params[XtraderRequestKeys.INVESTOR_ID],
+            action=params[XtraderRequestKeys.ACTION],
+            unit_amount=params[XtraderRequestKeys.AMOUNT]
+        )
+        c = 200
+    except FundNotFound:
+        message = ResponseMessages.FUND_NOT_FOUND
+    except FundInvestorNotFound:
+        message = ResponseMessages.FUND_INVESTOR_INVALID_ID
+    except InvalidAction:
+        message = ResponseMessages.INVALID_ACTION
+    except InsufficientDepositInFund:
+        message = ResponseMessages.INSUFFICIENT_DEPOSIT_IN_FUND
+    except InsufficientUnitsFromInvestor:
+        message = ResponseMessages.INSUFFICIENT_UNITS_FROM_INVESTOR
+
+    return JsonResponse(
+        {
+            XtraderResponseKeys.MESSAGE: message,
+            XtraderResponseKeys.C: c
+        }
+    )
 
 @csrf_exempt
 @require_POST
 @login_required(login_url="accounts:userena_sign_in")
-def redeem_unit(request):
-    return JsonResponse({"msg": "ok"})
-
-
-@csrf_exempt
-@require_POST
-@login_required(login_url="accounts:userena_sign_in")
-def add_investor(request):
+def add_investor(request: HttpRequest):
     params = json.loads(request.body.decode())
     national_code = params["nationalCode"]
     fund = Fund.objects.filter(manager=request.user).first()
@@ -66,7 +83,7 @@ def add_investor(request):
 
 @require_GET
 @login_required(login_url="accounts:userena_sign_in")
-def investors(request):
+def investors(request: HttpRequest):
     fund = Fund.objects.filter(manager=request.user).first()
     investors = FundInvestor.objects.filter(fund=fund)
     result = []
@@ -85,25 +102,26 @@ def investors(request):
 
 @require_GET
 @login_required(login_url="accounts:userena_sign_in")
-def get_fund(request):
-    fund = Fund.objects.filter(manager=request.user).first()
-    if fund:
-        result = fund.get_fund_info()
-    else:
-        result = {}
-    return JsonResponse(result)
+def get_fund(request: HttpRequest):
+    fund_manager = cast(User, request.user)
+    try:
+        fund_service = FundService(fund_manager=fund_manager)
+        fund_info = fund_service.get_fund_info()
+        return JsonResponse(fund_info)
+    except FundNotFound:
+        return JsonResponse({})
 
 @require_GET
 @login_required(login_url="accounts:userena_sign_in")
 def transactions_history(request: HttpRequest):
     fund_manager = cast(User, request.user)
     fund_service = FundService(fund_manager=fund_manager)
-    transactions = fund_service.fetch_and_update_transactions()
+    transactions = fund_service.sync_and_fetch_transactions()
     return JsonResponse({"data": [t.time for t in transactions]})
 
 @require_GET
 @login_required(login_url="accounts:userena_sign_in")
-def init_fund_performance(request):
+def init_fund_performance(request: HttpRequest):
     if not request.GET.get("pass", "") == "XTreasury":
         return JsonResponse({"msg": "not authorize"}, status=401)
     fund = Fund.objects.filter(manager=request.user).first()

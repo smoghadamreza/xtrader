@@ -57,8 +57,8 @@ class HistoryAPIClient(AuthenticatedAPIClient):
                 list_a=deposits,
                 list_b=self._account_api_client.get_deposits(
                     params={
-                        BinanceRequestKeys.START_TIME: UnixMillis.to_ms(current_time),
-                        BinanceRequestKeys.END_TIME: UnixMillis.to_ms(end_time)
+                        BinanceRequestKeys.START_TIME: UnixMillis.from_dt_to_ms(current_time),
+                        BinanceRequestKeys.END_TIME: UnixMillis.from_dt_to_ms(end_time)
                     }
                 )
             )
@@ -75,8 +75,8 @@ class HistoryAPIClient(AuthenticatedAPIClient):
                 list_a=withdrawals,
                 list_b=self._account_api_client.get_withdrawals(
                     params={
-                        BinanceRequestKeys.START_TIME: UnixMillis.to_ms(current_time),
-                        BinanceRequestKeys.END_TIME: UnixMillis.to_ms(end_time)
+                        BinanceRequestKeys.START_TIME: UnixMillis.from_dt_to_ms(current_time),
+                        BinanceRequestKeys.END_TIME: UnixMillis.from_dt_to_ms(end_time)
                     }
                 )
             )
