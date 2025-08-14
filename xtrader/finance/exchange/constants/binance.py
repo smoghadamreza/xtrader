@@ -163,10 +163,9 @@ class BinanceRequestValues:
     GTC = "GTC"
     SPOT = "SPOT"
 
+    class Interval:
+        ONE_DAY = "1d"
 
 class BinanceResponseValues:
     SPOT = "SPOT"
     LOT_SIZE = "LOT_SIZE"
-
-    class Interval:
-        ONE_DAY = "1d"

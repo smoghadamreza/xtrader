@@ -12,3 +12,12 @@ class InsufficientDepositInFund(Exception):
 
 class InsufficientUnitsFromInvestor(Exception):
     pass
+
+class NameIsTooLong(ValueError):
+    pass
+
+class InvestorAlreadyExists(Exception):
+    pass
+
+class NoSnapshotFound(Exception):
+    pass

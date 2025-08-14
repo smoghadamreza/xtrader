@@ -8,3 +8,6 @@ class RedisTTL:
     MARKET_DEPTH = 5
     LAST_PRICE = 30
     EXCHANGE_INFO = 600  # 10 minutes
+
+SYMBOL_HISTORY_KEYS = ["date", "close_price", "open_price", "high", "low", "volume"]
+INTERVALS = [1, 5, 10, 30, 60]

@@ -12,7 +12,7 @@ class BaseExchangeMarketService(ABC):
     FALLBACK_ASSET_SYMBOL_ID  = "BTC"
 
     @abstractmethod
-    def get_candles(self, params: Dict[str, str]) -> List[Candlestick]:
+    def get_candles(self, params: Dict[str, str], raise_for_status: bool = False) -> List[Candlestick]:
         pass
 
     @abstractmethod
@@ -46,8 +46,8 @@ class BaseExchangeService(ABC):
     def market_service(self) -> BaseExchangeMarketService:
         raise NotImplementedError()
 
-    def get_candles(self, params: Dict[str, Any]) -> List[Candlestick]:
-        return self.market_service.get_candles(params=params)
+    def get_candles(self, params: Dict[str, Any], raise_for_status: bool = False) -> List[Candlestick]:
+        return self.market_service.get_candles(params=params, raise_for_status=raise_for_status)
 
     def get_ticker_24hr(self, symbol_id: str) -> Ticker:
         return self.market_service.get_ticker_24hr(symbol_id=symbol_id)

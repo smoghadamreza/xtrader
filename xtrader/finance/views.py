@@ -11,12 +11,12 @@ from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST, require_GET
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import transaction
-from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import Profile
-from aum.models import Fund
+from aum.service.fund import FundService
 from data.backup import filters_data
 from finance import data_handling
 from finance import data_handling as dh
@@ -191,7 +191,7 @@ def strategy_notif(request, interval):
     t = threading.Thread(target=scan.screener, args=(interval,))
     t.start()
     if interval == "1d":
-        t = threading.Thread(target=Fund.get_daily_snapshots)
+        t = threading.Thread(target=FundService.create_today_snapshots)
         t.start()
     return JsonResponse({"s": "ok"})
 

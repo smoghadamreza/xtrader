@@ -29,7 +29,7 @@ number of `unit`s they invested on that `Fund`.
         <td>The `Fund` which this investor has invested on.</td>
     </tr>
     <tr>
-        <td>nationalCode</td>
+        <td>national_code</td>
         <td><include from="third-party-libraries-links.topic" element-id="django-models.char-field"/></td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>

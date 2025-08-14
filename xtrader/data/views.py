@@ -1,95 +1,68 @@
 import json
-from typing import List, cast
+from typing import cast
+from django.contrib.auth.models import User
+from django.http import HttpResponse, JsonResponse, HttpRequest
 
-import pandas as pd
-from django.conf import settings
-from django.http import HttpResponse, JsonResponse
-
-import data.redis as redis
-import data.stock_watch as stockwatchModel
-from data.models import StockWatch as Symbol
-from finance.models import Strategy
+from data.service import StockWatchService
+from utils.consts import XtraderResponseKeys
 
 
-def history(request):
-    symbol_ids = cast(List[bytes], redis.keys())
-    histories = []
-    for symbol_id in symbol_ids:
-        symbol_id = symbol_id.decode()
-        symbol_history_dict = {}
-        symbol_history_dict[symbol_id] = {}
-        for key in ["date", "close", "open", "high", "low", "volume"]:
-            try:
-                symbol_history_dict[symbol_id][key] = redis.hget(
-                    name=symbol_id, key=key
-                )
-            except Exception:
-                pass
-        histories.append(symbol_history_dict)
-    return HttpResponse(json.dumps(histories))
+async def history(_: HttpRequest):
+    stock_watch_service = StockWatchService()
+    symbols_history = await stock_watch_service.get_all_symbol_history() 
+    return HttpResponse(json.dumps(symbols_history))
 
 
-def stock_watch(request, symbol_id):
-    stock = stockwatchModel.stock_watch_info(symbol_id, eps=True)
-    return HttpResponse(json.dumps(stock))
+def stock_watch_info(_: HttpRequest, symbol_id: str):
+    stock_watch_service = StockWatchService()
+    stock_watch_info  = stock_watch_service.get_stock_watch_info(symbol_id=symbol_id)
+    return HttpResponse(json.dumps(stock_watch_info))
 
 
-def symbol_search(request, query):
-    spots = redis.hgetall("exchangeInfo")
-    symbols = [symbol for symbol in spots if query.upper() in symbol]
-    result = []
-    for symbol in symbols:
-        info = redis.hget("exchangeInfo", symbol)
-        result.append(
-            dict(
-                symbol_id=symbol,
-                kind=info["quoteAsset"],
-                category=info["baseAsset"],
-                symbol_name=symbol,
-                name=", ".join(info["permissions"]),
-                description="self.CompanyName",
-                title="title",
-            )
-        )
+def symbol_search(_: HttpRequest, query: str):
+    stock_watch_service = StockWatchService()
+    result  = stock_watch_service.search_symbols(query=query)
     return HttpResponse(
-        json.dumps({"items": result}, ensure_ascii=False).encode("utf8"),
+        json.dumps(
+            {XtraderResponseKeys.ITEMS: result}, ensure_ascii=False
+        ).encode("utf8"),
         content_type="application/json; charset=utf-8",
     )
 
 
-def get_data(request, symbol_id, interval):
-    data_dict = redis.load_history(symbol_id, interval=interval)
-    df = pd.DataFrame(data=data_dict, index=data_dict["date"])
-    df = df.loc[:, ["date", "open", "high", "low", "close", "volume"]]
-    pair = redis.hget("exchangeInfo", symbol_id.upper())
-    stock_information = dict(
-        per_name=pair["baseAsset"],
-        measurement_name=pair["symbol"],
-        name=pair["baseAsset"],
+def get_data(_: HttpRequest, symbol_id: str, interval: str):
+    stock_watch_service = StockWatchService()
+    symbol_history_info = stock_watch_service.get_symbol_history(
+        symbol_id=symbol_id, interval=interval
     )
-    stock_history = df.to_json(orient="values")
-    stock_information["items"] = stock_history
-
-    return JsonResponse(json.dumps(stock_information), safe=False)
+    return JsonResponse(json.dumps(symbol_history_info), safe=False)
 
 
-def get_symbols(request):
-    symbols = Symbol.objects.all()
-    symbol_ids = [symbol.symbol_id for symbol in symbols]
-    return JsonResponse({"symbols": symbol_ids})
+def get_symbols(_: HttpRequest):
+    stock_watch_service = StockWatchService()
+    return JsonResponse({
+        XtraderResponseKeys.SYMBOLS: 
+        stock_watch_service.get_stock_watch_symbols()
+    })
 
 
-def get_all_symbols(request):
-    spots = redis.hgetall("exchangeInfo")
-    symbols = [{"title": symbol} for symbol in spots]
-    return JsonResponse({"symbols": symbols})
+def get_all_symbols(_: HttpRequest):
+    stock_watch_service = StockWatchService()
+    symbols = stock_watch_service.get_all_exchange_symbols()
+    data = [{XtraderResponseKeys.TITLE: symbol} for symbol in symbols]
+    return JsonResponse({XtraderResponseKeys.SYMBOLS: data})
 
 
-def get_intervals(request):
-    if not request.user.username:
-        return JsonResponse({"intervals": settings.INTERVALS})
-    strategy = Strategy.objects.filter(trader=request.user).first()
-    interval = strategy.interval if strategy else "4h"
+def get_intervals(request: HttpRequest):
+    user = cast(User, request.user)
+    stock_watch_service = StockWatchService()
+    intervals = stock_watch_service.get_intervals()
+    user_time_frame = stock_watch_service.get_user_time_frame(user=user)
+    if user_time_frame is None:
+        return JsonResponse({XtraderResponseKeys.INTERVALS: intervals})
     return JsonResponse(
-        {"intervals": settings.INTERVALS, "userTimeFrame": interval}
+        {
+            XtraderResponseKeys.INTERVALS: intervals,
+            XtraderResponseKeys.USER_TIME_FRAME: user_time_frame
+        }
     )

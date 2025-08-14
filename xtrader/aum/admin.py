@@ -24,8 +24,8 @@ class FundInvestorAdmin(admin.ModelAdmin):
         "last_name",
         "fund",
         "units",
-        "nationalCode",
-        "phoneNumber",
+        "national_code",
+        "phone_number",
         "note",
     )
 
@@ -47,7 +47,7 @@ class UnitTransferAdmin(admin.ModelAdmin):
     list_display = (
         "investor",
         "fund",
-        "nationalCode",
+        "national_code",
         "action",
         "units",
         "nav",
@@ -56,8 +56,8 @@ class UnitTransferAdmin(admin.ModelAdmin):
         "time",
     )
 
-    def nationalCode(self, obj):
-        return obj.investor.nationalCode
+    def national_code(self, obj):
+        return obj.investor.national_code
 
     def fund(self, obj):
         return obj.investor.fund

@@ -1,5 +1,5 @@
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 class UnixMillis:
     "Converts datetime to milliseconds passed since  Unix Time start aka Timestamp."
@@ -20,3 +20,11 @@ class UnixMillis:
     @classmethod
     def normalize_to_milli_second(cls, ts_ms: int) -> int:
         return (ts_ms // 1000) * 1000
+    
+    @classmethod
+    def from_date_to_ms(cls, d: Optional[date] = None) -> int | None:
+        """Convert a date to milliseconds since Unix epoch."""
+        if d is None:
+            return None
+        dt = datetime.combine(d, datetime.min.time(), tzinfo=timezone.utc)
+        return cls.from_dt_to_ms(dt)

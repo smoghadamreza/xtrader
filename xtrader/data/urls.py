@@ -7,7 +7,7 @@ urlpatterns = [
     re_path(r"^all-symbols", views.get_all_symbols, name="all-symbols"),
     re_path(r"^intervals/$", views.get_intervals, name="get-intervals"),
     re_path(r"^history/$", views.history),
-    re_path(r"^stock-watch/(?P<symbol_id>\w+)/$", views.stock_watch),
+    re_path(r"^stock-watch/(?P<symbol_id>\w+)/$", views.stock_watch_info),
     re_path(
         r"^symbol-search/q=(?P<query>\w+)",
         views.symbol_search,

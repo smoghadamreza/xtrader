@@ -105,10 +105,11 @@ class BinanceMarketService(BaseExchangeMarketService):
 
 
 
-    def get_candles(self, params: Dict[str, str]) -> List[Candlestick]:
+    def get_candles(self, params: Dict[str, str], raise_for_status: bool = False) -> List[Candlestick]:
         candles_data = self._get(
             endpoint=self.Endpoint.CANDLES,
-            params=params
+            params=params,
+            raise_for_status=raise_for_status
         )
         candles_data = cast(List[List[float|int]], candles_data)
         return [Candlestick.from_list(c) for c in candles_data]
@@ -236,11 +237,13 @@ class BinanceMarketService(BaseExchangeMarketService):
         data = cast( Dict[str, Any], data)
         return data
     
-    def _get(self, endpoint: str, params: Optional[dict] = None) -> Union[Dict[str, Any], List[Any]]:
+    def _get(self, endpoint: str, params: Optional[dict] = None, raise_for_status: bool = False) -> Union[Dict[str, Any], List[Any]]:
         response = requests.get(
             url=self.BASE_URL + endpoint,
             params=params
         )
+        if raise_for_status:
+            response.raise_for_status()
         return response.json()
 
 binance_market_service = BinanceMarketService()

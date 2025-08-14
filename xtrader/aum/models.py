@@ -1,7 +1,6 @@
 import time
 from datetime import datetime
 from typing import List, Dict, Any
-from datetime import timedelta
 from finance.exchange.data import TransactionRecord, DepositRecord, WithdrawalRecord
 
 import requests
@@ -11,6 +10,7 @@ from django.utils import timezone
 from utils.unix_millis import UnixMillis
 from finance import oms
 from finance.copy_trade.service import NetAssetValueCalculator
+from aum.exception import NameIsTooLong, InvestorAlreadyExists
 
 class Fund(models.Model):
     manager = models.ForeignKey(
@@ -36,30 +36,6 @@ class Fund(models.Model):
         if investors:
             result = investors.aggregate(models.Sum("units"))["units__sum"]
         return result
-
-    def get_assets(self):
-        exchange, exchange_class = oms.OMSManager.get_exchange(
-            request=None, trader=self.manager
-        )
-        if exchange_class is None:
-            raise ValueError("Exchange class cannot be None")
-        return exchange_class.get_portfolio(exchange)
-
-    def get_cash(self, assets=None):
-        if not assets:
-            assets = self.get_assets()
-        usdt = 0
-        for asset in assets:
-            if asset["symbol"] == "USDT":
-                usdt = asset["free"] + asset["locked"]
-        self.get_transactions()
-        other_assets = self.fee + self.deposit + self.withdraw
-        usdt -= other_assets
-
-        nav = NetAssetValueCalculator.calculate_net_asset_value(a)
-        self.aum = oms.OMSManager.get_nav(assets=assets) - other_assets
-        self.save()
-        return usdt
 
     def get_fund_info(self, float_precision: int = 2) -> Dict[str, int|float|str]:
         round_func = lambda x: round(x, float_precision)
@@ -102,140 +78,12 @@ class Fund(models.Model):
             nav=nav,
         ).save()
 
-    def get_unit_assets(self):
-        assets = self.get_assets()
-        cash = self.get_cash(assets=assets)
-        units = self.get_units_count()
-        fund_assets = {
-            asset["symbol"]: asset["free"] + asset["locked"]
-            for asset in assets
-            if not asset["symbol"] == "USDT"
-        }
-        fund_assets["USDT"] = cash
-        return {
-            symbol: quantity / units
-            for symbol, quantity in fund_assets.items()
-        }
-
-    def init_fund_performance(self, history=120):
-        snapshots = FundUnitSnapshot.objects.filter(fund=self).order_by("-age")
-        if snapshots:
-            return "already exists"
-        self.create_snapshots(assets=self.get_unit_assets(), history=history)
-        return "created"
-
-    def fund_daily_snapshot(self):
-        snapshot = (
-            FundUnitSnapshot.objects.filter(fund=self)
-            .order_by("-age")
-            .values("age", "insert_date")
-            .first()
-        )
-
-        if snapshot is None:
-            raise ValueError("FundUnitSnapshot not found")
-
-        insert_date = timezone.datetime.today()
-        if str(snapshot["insert_date"]) == str(insert_date.date()):
-            print("snapshot exists!")
-            return None
-        age = snapshot["age"] + 1
-        unit_assets = self.get_unit_assets()
-        prices = oms.Binance.get_prices_for_nav(unit_assets)
-        nav = sum(
-            [
-                prices[asset] * quantity
-                for asset, quantity in unit_assets.items()
-            ]
-        )
-        for asset, quantity in unit_assets.items():
-            value = quantity * prices[asset]
-            ratio = value / nav
-            FundUnitSnapshot(
-                fund=self,
-                asset=asset,
-                quantity=quantity,
-                value=value,
-                ratio=ratio,
-                insert_date=insert_date,
-                age=age,
-                nav=nav,
-            ).save()
-
-    @classmethod
-    def get_daily_snapshots(cls):
-        funds = cls.objects.all()
-        for fund in funds:
-            if FundUnitSnapshot.objects.filter(fund=fund).first():
-                fund.fund_daily_snapshot()
-            else:
-                fund.init_fund_performance()
-        for conn in connections.all():
-            conn.close()
-
-    def get_fund_performance(self, mode="all", history=120):
-        snapshots = (
-            FundUnitSnapshot.objects.filter(fund=self)
-            .order_by("age")
-            .values("age", "nav", "insert_date")
-        )
-        age = -1
-        pnav = None
-        result = []
-        for snapshot in snapshots:
-            if not snapshot["age"] > age:
-                continue
-            age += 1
-            if pnav is None:
-                pnav = snapshot["nav"]
-                continue
-            r = (snapshot["nav"] / pnav) - 1
-            pnav = snapshot["nav"]
-            result.append(
-                {
-                    "age": snapshot["age"],
-                    "nav": round(snapshot["nav"], 2),
-                    "date": snapshot["insert_date"],
-                    "return": 100 * round(r, 3),
-                }
-            )
-        result = result[-history:]
-        if mode == "fund":
-            return [
-                [int(1000 * time.mktime(r["date"].timetuple())), r["nav"]]
-                for r in result
-            ]
-        btc_candles = requests.get(
-            "https://api.binance.com/api/v3/klines",
-            params={"symbol": "BTCUSDT", "interval": "1d", "limit": 500},
-        ).json()
-        btc_prices = [float(c[4]) for c in btc_candles[-len(result) - 2 : -1]]
-        try:
-            p_price = btc_prices[0]  # Initialize with first price
-            for idx, price in enumerate(
-                btc_prices[1:], start=1
-            ):  # Skip first element
-                result[idx - 1]["btc"] = price
-                result[idx - 1]["btcReturn"] = 100 * round(
-                    (price / p_price) - 1, 3
-                )
-                p_price = price
-        except IndexError:
-            raise ValueError("btc_prices cannot be empty")
-        if mode == "btc":
-            return [
-                [int(1000 * time.mktime(r["date"].timetuple())), r["btc"]]
-                for r in result
-            ]
-        return {"data": result[::-1]}
-
-
 class FundInvestor(models.Model):
     fund = models.ForeignKey(Fund, on_delete=models.CASCADE)
-    nationalCode = models.CharField(
+    national_code = models.CharField(
         max_length=20, default="", blank=True, null=True
     )
-    phoneNumber = models.CharField(
+    phone_number = models.CharField(
         max_length=20, default="", blank=True, null=True
     )
     first_name = models.CharField(
@@ -249,6 +97,18 @@ class FundInvestor(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+    
+    @classmethod
+    def create_investor(cls, fund: Fund, first_name: str, last_name: str, national_code: str):
+        if len(first_name) > 20 or len(last_name) > 20:
+            raise NameIsTooLong()
+        if cls.objects.filter(fund=fund, national_code=national_code).exists():
+            raise InvestorAlreadyExists()
+        investor = cls.objects.create(
+            fund=fund, first_name=first_name,
+            last_name=last_name, national_code=national_code
+        )
+        return investor
 
 
 class UnitTransfer(models.Model):
