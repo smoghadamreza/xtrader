@@ -41,3 +41,9 @@ class XtraderResponseKeys:
     SYMBOLS = "symbols"
     TITLE = "title"
     ITEMS = "items"
+
+    # used in account.views
+    FOLLOWING = "following"
+    EXCHANGE = "exchange"
+    TELEGRAM = "telegram"
+    PRO_TRADER = "protrader"

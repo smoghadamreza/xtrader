@@ -1,5 +1,6 @@
 import json
 import threading
+from typing import cast, Dict
 import urllib.parse as urlparse
 import warnings
 from typing import cast
@@ -17,7 +18,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.http import (
+    Http404, HttpResponseRedirect, JsonResponse, HttpRequest
+)
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -34,6 +37,8 @@ from userena.models import (
     UserenaManager,
     UserenaSignup,
 )
+from django.contrib.auth.models import User
+from utils.consts import XtraderResponseKeys
 from userena.utils import get_profile_model, get_user_profile, signin_redirect
 
 from accounts.forms import (
@@ -1366,20 +1371,20 @@ def get_deposits(request):
 
 
 @login_required(login_url="accounts:userena_sign_in")
-def account_status(request):
-    user = request.user
-    status = {
-        "following": False,
-        "exchange": False,
-        "telegram": False,
+def account_status(request: HttpRequest):
+    user = cast(User, request.user)
+    status: Dict[str, bool|str] = {
+        XtraderResponseKeys.FOLLOWING: False,
+        XtraderResponseKeys.EXCHANGE: False,
+        XtraderResponseKeys.TELEGRAM: False,
     }
     following = Follow.objects.filter(follower=user).first()
     if following:
-        status["following"] = True
-        status["protrader"] = following.pro_trader.brand
+        status[XtraderResponseKeys.FOLLOWING] = True
+        status[XtraderResponseKeys.PRO_TRADER] = following.pro_trader.brand
     if Exchange.objects.filter(trader=user).first():
-        status["exchange"] = True
+        status[XtraderResponseKeys.EXCHANGE] = True
     profile = Profile.objects.filter(user=user).first()
     if profile and profile.telegram_id:
-        status["telegram"] = True
+        status[XtraderResponseKeys.TELEGRAM] = True
     return JsonResponse(status)
