@@ -1,20 +1,22 @@
 import json
-from typing import cast, Any, Dict, Tuple, Optional, Union, List
+from typing import (
+    cast, Any, Dict, Tuple, Optional, Union, List, Set, Mapping, Sequence
+)
 
 import redis
 from django.conf import settings
-from finance.exchange.data.market import SymbolInfo
+from finance.exchange.data import SymbolInfo
 from data.redis.constants import RedisNameSpace
 import logging
 
 
+
 logger = logging.getLogger(__name__)
 
-JSONPrimitive = Union[str, int, float, bool, None]
 JSONType = Union[
-    JSONPrimitive,
-    List["JSONType"],
-    Dict[str, "JSONType"]
+    str, int, float, bool, None,
+    Sequence["JSONType"],
+    Mapping[str, "JSONType"]
 ]
 
 class RedisWrapper:
@@ -49,20 +51,6 @@ class RedisWrapper:
 
         return json.loads(value.decode())
 
-    async def keys(self):
-        all_keys = await self._redis.keys('*')
-        decoded_keys = [key.decode('utf-8') for key in all_keys]
-        return decoded_keys
-
-    @staticmethod
-    def _dump_value(value: JSONType) -> Tuple[str, bool]:
-        try:
-            value_str: str = json.dumps(value)
-        except TypeError:
-            logger.exception(f"tried to set invalid data type {type(value)} into redis")
-            return "", False
-        return value_str, True
-    
     def hget_symbol_info(self, symbol_id: str) -> SymbolInfo:
         symbol_info_data = self.hget(
             namespace=RedisNameSpace.EXCHANGE_INFO, key=symbol_id
@@ -75,5 +63,30 @@ class RedisWrapper:
         for symbol_id, symbol_info_data in symbol_info_data_dict.items():
             result[symbol_id] = SymbolInfo.from_dict(data=symbol_info_data)
         return result
+    
+    def add_symbols(self, symbol_ids: List[str]) -> None:
+        """Store all symbol_ids into the Redis set under SYMBOLS namespace."""
+        if not symbol_ids:
+            return
+        # unpack list into *args
+        self._redis.sadd(RedisNameSpace.SYMBOLS, *symbol_ids)
+
+    def get_all_symbol_ids(self) -> List[str]:
+        """Retrieve all symbol_ids from Redis set (decode bytes to str)."""
+        raw_symbols = cast(
+            typ=Set[bytes],
+            val=self._redis.smembers(RedisNameSpace.SYMBOLS)
+        )
+        return [s.decode("utf-8") for s in raw_symbols]
+    
+    @staticmethod
+    def _dump_value(value: JSONType) -> Tuple[str, bool]:
+        try:
+            value_str: str = json.dumps(value)
+        except TypeError:
+            logger.exception(f"tried to set invalid data type {type(value)} into redis")
+            return "", False
+        return value_str, True
+    
 
 redis_wrapper = RedisWrapper()

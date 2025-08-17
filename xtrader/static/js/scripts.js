@@ -76,7 +76,7 @@ window.Date = JDate;
 function loadChartsReady() {
     //    isStrategySaved = false;
     changeIsStrategySaved(false);
-    load_data('/data/get-data/' + symbol_id);
+    load_data('/data/candles-history/' + symbol_id);
     // Highcharts.setOptions({
     //     lang: {
     //         months: ['فروردين', 'ارديبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
@@ -1231,7 +1231,7 @@ function show_scan_result(result) {
                 a.addEventListener('click', function () {
                     //                    delete_all(['indicators'], false);
                     symbol_id = symbol_url;
-                    load_data('/data/get-data/' + symbol_id);
+                    load_data('/data/candles-history/' + symbol_id);
                     //                    load_strategy();
                 });
                 if (signal === 'buy') a.setAttribute('style', 'color: #00CA9D; cursor:pointer;');
@@ -1282,7 +1282,7 @@ function show_scan_result1(result) {
                 item.addEventListener('click', function () {
                     delete_all(['indicators'], false);
                     symbol_id = symbol_url;
-                    load_data('/data/get-data/' + symbol_id);
+                    load_data('/data/candles-history/' + symbol_id);
                 });
 
                 var content = document.createElement('div');
@@ -2445,7 +2445,7 @@ $(document).ready(function () {
                 // console.log(value);
                 symbol_id = value.symbol_id;
                 var backtest_state = document.getElementById('table_place').style.display;
-                load_data('/data/get-data/' + symbol_id);
+                load_data('/data/candles-history/' + symbol_id);
                 if (backtest_state === 'block') {
                     delete_all(['back test']);
                 }
@@ -2480,13 +2480,7 @@ $(document).ready(function () {
                     }
                     // add result to category
                     response.results[category].results.push({
-                        // symbol_id=self.SymbolId,//symbol id
-                        // kind='kind', // price
-                        // category=self.ExchangeName,
-                        // symbol_name=self.InstrumentName,//title
-                        // name=self.InstrumentName,//discription
-                        // description='description',
-                        // title='title',
+
                         title: item.symbol_name,
                         description: item.name,
                         price: item.kind,
@@ -2519,7 +2513,7 @@ function changeTimeFrame(new_timeFrame) {
     isBacktested = false;
     isScaned = false;
     console.log("timeframe changed, isStrategySaved", isStrategySaved);
-    load_data('/data/get-data/' + symbol_id);
+    load_data('/data/candles-history/' + symbol_id);
 }
 function setTimeFrame(chosen_interval) {
     intervals.forEach(function (interval) {

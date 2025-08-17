@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 from typing import cast, List, Dict, Any
 
-from xtrader.finance.models import Exchange
+from finance.models import Exchange
 
 from .account_api import AccountAPIClient
 from .authenticated_api import AuthenticatedAPIClient
-from xtrader.finance.exchange.constants.binance import BinanceRequestKeys
+from finance.exchange.constants.binance import BinanceRequestKeys
 from finance.exchange.data import (
     DepositRecord, WithdrawalRecord, TradeRecord
 )

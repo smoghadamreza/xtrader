@@ -4,7 +4,11 @@
 # response types.
 
 from .asset import AssetBalance
-from .market import Candlestick, Ticker, BookTicker, MarketDepth, SymbolInfo
+from .candle_stick import Candlestick
+from .ticker import Ticker
+from book_ticker import BookTicker
+from market_depth import  MarketDepth
+from symbol_info import SymbolInfo
 from .order import OrderType, OrderRequestData
 from .snapshot import SnapshotBalance, AccountSnapshot
 from .trade_record import TradeRecord

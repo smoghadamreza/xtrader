@@ -9,24 +9,24 @@
 {% for order in orders %}
     <div class="divTableRow">
         <div class="divTableCell">
-            {{ order.OrderSideId }}
+            {{ order.order_side_id }}
         </div>
-        <a class="divTableCell" onclick="window.location='/stockwatch/'+'{{ order.SymbolId }}'">
-            {{ order.InstrumentName }}
+        <a class="divTableCell" onclick="window.location='/stockwatch/'+'{{ order.symbol_id }}'">
+            {{ order.instrument_name }}
         </a>
         <div class="divTableCell">
-            {{ order.Quantity }}
+            {{ order.quantity }}
         </div>
         <div class="divTableCell">
-            {{ order.Price }}
+            {{ order.price }}
         </div>
         <div class="divTableCell">
-            {{ order.OrderState }}
+            {{ order.order_state }}
         </div>
         <div class="divTableCell">
-            {% if order.OrderState != 'لغو شده' and order.OrderState != 'کامل معامله شده' %}
+            {% if order.order_state != 'لغو شده' and order.order_state != 'کامل معامله شده' %}
                 <i class="edit icon" title="ویرایش" style="color: #00ca9d"
-                   onclick="{% if order.OrderSideId == 'خرید' %}trade('buy','edit',{{ order.OrderId }}){% else %}trade('sell','edit',{{ order.OrderId }}){% endif %}"></i>
+                   onclick="{% if order.order_side_id == 'خرید' %}trade('buy','edit',{{ order.OrderId }}){% else %}trade('sell','edit',{{ order.OrderId }}){% endif %}"></i>
                 <i class="remove icon" title="انصراف" style="color: #E35C67"
                    onclick="cancelOrder('{{ order.OrderId }}')"></i>
             {% endif %}

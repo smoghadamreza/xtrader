@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Callable
 
 from finance.exchange.data import (
     AccountSnapshot, DepositRecord, WithdrawalRecord, TransactionRecord,
@@ -12,7 +12,11 @@ class BaseExchangeMarketService(ABC):
     FALLBACK_ASSET_SYMBOL_ID  = "BTC"
 
     @abstractmethod
-    def get_candles(self, params: Dict[str, str], raise_for_status: bool = False) -> List[Candlestick]:
+    def get_candles(
+        self, params: Dict[str, str],
+        raise_for_status: bool = False,
+        use_redis_cache: bool = False
+    ) -> List[Candlestick]:
         pass
 
     @abstractmethod
@@ -36,6 +40,10 @@ class BaseExchangeMarketService(ABC):
         pass
     
     @abstractmethod
+    def get_all_symbol_info(self) -> List[SymbolInfo]:
+        pass 
+
+    @abstractmethod
     def get_assets_prices(self, assets_symbol_ids: List[str]) -> Dict[str, float]:
         pass
 
@@ -46,8 +54,16 @@ class BaseExchangeService(ABC):
     def market_service(self) -> BaseExchangeMarketService:
         raise NotImplementedError()
 
-    def get_candles(self, params: Dict[str, Any], raise_for_status: bool = False) -> List[Candlestick]:
-        return self.market_service.get_candles(params=params, raise_for_status=raise_for_status)
+    def get_candles(
+        self, params: Dict[str, str],
+        raise_for_status: bool = False,
+        use_redis_cache: bool = False
+    ) -> List[Candlestick]:
+        return self.market_service.get_candles(
+            params=params,
+            raise_for_status=raise_for_status,
+            use_redis_cache=use_redis_cache
+        )
 
     def get_ticker_24hr(self, symbol_id: str) -> Ticker:
         return self.market_service.get_ticker_24hr(symbol_id=symbol_id)

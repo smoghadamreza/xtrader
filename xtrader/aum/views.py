@@ -21,13 +21,13 @@ from utils.consts import (
 from .consts import ResponseMessages, ResponseData
 
 
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def management(request):
     return render(request, "fund_management.html")
 
 @csrf_exempt
 @require_POST
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def issue_redeem_unit(request: HttpRequest):
     message = ""
     c = None
@@ -62,7 +62,7 @@ def issue_redeem_unit(request: HttpRequest):
 
 @csrf_exempt
 @require_POST
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def add_investor(request: HttpRequest):
     data = json.loads(request.body.decode())
     try:
@@ -88,7 +88,7 @@ def add_investor(request: HttpRequest):
     return JsonResponse({XtraderResponseKeys.MESSAGE: message}, status=400)
 
 @require_GET
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def investors(request: HttpRequest):
     try:
         fund_manager = cast(User, request.user)
@@ -98,7 +98,7 @@ def investors(request: HttpRequest):
         return JsonResponse({XtraderResponseKeys.MESSAGE: ResponseMessages.FUND_NOT_FOUND})
 
 @require_GET
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def get_fund(request: HttpRequest):
     fund_manager = cast(User, request.user)
     try:
@@ -109,15 +109,15 @@ def get_fund(request: HttpRequest):
         return JsonResponse({})
 
 @require_GET
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def transactions_history(request: HttpRequest):
     fund_manager = cast(User, request.user)
     fund_service = FundService(fund_manager=fund_manager)
     transactions = fund_service.sync_and_fetch_transactions()
-    return JsonResponse({"data": [t.time for t in transactions]})
+    return JsonResponse({XtraderResponseKeys.DATA: [t.time for t in transactions]})
 
 @require_GET
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def init_fund_performance(request: HttpRequest):
     pass_value = request.GET.get(XtraderRequestKeys.PASS, "")
     if pass_value != XtraderRequestValues.XTREASURY:
@@ -137,7 +137,7 @@ def init_fund_performance(request: HttpRequest):
 
 
 @require_GET
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def get_fund_performance(request: HttpRequest):
     try:
         fund_manager = cast(User, request.user)

@@ -1,7 +1,8 @@
 import time
-from datetime import datetime, timezone
+from django.utils import timezone
+from datetime import datetime
 
-import data.jalali as jalali
+import xtrader.utils.jalali as jalali
 import data.redis as redis
 from data.models import StockWatch
 
@@ -60,10 +61,15 @@ def to_str(date):
 
 
 class Check:
-    now = datetime.now()
+    now = timezone.now()
+
+    FRIDAY_WEEK_DAY = 4
+    THURSDAY_WEEK_DAY = 3
 
     def day(self):
-        return self.now.weekday() not in [3, 4]
+        return self.now.weekday() not in {
+            self.FRIDAY_WEEK_DAY, self.THURSDAY_WEEK_DAY
+        }
 
     def time(self):
         market_time = True

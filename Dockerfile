@@ -15,6 +15,7 @@ RUN apt-get update && \
     build-essential \
     python3-dev \
     libffi-dev \
+    libpq-dev \ 
     libssl-dev \
     libxml2 \
     libxml2-dev \
@@ -40,7 +41,9 @@ RUN conda init bash && \
     conda config --set auto_activate_base false
 
 # Create Conda environment
-RUN conda create -n xtrader-env -c conda-forge python=3.12 ta-lib uwsgi && \
+RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r && \
+    conda create -n xtrader-env -c conda-forge python=3.12 ta-lib uwsgi && \
     conda clean -afy
 
 # Copy requirements and install

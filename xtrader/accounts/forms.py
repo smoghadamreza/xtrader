@@ -39,7 +39,7 @@ class SignupFormExtra(SignupForm):
     )
     email = forms.EmailField(
         widget=forms.TextInput(attrs=dict(attrs_dict, maxlength=75)),
-        label=_("ایمیل "),
+        label=_("ایمیل"),
     )
 
     cellPhone = forms.CharField(

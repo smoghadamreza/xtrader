@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: xtrader-app
-    command: []
     ports:
       - 8000:8000
     volumes:

@@ -2,7 +2,7 @@ from typing import Optional
 from datetime import datetime, timezone, date
 
 class UnixMillis:
-    "Converts datetime to milliseconds passed since  Unix Time start aka Timestamp."
+    "Converts date and time related entities to desired formats."
     @classmethod
     def from_dt_to_ms(cls, dt: Optional[datetime] = None) -> int|None:
         if dt is None:
@@ -28,3 +28,14 @@ class UnixMillis:
             return None
         dt = datetime.combine(d, datetime.min.time(), tzinfo=timezone.utc)
         return cls.from_dt_to_ms(dt)
+
+    @classmethod
+    def format_date_to_str(cls, dt: datetime | date | None) -> str:
+        """
+        Converts a datetime or date object to a string in 'YYYY-MM-DD' format.
+        """
+        if dt is None:
+            return ""
+        if not isinstance(dt, (datetime, date)):
+            raise TypeError(f"Expected datetime or date, got {type(dt).__name__}")
+        return dt.strftime("%Y-%m-%d")

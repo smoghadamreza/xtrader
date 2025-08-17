@@ -49,7 +49,7 @@ def pro_traders(request):
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def follow_toggle(request):
     if request.method == "POST":
         data = json.loads(request.body.decode())
@@ -91,7 +91,7 @@ def copy_order(request: HttpRequest):
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def promote(request: HttpRequest):
     if request.method == "POST":
         try:
@@ -199,7 +199,7 @@ def get_profile(request, pro_id):
     )
 
 
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def copy_trading(request):
     return render(request, "copytrading.html", get_user(request=request))
 
@@ -208,7 +208,7 @@ def league(request):
     return render(request, "leagueLanding.html", get_user(request=request))
 
 
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 @csrf_exempt
 def exchange(request: HttpRequest):
     trader = cast(User, request.user)

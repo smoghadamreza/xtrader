@@ -1,9 +1,10 @@
 from data.redis import load_history
-
+from xtrader.data.services.stock_watch_service import StockWatchService
 
 def run_test(data):
     symbol_id = data["symbol_id"]
     date = data["index"]
+    history
     dates = load_history(symbol_id)["date"]
     for i, d in enumerate(dates):
         if d > date:

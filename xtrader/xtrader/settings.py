@@ -36,7 +36,7 @@ ALLOWED_HOSTS.extend(
 )
 # Settings used by Userena
 LOGIN_REDIRECT_URL = "/accounts/%(username)s/"
-LOGIN_URL = "/accounts/sign-in/"
+LOGIN_URL = "accounts:userena_sign_in"
 LOGOUT_URL = "/accounts/sign-out/"
 AUTH_PROFILE_MODULE = "accounts.Profile"
 USERENA_DISABLE_PROFILE_LIST = True
@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     "django_extensions",
     "userena",
     "accounts",
-    "main",
     "django.contrib.sites",
     "finance",
     "data",
@@ -181,6 +180,8 @@ STATIC_ROOT = "/vol/web/static"
 LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 XTREASURY_BOT = ""
 USDT_WALLET = ""
+SITE_ADDRESS = "ramzeservat.com"
+CANDLES_HISTORY_LIMIT = 500  # default value in binance
 REFERRAL_BOUNCE = 0.3
 ADMIN_TEL_ID = 121366977
 COPYTRADEFEE = 0.4

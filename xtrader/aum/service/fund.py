@@ -9,7 +9,7 @@ from finance.exchange.factory import ExchangeServiceFactory
 from aum.models import Fund, FundInvestor, FundUnitSnapshot
 from finance.exchange.data import AssetBalance, Candlestick
 from finance.exchange.constants.binance import BinanceRequestKeys, BinanceRequestValues
-from xtrader.utils.consts import Symbol
+from utils.consts import Symbol
 from finance.copy_trade.service import NetAssetValueCalculator
 from aum.exception import (
     FundNotFound, FundInvestorNotFound, InvalidAction,

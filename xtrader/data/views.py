@@ -3,13 +3,13 @@ from typing import cast
 from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse, HttpRequest
 
-from data.service import StockWatchService
+from xtrader.data.services.stock_watch_service import StockWatchService
 from utils.consts import XtraderResponseKeys
 
 
-async def history(_: HttpRequest):
+def get_all_symbol_candles_history(_: HttpRequest):
     stock_watch_service = StockWatchService()
-    symbols_history = await stock_watch_service.get_all_symbol_history() 
+    symbols_history = stock_watch_service.get_all_symbol_candles_history() 
     return HttpResponse(json.dumps(symbols_history))
 
 
@@ -30,9 +30,9 @@ def symbol_search(_: HttpRequest, query: str):
     )
 
 
-def get_data(_: HttpRequest, symbol_id: str, interval: str):
+def get_symbol_candles_history(_: HttpRequest, symbol_id: str, interval: int):
     stock_watch_service = StockWatchService()
-    symbol_history_info = stock_watch_service.get_symbol_history(
+    symbol_history_info = stock_watch_service.get_symbol_candles_history(
         symbol_id=symbol_id, interval=interval
     )
     return JsonResponse(json.dumps(symbol_history_info), safe=False)

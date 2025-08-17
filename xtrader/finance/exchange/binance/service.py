@@ -16,6 +16,7 @@ from typing import cast, Dict, List, Any
 from data.redis import redis_wrapper as redis
 from data.redis.constants import RedisNameSpace, RedisTTL
 from finance.exchange.constants.binance import BinanceRequestKeys, BinanceResponseKeys
+from utils.interval_parser import IntervalParser
 
 
 class BinanceService(BaseExchangeService):
@@ -105,13 +106,32 @@ class BinanceMarketService(BaseExchangeMarketService):
 
 
 
-    def get_candles(self, params: Dict[str, str], raise_for_status: bool = False) -> List[Candlestick]:
-        candles_data = self._get(
-            endpoint=self.Endpoint.CANDLES,
-            params=params,
-            raise_for_status=raise_for_status
-        )
-        candles_data = cast(List[List[float|int]], candles_data)
+    def get_candles(
+        self, params: Dict[str, str], raise_for_status: bool = False,
+        use_redis_cache: bool = False
+    ) -> List[Candlestick]:
+        candles_data = None
+        if use_redis_cache:
+            candles_data = redis.hget(
+                namespace=RedisNameSpace.CANDLES_HISTORY,
+                key=self._get_candle_history_key(params=params)
+            )
+        if candles_data is None:
+            candles_data = self._get(
+                endpoint=self.Endpoint.CANDLES,
+                params=params,
+                raise_for_status=raise_for_status
+            )
+            candles_data = cast(List[List[float|int]], candles_data)
+        if use_redis_cache:
+            redis.hsetex(
+                namespace=RedisNameSpace.CANDLES_HISTORY,
+                key=self._get_candle_history_key(params=params),
+                value=candles_data,
+                ttl=IntervalParser.parse_interval_to_seconds(
+                    interval=params[BinanceRequestKeys.INTERVAL]
+                ),
+            )
         return [Candlestick.from_list(c) for c in candles_data]
 
     def get_ticker_24hr(self, symbol_id: str) -> Ticker:  # replaces get_ticker in legacy oms.Binance
@@ -187,17 +207,28 @@ class BinanceMarketService(BaseExchangeMarketService):
                 endpoint=self.Endpoint.EXCHANGE_INFO,
                 params={BinanceRequestKeys.SYMBOL: symbol_id}
             )
-            exchange_symbol_info_data = self._extract_exchange_symbol_info_data(
+            symbol_infos: List[SymbolInfo] = self._extract_exchange_symbol_info(
                 exchange_info_response=exchange_info_response
             )
+            assert len(symbol_infos) == 1
             redis.hsetex(
                 namespace=RedisNameSpace.EXCHANGE_INFO,
                 key=symbol_id,
-                value=exchange_symbol_info_data,
+                value=symbol_infos[0].to_dict(),
                 ttl=RedisTTL.EXCHANGE_INFO
             )
+            return symbol_infos[0]
         return SymbolInfo.from_dict(data=exchange_symbol_info_data)
     
+    def get_all_symbol_info(self) -> List[SymbolInfo]:
+        exchange_info_response = self._get(
+            endpoint=self.Endpoint.EXCHANGE_INFO,
+        )
+        symbol_infos = self._extract_exchange_symbol_info(
+            exchange_info_response=exchange_info_response
+        )
+        return symbol_infos
+
     def get_assets_prices(self, assets_symbol_ids: List[str]) -> Dict[str, float]:  # Replaces get_prices_for_nav in legacy Binance.get_prices_for_nav
         """Get prices for Net Asset Value (NAV) calculation with fallback mechanism"""
         result = {}
@@ -224,7 +255,7 @@ class BinanceMarketService(BaseExchangeMarketService):
         return result
 
     @staticmethod
-    def _extract_exchange_symbol_info_data(exchange_info_response: Any) -> Dict[str, Any]:
+    def _extract_exchange_symbol_info(exchange_info_response: Any) -> List[SymbolInfo]:
         data = cast(Dict[str, Any], exchange_info_response)
         if BinanceResponseKeys.SYMBOLS not in data:
             raise ValueError(f"the required key 'symbols' is not present in exchange_info")
@@ -232,10 +263,9 @@ class BinanceMarketService(BaseExchangeMarketService):
         data = cast(List[Any], data)
         if not data or len(data) != 1:
             raise ValueError(f"Unexpected symbol info response: {data}")
-
-        data = data[0]
-        data = cast( Dict[str, Any], data)
-        return data
+        return [
+            SymbolInfo.from_dict(symbol_info_data) for symbol_info_data in data
+        ]
     
     def _get(self, endpoint: str, params: Optional[dict] = None, raise_for_status: bool = False) -> Union[Dict[str, Any], List[Any]]:
         response = requests.get(
@@ -245,5 +275,17 @@ class BinanceMarketService(BaseExchangeMarketService):
         if raise_for_status:
             response.raise_for_status()
         return response.json()
+    
+    def _get_candle_history_key(self, params: dict) -> str:
+        if not(
+            BinanceRequestKeys.SYMBOL in params and
+            BinanceRequestKeys.INTERVAL in params
+        ):
+            raise ValueError("Invalid params for getting history")
+        return "{symbol_id}-{interval}".format(
+            symbol_id=params[BinanceRequestKeys.SYMBOL],
+            interval=params[BinanceRequestKeys.INTERVAL]
+        )
+
 
 binance_market_service = BinanceMarketService()

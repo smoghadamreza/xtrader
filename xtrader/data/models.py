@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-
 class StockWatch(models.Model):
     symbol_id = models.CharField(max_length=80)
     instrument_name = models.CharField(max_length=80)

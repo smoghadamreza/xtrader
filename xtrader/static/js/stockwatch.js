@@ -219,7 +219,7 @@ function update_stockwatch() {
         success: function (result) {
             result = JSON.parse(result);
             //            result['InstrumentName'] = '(' + result['InstrumentName'] + ')';
-            result['InstrumentName'] = result['InstrumentName'];
+            result['instrument_name'] = result['instrument_name'];
             let book_depth = result.depth.length;
             for (let i = 0; i < book_depth; i++) {
                 result['bp' + i] = result.depth[i].bp;
@@ -246,7 +246,7 @@ function draw_chart() { }
 function draw_chart1() {
     waiting('wait');
     $.ajax({
-        url: '/data/get-data/' + SymbolId + '/' + getSetInterval('get'),
+        url: '/data/candles-history/' + SymbolId + '/' + getSetInterval('get'),
         success: function (data) {
             data = JSON.parse(data);
             var close = [],
@@ -304,74 +304,6 @@ function draw_chart1() {
             waiting('default');
         }
     });
-    //    $.getJSON('/data/get-data/' + SymbolId +'/'+getSetInterval('get'), function (data) {
-    //        // $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function (data) {
-    //        data = JSON.parse(data);
-    //        var close = [],
-    ////            name = data['per_name'];
-    //            name = SymbolId;
-    //        data = JSON.parse(data['items']);
-    //        var dataLength = data.length;
-    //        for (var i = 0; i < dataLength; i++) {
-    //            close.push([
-    //                data[i][0], // date
-    //                data[i][4], // close
-    //                // Math.ceil(data[i][4]), // close
-    //            ]);
-    //        }
-    //        Highcharts.stockChart('chart', {
-    //
-    //
-    //            rangeSelector: {
-    //                enabled: false,
-    //                inputEnabled: false,
-    //                // selected: 1
-    //            },
-    //            credits: {
-    //                enabled: false,
-    //            },
-    //            yAxis: [{
-    //                gridLineWidth: 0,
-    //                minorGridLineWidth: 0,
-    //                opposite: false,
-    //            }],
-    //            scrollbar: {
-    //                enabled: false
-    //            },
-    //            navigator: {
-    //                enabled: false
-    //            },
-    //            series: [{
-    //                color: {
-    //                    linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
-    //                    stops: [
-    //                        [0, '#f3f774'],
-    //                        [0.25, '#aae98e'],
-    //                        [0.50, '#09cac8'],
-    //                        [0.75, '#aae98e'],
-    //                        [1, '#f3f774']
-    //                    ]
-    //                },
-    //                name: name,
-    //                data: close,
-    //            }]
-    //        });
-    //        waiting('default');
-    //
-    //    });
-
-
-
-
-
-
-    // Highcharts.setOptions({
-    //     lang: {
-    //         months: ['فروردين', 'ارديبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
-    //         shortMonths: ['فروردين', 'ارديبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
-    //         weekdays: ["یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه", "شنبه"]
-    //     }
-    // });
 
     Highcharts.createElement('link', {
         href: 'https://fonts.googleapis.com/css?family=Unica+One',

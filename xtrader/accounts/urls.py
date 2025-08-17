@@ -6,9 +6,9 @@ import accounts.views as userena_views
 
 
 urlpatterns = [
-    re_path(r"^get-telegram/$", userena_views.get_telegram, name="get-telegram"),
+    re_path(r"^telegram-status/$", userena_views.telegram_status, name="telegram-status"),
     re_path(r"^new-deposit/$", userena_views.new_deposit, name="new-deposit"),
-    re_path(r"^get-wallet/$", userena_views.get_wallet, name="get-wallet"),
+    re_path(r"^get-wallet/$", userena_views.get_wallet_snapshot, name="get-wallet"),
     re_path(
         r"^check-deposits/$", userena_views.check_deposits, name="check-deposits"
     ),

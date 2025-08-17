@@ -21,6 +21,7 @@ from django.db import transaction
 from django.http import (
     Http404, HttpResponseRedirect, JsonResponse, HttpRequest
 )
+from django.views.decorators.http import require_POST, require_GET
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -38,19 +39,26 @@ from userena.models import (
     UserenaSignup,
 )
 from django.contrib.auth.models import User
-from utils.consts import XtraderResponseKeys
+from utils.consts import XtraderResponseKeys, XtraderRequestKeys
 from userena.utils import get_profile_model, get_user_profile, signin_redirect
-
+from accounts.services import (
+    WalletService, DepositService, ProfileService, MailService
+)
+from accounts.services.exceptions import (
+    NoProfileFoundForUser, NoWalletFoundForUser
+)
 from accounts.forms import (
     AuthenticationForm,
     ChangeEmailForm,
     EditProfileForm,
     SignupFormExtra,
 )
-from accounts.models import Deposit, Profile, Wallet
+from accounts.models import Profile
+from accounts.services.data import DepositCreationParams
 from finance import notification
 from finance.models import Exchange
 from social.models import Follow
+from .consts import ResponseMessage, TelegramMessage, EmailSubject
 
 
 class ExtraContextTemplateView(TemplateView):
@@ -1291,86 +1299,96 @@ def signup_sample(
     )(request)
 
 
-def get_telegram(request):
-    user = request.user
-    if not user:
-        return JsonResponse({"msg": "not login"})
-    profile = Profile.objects.filter(user=user).first()
-    result = {
-        "telegram_id": False,
-        "activation_code": False,
-    }
-    if profile and profile.telegram_id:
-        result["telegram_id"] = True
-    else:
-        result["activation_code"] = profile.get_code()
-    return JsonResponse(result)
+@login_required
+@require_GET
+def telegram_status(request: HttpRequest):  # replaces legacy get_telegram in this same spot.
+    user = cast(User, request.user)
+    try: 
+        profile_service = ProfileService(user=user)
+        return JsonResponse({
+            XtraderResponseKeys.TELEGRAM_ID: profile_service.has_telegram_id(),
+            XtraderResponseKeys.ACTIVATION_CODE: 
+                profile_service.get_telegram_activation_code(),
+        })
+    except NoProfileFoundForUser:
+        return JsonResponse(
+            {XtraderResponseKeys.MESSAGE: ResponseMessage.NO_PROFILE_FOR_USER}
+        )
 
-
+@require_POST
 @csrf_exempt
 @transaction.atomic
-def new_deposit(request):
-    if not request.method == "POST":
-        return JsonResponse({"msg": "bad request"})
-    try:
-        print(request.GET)
-        print(request.body)
-        print(request.POST)
-    except Exception:
-        pass
-    nonce = request.GET.get("nonce", "empty")
-    params = request.body.decode()
-    parsed = urlparse.urlparse("?" + params)
-    params = {k: v[0] for k, v in parse_qs(parsed.query).items()}
-    result = Deposit.create(nonce=nonce, params=params)
-    msg = "sold: {} usdt, final: {}".format(
-        params["value_coin"], params["value_forwarded_coin"]
+def new_deposit(request: HttpRequest):
+    nonce = request.GET.get(XtraderRequestKeys.NONCE, None)
+    params = DepositCreationParams.from_dict(
+        data=request.POST.dict()
     )
-    if result:
+    _, created = DepositService.get_or_create_deposit(
+        params=params,
+        wallet_nonce=nonce
+    )
+    if created:
         t = threading.Thread(
-            target=notification.send_telegram_message, args=(msg, 121366977)
+            target=notification.send_telegram_message,
+            args=(
+                TelegramMessage.DEPOSIT_REPORT_TEMPLATE.format(
+                    init_amount=params.init_amount,
+                    final_amount=params.final_amount
+                ),
+                121366977
+            )
         )
         t.start()
-    return JsonResponse({"m": result})
+    return JsonResponse({XtraderResponseKeys.M: created})
 
 
-@login_required(login_url="accounts:userena_sign_in")
-def get_wallet(request):
-    if not request.method == "GET":
-        return JsonResponse({"msg": "bad request"})
-    user = request.user
-    result = Wallet.get_wallet(user=user)
-    if not result["address"]:
-        status = 505
-    else:
-        status = 200
-    result["status"] = status
-    return JsonResponse(result)
+@require_GET
+@login_required
+def get_wallet_snapshot(request: HttpRequest):
+    user = cast(User, request.user)
+    wallet_service = WalletService.from_user(
+        user=user,
+        create_wallet_if_not_exists=True
+    )
+    wallet_snapshot = wallet_service.get_wallet_snapshot()
+    snapshot_data = wallet_snapshot.to_dict()
+    snapshot_data[XtraderResponseKeys.STATUS] = \
+        200 if wallet_snapshot.address else 505
+    return JsonResponse(data=snapshot_data)
+
+@require_GET
+@login_required
+def check_deposits(request: HttpRequest):
+    try:
+        user = cast(User, request.user)
+        wallet_service = WalletService.from_user(user=user, create_wallet_if_not_exists=False)
+        fetched_new_deposits = wallet_service.fetch_and_create_new_deposits()
+        return JsonResponse(
+            {
+                XtraderResponseKeys.STATUS: 200,
+                XtraderResponseKeys.NEW_DEPOSIT: fetched_new_deposits
+            }
+        )
+    except NoWalletFoundForUser:
+        return JsonResponse(
+            {
+                XtraderResponseKeys.STATUS: 403,
+                XtraderResponseKeys.MESSAGE: ResponseMessage.NO_WALLET_FOR_USER
+            }
+        )
+
+@require_GET
+@login_required
+def get_deposits(request: HttpRequest):
+    user = cast(User, request.user)
+    wallet_service = WalletService.from_user(user=user)
+    deposits = DepositService.get_deposits(
+        wallet=wallet_service.wallet
+    )
+    return JsonResponse({XtraderResponseKeys.DATA: deposits})
 
 
-@login_required(login_url="accounts:userena_sign_in")
-def check_deposits(request):
-    if not request.method == "GET":
-        return JsonResponse({"status": 403, "msg": "bad request"})
-    user = request.user
-    wallet = Wallet.objects.filter(user=user).first()
-    if not wallet:
-        return JsonResponse({"status": 403, "msg": "no wallet!"})
-    result = wallet.check_deposit()
-    return JsonResponse({"status": 200, "newDeposit": result})
-
-
-@login_required(login_url="accounts:userena_sign_in")
-def get_deposits(request):
-    if not request.method == "GET":
-        return JsonResponse({"status": 403, "msg": "bad request"})
-    user = request.user
-    wallet = Wallet.objects.filter(user=user).first()
-    deposits = Deposit.get_deposits(wallet=wallet)
-    return JsonResponse({"data": deposits})
-
-
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def account_status(request: HttpRequest):
     user = cast(User, request.user)
     status: Dict[str, bool|str] = {
@@ -1382,9 +1400,15 @@ def account_status(request: HttpRequest):
     if following:
         status[XtraderResponseKeys.FOLLOWING] = True
         status[XtraderResponseKeys.PRO_TRADER] = following.pro_trader.brand
-    if Exchange.objects.filter(trader=user).first():
+    if Exchange.objects.filter(trader=user).exists():
         status[XtraderResponseKeys.EXCHANGE] = True
     profile = Profile.objects.filter(user=user).first()
     if profile and profile.telegram_id:
         status[XtraderResponseKeys.TELEGRAM] = True
     return JsonResponse(status)
+
+# TODO: This view is currently unused but its logic seems useful to keep.
+def notify_users(_: HttpRequest):
+    emails = ProfileService._get_all_valid_emails()
+    failed = MailService.mail_users(EmailSubject.WELCOME, emails)
+    print("failed:", failed)

@@ -52,7 +52,7 @@ def calculate_indicators(request, interval):
 
 
 @require_POST
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 @csrf_exempt
 def add_new_watch_list(request):
     watchlist_limit = cast(
@@ -81,7 +81,7 @@ def add_new_watch_list(request):
 
 
 @require_GET
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def get_watch_lists(request):
     user = request.user
     if not user:
@@ -121,7 +121,7 @@ def get_watch_lists(request):
             )
 
 @require_GET
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def update_symbol_to_watch_list(request: HttpRequest) -> JsonResponse:
     user = request.user
     if not user:
@@ -203,7 +203,7 @@ def update_indicators(request):
     return JsonResponse(result, safe=False)
 
 
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def market_watch(request):
     profile = Profile.objects.get(
         user=User.objects.get_by_natural_key(request.user)
@@ -216,7 +216,7 @@ def market_watch(request):
     return render(request, "marketwatch.html", get_user(request))
 
 
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def display(request):
     return render(
         request,
@@ -231,14 +231,14 @@ def get_filters(request):
 
 def filter_market(request):
     filters = json.loads(request.GET["filters"])
-    import data.dates as d
+    import xtrader.utils.dates as d
 
     last = d.Check().last_market()
     from data.models import MarketWatch
 
     stocks = MarketWatch.objects.filter(
         stockWatch__LastTradeDate=last
-    ).order_by("-stockWatch__TotalTradeValue")
+    ).order_by("-stockWatch__total_trade_value")
     if len(filters) > 0:
         D = {}
         for f in filters:
@@ -296,14 +296,14 @@ def index(request):
     return render(request, "newindex.html")
 
 
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def stock_watch(request, symbold_id=None):
     if not symbold_id:
         return redirect("/spot/BTCUSDT")
     return redirect("/spot/" + symbold_id)
 
 
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def spot(request, symbol_id: str):
     if not symbol_id:
         return redirect("/spot/BTCUSDT")
@@ -438,7 +438,7 @@ def remove_exchange(request: HttpRequest):
 
 
 @csrf_exempt
-@login_required(login_url="accounts:userena_sign_in")
+@login_required
 def trading_view(request):
     if request.method == "GET":
         tw, _ = TradingView.objects.get_or_create(

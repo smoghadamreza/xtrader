@@ -120,7 +120,6 @@ function initSetup() {
                 var backtest_state = '';
                 //document.getElementById('table_place').style.display;
                 window.location = '/spot/' + symbol_id;
-                //load_data('/data/get-data/' + symbol_id);
                 if (backtest_state == 'block') {
                     delete_all(['back test']);
                 }
@@ -155,13 +154,6 @@ function initSetup() {
                     }
                     // add result to category
                     response.results[category].results.push({
-                        // symbol_id=self.SymbolId,//symbol id
-                        // kind='kind', // price
-                        // category=self.ExchangeName,
-                        // symbol_name=self.InstrumentName,//title
-                        // name=self.InstrumentName,//discription
-                        // description='description',
-                        // title='title',
                         title: item.symbol_name,
                         description: item.name,
                         price: item.kind,
@@ -237,9 +229,9 @@ function getWebhook() {
     });
 }
 
-function getTelegram() {
+function getTelegramStatus() {
     $.ajax({
-        url: '/accounts/get-telegram/',
+        url: '/accounts/telegram-status/',
         method: 'GET',
         success: function (result) {
             if (result.telegram_id) {
@@ -449,7 +441,6 @@ function setSymbols() {
                         //                        var backtest_state = '';
                         //                        //document.getElementById('table_place').style.display;
                         //                        window.location = '/spot/' + symbol_id;
-                        //                        //load_data('/data/get-data/' + symbol_id);
                         //                        if (backtest_state == 'block') {
                         //                            delete_all(['back test']);
                         //                        }

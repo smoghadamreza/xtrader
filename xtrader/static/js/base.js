@@ -1,8 +1,8 @@
 function quick_check(str) {
     if (!isNaN(str)) {
         var sign = '';
-        if (Number(str)<0) {
-            str = -1*Number(str);
+        if (Number(str) < 0) {
+            str = -1 * Number(str);
             sign = '-';
         }
         str = String(str);
@@ -10,12 +10,12 @@ function quick_check(str) {
             str2 = '',
             l = str.length;
         for (var i = 0; i < l; i++) {
-            if(str.substring(i,i+1) === '.'){
-                str2 = str.substring(i+1,l);
+            if (str.substring(i, i + 1) === '.') {
+                str2 = str.substring(i + 1, l);
                 str2 = '.' + str2;
                 break
-            }else{
-                str1 += str.substring(i, i+1);
+            } else {
+                str1 += str.substring(i, i + 1);
             }
         }
         // let l = str.length;
@@ -51,7 +51,7 @@ function numberSeparator(n) {
 }
 
 $(document).ready(function () {
-//    $('input.prompt').attr('style', 'background-color:white;text-align: right;font-family:IRANSans; border-radius:4px;height: 5vh;');
+    //    $('input.prompt').attr('style', 'background-color:white;text-align: right;font-family:IRANSans; border-radius:4px;height: 5vh;');
     $('#search > div.ui.icon.input > input').attr('style', 'background-color:white;text-align: right;font-family:IRANSans; border-radius:4px;height: 5vh;');
     $('#search').search({
         type: 'category',
@@ -67,7 +67,6 @@ $(document).ready(function () {
                 var backtest_state = '';
                 //document.getElementById('table_place').style.display;
                 window.location = '/spot/' + symbol_id;
-                //load_data('/data/get-data/' + symbol_id);
                 if (backtest_state == 'block') {
                     delete_all(['back test']);
                 }
@@ -102,18 +101,10 @@ $(document).ready(function () {
                     }
                     // add result to category
                     response.results[category].results.push({
-                        // symbol_id=self.SymbolId,//symbol id
-                        // kind='kind', // price
-                        // category=self.ExchangeName,
-                        // symbol_name=self.InstrumentName,//title
-                        // name=self.InstrumentName,//discription
-                        // description='description',
-                        // title='title',
                         title: item.symbol_name,
                         description: item.name,
                         price: item.kind,
                         eng_name: 'eng',
-                        // item.eng_name,
                         symbol_id: item.symbol_id,
                     });
                 });

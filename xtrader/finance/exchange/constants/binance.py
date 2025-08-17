@@ -169,3 +169,4 @@ class BinanceRequestValues:
 class BinanceResponseValues:
     SPOT = "SPOT"
     LOT_SIZE = "LOT_SIZE"
+    TRADING = "TRADING"

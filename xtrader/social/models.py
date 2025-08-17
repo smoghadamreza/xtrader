@@ -4,10 +4,8 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils import timezone
 
 from accounts.models import Wallet
-from finance.copy_trade.service import CopyTradeService
 from sales.models import Payment
 
 

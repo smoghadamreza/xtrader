@@ -152,18 +152,18 @@ var user_strategy_names;
 var user_current_strategy;
 function add_new_strategy() {
     var new_name = prompt('برای استراتژی جدید خود یک نام انتخاب کنید', 'جدید ' + (user_strategy_names.length + 1));
-        // strategys_name_place = document.getElementById('strategys_name_place'),
-        // new_option = document.createElement('option'),
-        // text_node = document.createTextNode(new_name);
+    // strategys_name_place = document.getElementById('strategys_name_place'),
+    // new_option = document.createElement('option'),
+    // text_node = document.createTextNode(new_name);
     if (check_new_name(new_name)) {
         save_filters('default');
-/*
-        new_option.appendChild(text_node);
-        new_option.setAttribute('id', "strategy name: " + new_name);
-        strategys_name_place.appendChild(new_option);
-        strategys_name_place.value = new_name;
-*/
-        create_name_option({'new_name': new_name});
+        /*
+                new_option.appendChild(text_node);
+                new_option.setAttribute('id', "strategy name: " + new_name);
+                strategys_name_place.appendChild(new_option);
+                strategys_name_place.value = new_name;
+        */
+        create_name_option({ 'new_name': new_name });
         user_current_strategy = new_name;
         isStrategySaved = false;
         // save_filters('default');
@@ -180,7 +180,7 @@ function insert_strategys_names() {
     var strategys_name_place = document.getElementById('strategys_name_place');
     strategys_name_place.innerHTML = '';
     user_strategy_names.forEach(function (new_name) {
-        create_name_option({'new_name': new_name});
+        create_name_option({ 'new_name': new_name });
         // var new_option = document.createElement('option'),
         //     text_node = document.createTextNode(new_name);
         // new_option.appendChild(text_node);
@@ -192,7 +192,7 @@ function insert_strategys_names() {
 
 function load_another_strategy(new_name) {
     delete_all(['symbol_ids', 'indicators', 'back test', 'filters'], false);
-    load_strategy({'name': new_name});
+    load_strategy({ 'name': new_name });
     // set_strategy_name({'name': new_name});
 }
 
@@ -222,7 +222,7 @@ function load_alternative_strategy(data) {
         load_another_strategy(names[0].value);
         // strategys_name_place.value = names[0].value;
     } else {
-        create_name_option({'new_name': 'جدید'});
+        create_name_option({ 'new_name': 'جدید' });
     }
 }
 
@@ -250,7 +250,7 @@ function create_name_option(data) {
 
 }
 
-function set_strategy_name(data){
+function set_strategy_name(data) {
     var strategys_name_place = document.getElementById('strategys_name_place'),
         name = data['name'];
     strategys_name_place.value = name;
@@ -281,7 +281,7 @@ function hadi() {
             width: 2,
             id: 'plot-line-1'
         });
-        update_indicators({'close': c, 'open': o, 'low': L, 'high': h});
+        update_indicators({ 'close': c, 'open': o, 'low': L, 'high': h });
     }, 2000);
-// });
+    // });
 }
