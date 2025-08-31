@@ -20,15 +20,20 @@ from aum.service.fund import FundService
 from data.backup import filters_data
 from finance import data_handling
 from finance import data_handling as dh
-from finance import indicator, notification, scan, strategy, volume
+from finance import indicator, notification, scan, strategy
+from finance.services.trade_strategy_management import (
+    MartingaleStopLossTakeProfitService,
+    MartingaleStrategyConfig
+)
 from finance.models import TradingView, Watchlist, WatchlistSymbol
-from finance.exchange.factory import ExchangeServiceFactory
-from finance.exchange.base import BaseExchangeService
-from finance.exchange.exception import NoConnectedExchangeException
-from finance.exchange.binance.service import binance_market_service
-from finance.exchange.constants.binance import BinanceRequestKeys
+from finance.services.exchange.factory import ExchangeServiceFactory
+from finance.services.exchange.base import BaseExchangeService
+from finance.services.exchange.exception import NoConnectedExchangeException
+from finance.services.exchange.binance.service import binance_market_service
+from finance.services.exchange.constants.binance import BinanceRequestKeys
 from finance.models import Exchange
 from finance.oms import xtrader_exchange_service
+
 
 all_functions = dict(inspect.getmembers(data_handling, inspect.isfunction))
 
@@ -401,9 +406,14 @@ def test_volume(request):
     )
 
 
-def manage_volume(request: HttpRequest):
+def run_martingale_strategy(request: HttpRequest):
     data = json.loads(request.GET["param"])
-    result = volume.run_test(data)
+    trade_strategy_service = MartingaleStopLossTakeProfitService(
+        config=MartingaleStrategyConfig.from_dict(data=data),
+        market_service=binance_market_service
+    )
+
+    result = trade_strategy_service.run_strategy()
     return render(request, "volumetest.html", result)
 
 

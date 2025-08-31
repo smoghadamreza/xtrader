@@ -4,13 +4,13 @@ from django.utils import timezone
 
 from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
-from finance.exchange.base import BaseExchangeService
-from finance.exchange.factory import ExchangeServiceFactory
+from finance.services.exchange.base import BaseExchangeService
+from finance.services.exchange.factory import ExchangeServiceFactory
 from aum.models import Fund, FundInvestor, FundUnitSnapshot
-from finance.exchange.data import AssetBalance, Candlestick
-from finance.exchange.constants.binance import BinanceRequestKeys, BinanceRequestValues
+from finance.services.exchange.data import AssetBalance, Candlestick
+from finance.services.exchange.constants.binance import BinanceRequestKeys, BinanceRequestValues
 from utils.consts import Symbol
-from finance.copy_trade.service import NetAssetValueCalculator
+from finance.services.copy_trade.service import NetAssetValueCalculator
 from aum.exception import (
     FundNotFound, FundInvestorNotFound, InvalidAction,
     InsufficientDepositInFund, InsufficientUnitsFromInvestor,
@@ -244,11 +244,9 @@ class FundService:
         """Fetch historical BTCUSDT daily close prices."""
 
         candles = self.exchange_service.get_candles(
-            params={
-                BinanceRequestKeys.SYMBOL: Symbol.BTCUSDT,
-                BinanceRequestKeys.INTERVAL: BinanceRequestValues.Interval.ONE_DAY,
-                BinanceRequestKeys.LIMIT: 500
-            }
+            symbol_id=Symbol.BTCUSDT,
+            interval=BinanceRequestValues.Interval.ONE_DAY,
+            limit=500
         )
 
         # Take enough BTC prices to match fund_returns length
@@ -353,11 +351,9 @@ class FundService:
 
             pair_symbol = symbol + Symbol.USDT
             candles = self.exchange_service.get_candles(
-                params={
-                    BinanceRequestKeys.SYMBOL: pair_symbol,
-                    BinanceRequestKeys.INTERVAL: interval,
-                    BinanceRequestKeys.LIMIT: limit,
-                }
+                symbol_id=pair_symbol,
+                interval=interval,
+                limit=limit
             )
             # excluding the last candle
             history[symbol] = candles[-(history_offset + 5) : -1]

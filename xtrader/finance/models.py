@@ -105,7 +105,7 @@ class Exchange(models.Model):
 
     @classmethod
     def create_and_verify(cls, trader: User, kwargs: dict):
-        from finance.exchange.factory import ExchangeServiceFactory
+        from finance.services.exchange.factory import ExchangeServiceFactory
 
 
 

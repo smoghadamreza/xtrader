@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
 from typing import List, Dict, Any
 
-from finance.exchange.data import SymbolInfo, MarketDepth
+from finance.services.exchange.data import SymbolInfo, MarketDepth
 
 
 @dataclass
@@ -60,6 +60,6 @@ class StockWatchInfo:
             "CompanyName": self.company_name,
             "depth": [
                 order_book_level.to_dict()
-                for order_book_level in self.depth
+                for order_book_level in self.depth[:depth_limit]
             ]
         }

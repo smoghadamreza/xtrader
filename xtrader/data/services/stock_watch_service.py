@@ -9,12 +9,14 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from data.models import StockWatch
 from finance.models import Strategy
-from finance.exchange.base import BaseExchangeMarketService
-from finance.exchange.binance import (
+from finance.services.exchange.base import BaseExchangeMarketService
+from finance.services.exchange.binance import (
     BinanceMarketService, binance_market_service
 )
-from finance.exchange.constants.binance import BinanceRequestKeys
-from finance.exchange.data import SymbolInfo, Candlestick
+from finance.services.exchange.constants.binance import (
+    BinanceRequestKeys, BinanceRequestValues
+)
+from finance.services.exchange.data import SymbolInfo, Candlestick
 
 
 
@@ -35,32 +37,25 @@ class StockWatchService:
     def get_all_symbol_candles_history(self) -> List[Dict[str, Dict[str, Any]]]:
         # TODO: This function that is being called had no reference to 
         # where it is filling the redis. So according to the keys it expects 
-        # in the data, a carefull guess is that it expects CandleSticks.
+        # in the data, a carefull guess is that it expects Candlesticks.
         # So partly I improvised.
         symbol_ids = redis_wrapper.get_all_symbol_ids()
         candles_histories = []
         for symbol_id in symbol_ids:
             candles = self._market_service.get_candles(
-                params={
-                    BinanceRequestKeys.SYMBOL: symbol_id,
-                    BinanceRequestKeys.INTERVAL: "1m",
-                    BinanceRequestKeys.LIMIT: settings.CANDLES_HISTORY_LIMIT,
-                },
+                symbol_id=symbol_id,
+                interval=BinanceRequestValues.Interval.ONE_MINUTE, 
                 use_redis_cache=True
             )
             candles_data = [c.to_dict() for c in candles]
             candles_histories.append({symbol_id: candles_data})
         return candles_histories
     
-    def get_symbol_candles_history(self, symbol_id: str, interval: int) -> Dict[str, Any]:
+    def get_symbol_candles_history(self, symbol_id: str, interval: str) -> Dict[str, Any]:
         """Fetch symbol candle history for a given interval."""
-        params = {
-            BinanceRequestKeys.SYMBOL: symbol_id,
-            BinanceRequestKeys.INTERVAL: interval,
-            BinanceRequestKeys.LIMIT: settings.CANDLES_HISTORY_LIMIT,
-        }
         candles = self._market_service.get_candles(
-            params=params,
+            symbol_id=symbol_id,
+            interval=interval,
             use_redis_cache=True
         )
         symbol_info = redis_wrapper.hget_symbol_info(symbol_id=symbol_id)

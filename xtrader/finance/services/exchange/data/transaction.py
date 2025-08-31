@@ -2,7 +2,7 @@
 from typing import cast, Union, Dict, Any, Type
 
 from dataclasses import dataclass
-from finance.exchange.constants.binance import BinanceResponseKeys
+from finance.services.exchange.constants.binance import BinanceResponseKeys
 
 @dataclass
 class DepositRecord:

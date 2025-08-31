@@ -1,6 +1,6 @@
 # TODO: For now dataclasses in the imported files only represent Binance related data. 
 # When you want to add another exchange to the project, make sure to 
-# create proper parent class to use in finance.exchange.base.BaseExchangeService
+# create proper parent class to use in finance.services.exchange.base.BaseExchangeService
 # response types.
 
 from .asset import AssetBalance

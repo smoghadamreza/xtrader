@@ -2,13 +2,13 @@
 from typing import cast, Dict, Any, Union, List
 
 from .authenticated_api import AuthenticatedAPIClient
-from finance.exchange.constants.binance import (
+from finance.services.exchange.constants.binance import (
     BinanceRequestKeys, MESSAGE, ERROR, STATUS_CODE,
     INSUFFICIENT_FUNDS_STATUS_CODE, INSUFFICIENT_FUNDS_MESSAGE, 
     INVALID_INPUT_STATUS_CODES, INVALID_INPUT_MESSAGE,
     DEFAULT_ERROR_MESSAGE_TEMPLATE
 )
-from finance.exchange.data import (
+from finance.services.exchange.data import (
     OrderRequestData, OrderType, SymbolInfo
 )
 

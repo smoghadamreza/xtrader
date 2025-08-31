@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from finance.exchange.constants.binance import BinanceResponseKeys
+from finance.services.exchange.constants.binance import BinanceResponseKeys
 
 
 @dataclass

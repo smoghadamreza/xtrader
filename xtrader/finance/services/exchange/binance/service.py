@@ -1,9 +1,11 @@
 import requests
 from typing import Dict, Any, List, Union, Final, Optional
 
+from django.conf import settings
+
 from finance.models import Exchange, ExchangeType
-from finance.exchange.base import BaseExchangeMarketService, BaseExchangeService
-from finance.exchange.data import (
+from finance.services.exchange.base import BaseExchangeMarketService, BaseExchangeService
+from finance.services.exchange.data import (
     DepositRecord, WithdrawalRecord, TransactionRecord,
     SymbolInfo, Candlestick, Ticker, BookTicker, MarketDepth,
     AssetBalance, TradeRecord, AccountSnapshot
@@ -15,7 +17,7 @@ from typing import cast, Dict, List, Any
 
 from data.redis import redis_wrapper as redis
 from data.redis.constants import RedisNameSpace, RedisTTL
-from finance.exchange.constants.binance import BinanceRequestKeys, BinanceResponseKeys
+from finance.services.exchange.constants.binance import BinanceRequestKeys, BinanceResponseKeys
 from utils.interval_parser import IntervalParser
 
 
@@ -107,29 +109,42 @@ class BinanceMarketService(BaseExchangeMarketService):
 
 
     def get_candles(
-        self, params: Dict[str, str], raise_for_status: bool = False,
+        self,
+        symbol_id: str, interval: str,
+        limit: int = settings.CANDLES_HISTORY_LIMIT,
+        raise_for_status: bool = False,
         use_redis_cache: bool = False
     ) -> List[Candlestick]:
         candles_data = None
         if use_redis_cache:
             candles_data = redis.hget(
                 namespace=RedisNameSpace.CANDLES_HISTORY,
-                key=self._get_candle_history_key(params=params)
+                key=self._get_candle_history_key(
+                    symbol_id=symbol_id,
+                    interval=interval
+                )
             )
         if candles_data is None:
             candles_data = self._get(
                 endpoint=self.Endpoint.CANDLES,
-                params=params,
+                params={
+                    BinanceRequestKeys.SYMBOL: symbol_id,
+                    BinanceRequestKeys.INTERVAL: interval,
+                    BinanceRequestKeys.LIMIT: limit
+                },
                 raise_for_status=raise_for_status
             )
             candles_data = cast(List[List[float|int]], candles_data)
         if use_redis_cache:
             redis.hsetex(
                 namespace=RedisNameSpace.CANDLES_HISTORY,
-                key=self._get_candle_history_key(params=params),
+                key=self._get_candle_history_key(
+                    symbol_id=symbol_id,
+                    interval=interval
+                ),
                 value=candles_data,
                 ttl=IntervalParser.parse_interval_to_seconds(
-                    interval=params[BinanceRequestKeys.INTERVAL]
+                    interval=interval
                 ),
             )
         return [Candlestick.from_list(c) for c in candles_data]
@@ -276,15 +291,10 @@ class BinanceMarketService(BaseExchangeMarketService):
             response.raise_for_status()
         return response.json()
     
-    def _get_candle_history_key(self, params: dict) -> str:
-        if not(
-            BinanceRequestKeys.SYMBOL in params and
-            BinanceRequestKeys.INTERVAL in params
-        ):
-            raise ValueError("Invalid params for getting history")
+    def _get_candle_history_key(self, symbol_id: str, interval: str) -> str:
         return "{symbol_id}-{interval}".format(
-            symbol_id=params[BinanceRequestKeys.SYMBOL],
-            interval=params[BinanceRequestKeys.INTERVAL]
+            symbol_id=symbol_id,
+            interval=interval
         )
 
 

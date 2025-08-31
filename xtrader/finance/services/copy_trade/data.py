@@ -1,4 +1,4 @@
-from finance.exchange.data import OrderRequestData
+from finance.services.exchange.data import OrderRequestData
 from utils.consts import XtraderRequestValues
 
 class CopyTradeOrderData:

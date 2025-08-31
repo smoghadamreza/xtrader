@@ -10,7 +10,7 @@ import requests
 from django.conf import settings
 from django.db import connections
 from django.contrib.auth.models import User
-from finance.exchange.factory import ExchangeServiceFactory
+from finance.services.exchange.factory import ExchangeServiceFactory
 
 import data.redis as redis
 from finance.models import Exchange, TradingView

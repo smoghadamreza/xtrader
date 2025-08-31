@@ -165,6 +165,7 @@ class BinanceRequestValues:
 
     class Interval:
         ONE_DAY = "1d"
+        ONE_MINUTE = "1m"
 
 class BinanceResponseValues:
     SPOT = "SPOT"

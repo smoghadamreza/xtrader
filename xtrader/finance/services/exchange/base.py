@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Union, Callable
+from typing import Any, Dict, List, Union
 
-from finance.exchange.data import (
+from django.conf import settings
+
+from finance.services.exchange.data import (
     AccountSnapshot, DepositRecord, WithdrawalRecord, TransactionRecord,
     SymbolInfo, Candlestick, Ticker, BookTicker, MarketDepth,
     AssetBalance, TradeRecord
@@ -13,7 +15,9 @@ class BaseExchangeMarketService(ABC):
 
     @abstractmethod
     def get_candles(
-        self, params: Dict[str, str],
+        self, 
+        symbol_id: str, interval: str,
+        limit: int = settings.CANDLES_HISTORY_LIMIT,
         raise_for_status: bool = False,
         use_redis_cache: bool = False
     ) -> List[Candlestick]:
@@ -55,12 +59,14 @@ class BaseExchangeService(ABC):
         raise NotImplementedError()
 
     def get_candles(
-        self, params: Dict[str, str],
+        self,
+        symbol_id: str, interval: str,
+        limit: int = settings.CANDLES_HISTORY_LIMIT,
         raise_for_status: bool = False,
         use_redis_cache: bool = False
     ) -> List[Candlestick]:
         return self.market_service.get_candles(
-            params=params,
+            symbol_id=symbol_id, interval=interval, limit=limit,
             raise_for_status=raise_for_status,
             use_redis_cache=use_redis_cache
         )

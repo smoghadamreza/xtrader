@@ -1,4 +1,4 @@
-from finance.exchange.data import SymbolInfo
+from finance.services.exchange.data import SymbolInfo
 from dataclasses import dataclass, asdict
 
 @dataclass

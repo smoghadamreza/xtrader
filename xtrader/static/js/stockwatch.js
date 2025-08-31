@@ -219,7 +219,7 @@ function update_stockwatch() {
         success: function (result) {
             result = JSON.parse(result);
             //            result['InstrumentName'] = '(' + result['InstrumentName'] + ')';
-            result['instrument_name'] = result['instrument_name'];
+            result['InstrumentName'] = result['InstrumentName'];
             let book_depth = result.depth.length;
             for (let i = 0; i < book_depth; i++) {
                 result['bp' + i] = result.depth[i].bp;

@@ -3,12 +3,12 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from typing import cast, List, Dict, Any
 from social.models import ProTrader, Follow
-from finance.exchange.base import BaseExchangeService
-from finance.exchange.data import (
+from finance.services.exchange.base import BaseExchangeService
+from finance.services.exchange.data import (
     OrderRequestData, OrderType
 )
-from finance.exchange.factory import ExchangeServiceFactory
-from finance.exchange.constants.binance import BinanceRequestKeys
+from finance.services.exchange.factory import ExchangeServiceFactory
+from finance.services.exchange.constants.binance import BinanceRequestKeys
 from django.db import connections
 from .data import CopyTradeOrderAction, CopyTradeOrderData
 

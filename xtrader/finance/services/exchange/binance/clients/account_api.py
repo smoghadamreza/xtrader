@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, timezone
 from typing import cast, Dict, Any, List, Optional
 
 from .authenticated_api import AuthenticatedAPIClient
-from finance.exchange.constants.binance import BinanceRequestKeys, BinanceResponseKeys, BinanceResponseValues, BinanceRequestValues, BUYING_POWER
-from finance.exchange.data import (
+from finance.services.exchange.constants.binance import BinanceRequestKeys, BinanceResponseKeys, BinanceResponseValues, BinanceRequestValues, BUYING_POWER
+from finance.services.exchange.data import (
     AccountSnapshot, OrderType, DepositRecord, WithdrawalRecord,
     TransactionRecord, AssetBalance
 

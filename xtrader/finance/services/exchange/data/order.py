@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, Dict, Any
-from finance.exchange.constants.binance import BinanceRequestKeys, BinanceRequestValues
+from finance.services.exchange.constants.binance import BinanceRequestKeys, BinanceRequestValues
 
 class OrderParams:
     SYMBOL = BinanceRequestKeys.SYMBOL  # Might cause error in OrderAPIClient as it expects "SymbolID"

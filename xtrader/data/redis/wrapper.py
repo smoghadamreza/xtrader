@@ -5,7 +5,7 @@ from typing import (
 
 import redis
 from django.conf import settings
-from finance.exchange.data import SymbolInfo
+from finance.services.exchange.data import SymbolInfo
 from data.redis.constants import RedisNameSpace
 import logging
 

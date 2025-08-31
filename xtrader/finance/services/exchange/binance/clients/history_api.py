@@ -5,8 +5,8 @@ from finance.models import Exchange
 
 from .account_api import AccountAPIClient
 from .authenticated_api import AuthenticatedAPIClient
-from finance.exchange.constants.binance import BinanceRequestKeys
-from finance.exchange.data import (
+from finance.services.exchange.constants.binance import BinanceRequestKeys
+from finance.services.exchange.data import (
     DepositRecord, WithdrawalRecord, TradeRecord
 )
 from utils.unix_millis import UnixMillis

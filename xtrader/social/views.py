@@ -16,11 +16,11 @@ from finance import notification
 from finance.models import Exchange
 from finance.views import get_user
 from social.models import Follow, ProTrader
-from finance.exchange.factory import ExchangeServiceFactory, NoConnectedExchangeException
+from finance.services.exchange.factory import ExchangeServiceFactory, NoConnectedExchangeException
 from finance.oms import xtrader_exchange_service
 from social.service import ProTraderService
 from social.exception import NoProTraderFound
-from finance.copy_trade.service import CopyTradeService
+from finance.services.copy_trade.service import CopyTradeService
 
 
 

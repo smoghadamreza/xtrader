@@ -1,15 +1,11 @@
-import time
 from datetime import datetime
 from typing import List, Dict, Any
-from finance.exchange.data import TransactionRecord, DepositRecord, WithdrawalRecord
+from finance.services.exchange.data import TransactionRecord, DepositRecord, WithdrawalRecord
 
-import requests
 from django.contrib.auth.models import User
-from django.db import connections, models
+from django.db import models
 from django.utils import timezone
 from utils.unix_millis import UnixMillis
-from finance import oms
-from finance.copy_trade.service import NetAssetValueCalculator
 from aum.exception import NameIsTooLong, InvestorAlreadyExists
 
 class Fund(models.Model):

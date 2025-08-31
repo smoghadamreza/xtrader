@@ -1,7 +1,7 @@
 from typing import List, Dict, Any, Optional
 
 from dataclasses import dataclass, asdict
-from finance.exchange.constants.binance import BinanceResponseKeys, BinanceResponseValues
+from finance.services.exchange.constants.binance import BinanceResponseKeys, BinanceResponseValues
 
 @dataclass
 class LotFilter:
