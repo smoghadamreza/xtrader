@@ -13,13 +13,13 @@ urlpatterns = [
         r"^check-deposits/$", userena_views.check_deposits, name="check-deposits"
     ),
     re_path(r"^get-deposits/$", userena_views.get_deposits, name="get-deposits"),
-    re_path(r"^sign-up/$", userena_views.signup_sample, name="userena_sign-up"),
+    re_path(r"^sign-up/$", userena_views.signup_sample, name="userena-sign-up"),
     # re_path(r"^signup-useless/$", userena_views.signup, name="userena_signup"),
-    re_path(r"^sign-in/$", userena_views.sign_in, name="userena_sign_in"),
+    re_path(r"^sign-in/$", userena_views.sign_in, name="userena-sign-in"),
     re_path(
         r"^sign-out/$",
         userena_views.sign_out,
-        name="userena_sign_out",
+        name="userena-sign-out",
     ),
     re_path(
         r"^password/reset/$",
@@ -33,14 +33,14 @@ urlpatterns = [
                 "accounts:userena_password_reset_done"
             ),  # Added namespace
         ),
-        name="userena_password_reset",
+        name="userena-password-reset",
     ),
     re_path(
         r"^password/reset/done/$",
         auth_views.PasswordResetDoneView.as_view(
             template_name="userena/password_reset_done.html"
         ),
-        name="userena_password_reset_done",
+        name="userena-password-reset-done",
     ),
     re_path(
         r"^password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$",
@@ -48,14 +48,14 @@ urlpatterns = [
             template_name="userena/password_reset_confirm_form.html",
             success_url=reverse_lazy("userena_password_reset_complete"),
         ),
-        name="userena_password_reset_confirm",
+        name="userena-password-reset-confirm",
     ),
     re_path(
         r"^password/reset/confirm/complete/$",
         auth_views.PasswordResetCompleteView.as_view(
             template_name="userena/password_reset_complete.html"
         ),
-        name="userena_password_reset_complete",
+        name="userena-password-reset-complete",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/sign-up/complete/$",
@@ -69,79 +69,79 @@ urlpatterns = [
                 "userena_activation_days": userena_settings.USERENA_ACTIVATION_DAYS,
             },
         },
-        name="userena_sign_up_complete",
+        name="userena-sign-up-complete",
     ),
     re_path(
         r"^activate/(?P<activation_key>\w+)/$",
         userena_views.activate,
-        name="userena_activate",
+        name="userena-activate",
     ),
     re_path(
         r"^activate/retry/(?P<activation_key>\w+)/$",
         userena_views.activate_retry,
-        name="userena_activate_retry",
+        name="userena-activate-retry",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/pending/$",
         userena_views.activate_pending,
-        name="userena_activate_pending",
+        name="userena-activate-pending",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/email/$",
         userena_views.email_change,
-        name="userena_email_change",
+        name="userena-email-change",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/email/complete/$",
         userena_views.direct_to_user_template,
         {"template_name": "userena/email_change_complete.html"},
-        name="userena_email_change_complete",
+        name="userena-email-change-complete",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/confirm-email/complete/$",
         userena_views.direct_to_user_template,
         {"template_name": "userena/email_confirm_complete.html"},
-        name="userena_email_confirm_complete",
+        name="userena-email-confirm-complete",
     ),
     re_path(
         r"^confirm-email/(?P<confirmation_key>\w+)/$",
         userena_views.email_confirm,
-        name="userena_email_confirm",
+        name="userena-email-confirm",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/disabled/$",
         userena_views.disabled_account,
-        name="userena_disabled",
+        name="userena-disabled",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/password/$",
         userena_views.password_change,
-        name="userena_password_change",
+        name="userena-password-change",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/password/complete/$",
         userena_views.direct_to_user_template,
         {"template_name": "userena/password_complete.html"},
-        name="userena_password_change_complete",
+        name="userena-password-change-complete",
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/edit/$",
         userena_views.profile_edit,
-        name="userena_profile_edit",
+        name="userena-profile-edit",
     ),
     re_path(
         r"^(?P<username>(?!(sign-out|sign-up|sign-in)/)[\@\.\+\w-]+)/$",
         userena_views.profile_detail,
-        name="userena_profile_detail",
+        name="userena-profile-detail",
     ),
     re_path(
         r"^page/(?P<page>[0-9]+)/$",
         userena_views.ProfileListView.as_view(),
-        name="userena_profile_list_paginated",
+        name="userena-profile-list-paginated",
     ),
     re_path(
         r"^$",
         userena_views.ProfileListView.as_view(),
-        name="userena_profile_list",
+        name="userena-profile-list",
     ),
 ]

@@ -62,7 +62,7 @@ class Wallet(models.Model):
         max_length=80, default="", null=False, blank=False
     )
     nonce = models.CharField(max_length=40, default="", null=False, blank=False)
-    last_change = models.IntegerField(default=lambda: int(time.time()), null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True) 
 
     def __str__(self):
         return self.user.username

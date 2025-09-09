@@ -35,7 +35,7 @@ class DepositAdmin(admin.ModelAdmin):
 
 
 class WalletAdmin(admin.ModelAdmin):
-    list_display = ("user", "address", "balance", "nonce", "last_change")
+    list_display = ("user", "address", "balance", "nonce", "updated_at")
 
 
 admin.site.unregister(Profile)

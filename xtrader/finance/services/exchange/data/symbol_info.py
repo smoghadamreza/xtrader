@@ -81,7 +81,6 @@ class SymbolInfo:
             None
         )
 
-
         return cls(
             symbol=data[BinanceResponseKeys.SYMBOL],
             status=data[BinanceResponseKeys.STATUS],

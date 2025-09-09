@@ -35,10 +35,10 @@
     </fieldset>
     <br>
     <input class="ui button sign-in__btn" type="submit" value="ورود" />
-    <a style="color: #4a90e2" class="ui button sign-up__link" href="{% url " accounts:userena_sign_up" %}"> ثبت نام </a>
+    <a style="color: #4a90e2" class="ui button sign-up__link" href="{% url " accounts:userena-sign-up" %}"> ثبت نام </a>
     <br>
     <p class="forgot-password forgot-password__link"><a style="color: #4a90e2" class="link" href="{% url "
-            accounts:userena_password_reset" %}">رمز
+            accounts:userena-password-reset" %}">رمز
             خود را فراموش
             کردید ؟</a></p>
     {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}

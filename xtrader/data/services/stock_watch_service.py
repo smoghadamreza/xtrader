@@ -5,7 +5,6 @@ from data.redis import redis_wrapper
 from data.redis.constants import SYMBOL_HISTORY_KEYS, INTERVALS
 from data.services.data import SymbolSearchResult, StockWatchInfo
 from typing import List, Dict, Any
-from django.conf import settings
 from django.contrib.auth.models import User
 from data.models import StockWatch
 from finance.models import Strategy
@@ -14,7 +13,7 @@ from finance.services.exchange.binance import (
     BinanceMarketService, binance_market_service
 )
 from finance.services.exchange.constants.binance import (
-    BinanceRequestKeys, BinanceRequestValues
+    BinanceRequestValues
 )
 from finance.services.exchange.data import SymbolInfo, Candlestick
 
@@ -29,8 +28,11 @@ class StockWatchService:
         """Fetch all tradable symbols from Binance and update Redis set."""
         symbol_infos = binance_market_service.get_all_symbol_info()
 
-        symbols = [info.symbol for info in symbol_infos
-            if info.is_symbol_for_trading()]
+        symbols = [
+            info.symbol
+            for info in symbol_infos
+            if info.is_symbol_for_trading()
+        ]
 
         redis_wrapper.add_symbols(symbols)
 

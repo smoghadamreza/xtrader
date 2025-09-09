@@ -1,4 +1,7 @@
 import requests
+import logging
+import json
+import time
 from typing import Dict, Any, List, Union, Final, Optional
 
 from django.conf import settings
@@ -19,6 +22,9 @@ from data.redis import redis_wrapper as redis
 from data.redis.constants import RedisNameSpace, RedisTTL
 from finance.services.exchange.constants.binance import BinanceRequestKeys, BinanceResponseKeys
 from utils.interval_parser import IntervalParser
+
+logger = logging.getLogger(__name__)
+
 
 
 class BinanceService(BaseExchangeService):
@@ -106,25 +112,27 @@ class BinanceMarketService(BaseExchangeMarketService):
         PRICE = TICKER + "/price"
         EXCHANGE_INFO = BASE + "/exchangeInfo"
 
+    class FallBackDataFile:
+        ROOT = "finance/services/exchange/binance/fallback_data/"
+        EXCHANGE_INFO = ROOT + "exchange_info.json"
 
 
     def get_candles(
         self,
-        symbol_id: str, interval: str,
+        symbol_id: str,
+        interval: str,
         limit: int = settings.CANDLES_HISTORY_LIMIT,
         raise_for_status: bool = False,
         use_redis_cache: bool = False
     ) -> List[Candlestick]:
-        candles_data = None
-        if use_redis_cache:
-            candles_data = redis.hget(
-                namespace=RedisNameSpace.CANDLES_HISTORY,
-                key=self._get_candle_history_key(
-                    symbol_id=symbol_id,
-                    interval=interval
-                )
-            )
-        if candles_data is None:
+        cache_key = self._get_candle_history_key(
+            symbol_id=symbol_id, interval=interval
+        )
+        candles_data = redis.hget(
+            namespace=RedisNameSpace.CANDLES_HISTORY, key=cache_key
+        ) if use_redis_cache else None
+
+        if not candles_data:
             candles_data = self._get(
                 endpoint=self.Endpoint.CANDLES,
                 params={
@@ -134,20 +142,16 @@ class BinanceMarketService(BaseExchangeMarketService):
                 },
                 raise_for_status=raise_for_status
             )
-            candles_data = cast(List[List[float|int]], candles_data)
-        if use_redis_cache:
-            redis.hsetex(
-                namespace=RedisNameSpace.CANDLES_HISTORY,
-                key=self._get_candle_history_key(
-                    symbol_id=symbol_id,
-                    interval=interval
-                ),
-                value=candles_data,
-                ttl=IntervalParser.parse_interval_to_seconds(
-                    interval=interval
-                ),
-            )
-        return [Candlestick.from_list(c) for c in candles_data]
+            if use_redis_cache:
+                redis.hsetex(
+                    namespace=RedisNameSpace.CANDLES_HISTORY,
+                    key=cache_key,
+                    value=candles_data,
+                    ttl=IntervalParser.parse_interval_to_seconds(interval=interval)
+                )
+
+        return [Candlestick.from_list(c) for c in cast(List[List[float]], candles_data)]
+
 
     def get_ticker_24hr(self, symbol_id: str) -> Ticker:  # replaces get_ticker in legacy oms.Binance
         ticker_data = self._get(
@@ -169,127 +173,163 @@ class BinanceMarketService(BaseExchangeMarketService):
         book_ticker_data = cast(Dict[str, Any], book_ticker_data)
         return BookTicker.from_dict(data=book_ticker_data)
     
-    def get_market_depth(self, symbol_id: str, limit: int) -> MarketDepth:  # replaces get_depth in legacy oms.Binance
-        market_depth_data =  redis.hget(
-            namespace=RedisNameSpace.MARKET_DEPTH,
-            key=symbol_id
-        )
-        if market_depth_data is None:
-            market_depth_data = self._get(
+    def get_market_depth(self, symbol_id: str, limit: int) -> MarketDepth:
+        data = redis.hget(namespace=RedisNameSpace.MARKET_DEPTH, key=symbol_id)
+        if not data:
+            data = self._get(
                 endpoint=self.Endpoint.DEPTH,
                 params={
-                    BinanceRequestKeys.SYMBOL: symbol_id, BinanceRequestKeys.LIMIT: limit
+                    BinanceRequestKeys.SYMBOL: symbol_id,
+                    BinanceRequestKeys.LIMIT: limit
                 }
             )
-            market_depth_data = cast(Dict[str, Any], market_depth_data)
             redis.hsetex(
                 namespace=RedisNameSpace.MARKET_DEPTH,
-                key=symbol_id,
-                value=market_depth_data,
+                key=symbol_id, value=data,
                 ttl=RedisTTL.MARKET_DEPTH
             )
-        return MarketDepth.from_dict(symbol=symbol_id, data=market_depth_data)
-    
+        return MarketDepth.from_dict(
+            symbol=symbol_id, data=cast(Dict[str, Any], data)
+        )
+
     def get_last_price(self, symbol_id: str) -> float:
-        last_price_data =  redis.hget(
+        data = cast(Dict[str, Any], redis.hget(
             namespace=RedisNameSpace.LAST_PRICE,
             key=symbol_id
-        )
-        if last_price_data is None:
-            last_price_data = self._get(
+        ))
+        if not data:
+            data = cast(Dict[str, Any], self._get(
                 endpoint=self.Endpoint.PRICE,
-                params={
-                    BinanceRequestKeys.SYMBOL: symbol_id
-                }
+                params={BinanceRequestKeys.SYMBOL: symbol_id}
             )
-            last_price_data = cast(Dict[str, Any], last_price_data)
+            )
             redis.hsetex(
                 namespace=RedisNameSpace.LAST_PRICE,
-                key=symbol_id,
-                value=float(last_price_data[BinanceResponseKeys.PRICE]),
-                ttl=RedisTTL.LAST_PRICE
-            )
+                key=symbol_id, value=data,
+                ttl=RedisTTL.LAST_PRICE)
+        return float(data.get(BinanceResponseKeys.PRICE, 0))
 
-        return last_price_data.get(BinanceResponseKeys.PRICE, 0)
 
-    def get_symbol_info(self, symbol_id: str) -> SymbolInfo:  # Make sure the symbol_id is only in upper case.
-        exchange_symbol_info_data = redis.hget(
+    def get_symbol_info(self, symbol_id: str) -> SymbolInfo:
+        data = redis.hget(
             namespace=RedisNameSpace.EXCHANGE_INFO,
             key=symbol_id
         )
-        if exchange_symbol_info_data is None: 
+        if not data:
             exchange_info_response = self._get(
                 endpoint=self.Endpoint.EXCHANGE_INFO,
                 params={BinanceRequestKeys.SYMBOL: symbol_id}
             )
-            symbol_infos: List[SymbolInfo] = self._extract_exchange_symbol_info(
-                exchange_info_response=exchange_info_response
-            )
-            assert len(symbol_infos) == 1
+            symbols_data: List[Dict[str, Any]] = \
+                self._extract_exchange_symbol_info(
+                    exchange_info_response=exchange_info_response
+                )
+            assert len(symbols_data) == 1
+            # Store raw Binance dict in Redis
             redis.hsetex(
                 namespace=RedisNameSpace.EXCHANGE_INFO,
-                key=symbol_id,
-                value=symbol_infos[0].to_dict(),
+                key=symbol_id, value=symbols_data[0],
                 ttl=RedisTTL.EXCHANGE_INFO
             )
-            return symbol_infos[0]
-        return SymbolInfo.from_dict(data=exchange_symbol_info_data)
+            return SymbolInfo.from_dict(symbols_data[0])
+        return SymbolInfo.from_dict(data)
+
     
     def get_all_symbol_info(self) -> List[SymbolInfo]:
         exchange_info_response = self._get(
             endpoint=self.Endpoint.EXCHANGE_INFO,
+            fallback_data_file=self.FallBackDataFile.EXCHANGE_INFO
         )
-        symbol_infos = self._extract_exchange_symbol_info(
+        symbols_data = self._extract_exchange_symbol_info(
             exchange_info_response=exchange_info_response
         )
-        return symbol_infos
+        return [SymbolInfo.from_dict(d) for d in symbols_data]
 
-    def get_assets_prices(self, assets_symbol_ids: List[str]) -> Dict[str, float]:  # Replaces get_prices_for_nav in legacy Binance.get_prices_for_nav
-        """Get prices for Net Asset Value (NAV) calculation with fallback mechanism"""
+
+    def get_assets_prices(
+        self, assets_symbol_ids: List[str]
+    ) -> Dict[str, float]:
         result = {}
-        unique_symbol_ids = list(set(assets_symbol_ids))
-        for symbol_id in unique_symbol_ids:
+        for symbol_id in set(assets_symbol_ids):
             if symbol_id == self.BASE_ASSET_SYMBOL_ID:
-                result[self.BASE_ASSET_SYMBOL_ID] = 1.0
+                result[symbol_id] = 1.0
                 continue
-                
             symbol_pair_id = f"{symbol_id}{self.BASE_ASSET_SYMBOL_ID}"
-            price = self.get_last_price(symbol_id=symbol_pair_id)
-            
+            price = self.get_last_price(symbol_pair_id)
             if price > 0:
                 result[symbol_id] = price
-            else:  # Fallback
-                fallback_asset_price = self.get_last_price(
-                    symbol_id=f"{symbol_id}{self.BASE_ASSET_SYMBOL_ID}"
-                )
-
-                fallback_asset_to_usdt_price = self.get_last_price(
+            else:  # fallback via BTC
+                fallback_price = self.get_last_price(symbol_pair_id)
+                fallback_to_usdt = self.get_last_price(
                     symbol_id=f"{self.FALLBACK_ASSET_SYMBOL_ID}{self.BASE_ASSET_SYMBOL_ID}"
                 )
-                result[symbol_id] = fallback_asset_price * fallback_asset_to_usdt_price
+                result[symbol_id] = fallback_price * fallback_to_usdt
         return result
 
     @staticmethod
-    def _extract_exchange_symbol_info(exchange_info_response: Any) -> List[SymbolInfo]:
+    def _extract_exchange_symbol_info(
+        exchange_info_response: Any
+    ) -> List[Dict[str, Any]]:
         data = cast(Dict[str, Any], exchange_info_response)
         if BinanceResponseKeys.SYMBOLS not in data:
-            raise ValueError(f"the required key 'symbols' is not present in exchange_info")
-        data = data[BinanceResponseKeys.SYMBOLS]
-        data = cast(List[Any], data)
-        if not data or len(data) != 1:
-            raise ValueError(f"Unexpected symbol info response: {data}")
-        return [
-            SymbolInfo.from_dict(symbol_info_data) for symbol_info_data in data
-        ]
-    
-    def _get(self, endpoint: str, params: Optional[dict] = None, raise_for_status: bool = False) -> Union[Dict[str, Any], List[Any]]:
-        response = requests.get(
-            url=self.BASE_URL + endpoint,
-            params=params
-        )
-        if raise_for_status:
-            response.raise_for_status()
-        return response.json()
+            raise ValueError(f"Missing 'symbols' key in exchange info")
+        symbols = cast(List[Dict[str, Any]], data[BinanceResponseKeys.SYMBOLS])
+        return [s for s in symbols if s]
+
+    def _get(
+        self,
+        endpoint: str,
+        params: Optional[dict] = None,
+        raise_for_status: bool = False,
+        fallback_data_file: str = "",
+        max_retries: int = 3,
+        backoff_factor: float = 1.0
+    ) -> Union[Dict[str, Any], List[Any]]:
+        """
+        Attempt to GET data from API with retries. Falls back to local JSON file if retries fail.
+
+        :param endpoint: API endpoint
+        :param params: Query parameters
+        :param raise_for_status: Whether to raise for HTTP errors
+        :param fallback_data_file: Path to backup JSON file
+        :param max_retries: Maximum retry attempts before fallback
+        :param backoff_factor: Multiplier for exponential backoff
+        """
+        url = self.BASE_URL + endpoint
+        attempt = 0
+
+        while attempt < max_retries:
+            try:
+                logger.info(f"Attempt {attempt+1}/{max_retries}: GET {url} with params={params}")
+                response = requests.get(url=url, params=params, timeout=10)
+
+                if raise_for_status:
+                    response.raise_for_status()
+
+                logger.info("API request successful")
+                return response.json()
+
+            except (requests.RequestException, ValueError) as e:
+                attempt += 1
+                logger.warning(f"Request attempt {attempt} failed: {e}")
+
+                if attempt < max_retries:
+                    sleep_time = backoff_factor * (2 ** (attempt - 1))
+                    logger.info(f"Retrying in {sleep_time:.1f} seconds...")
+                    time.sleep(sleep_time)
+
+        # If all retries failed, try fallback file
+        if fallback_data_file:
+            try:
+                logger.error(f"Max retries reached. Using fallback file: {fallback_data_file}")
+                with open(fallback_data_file, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.critical(f"Failed to load fallback file '{fallback_data_file}': {e}")
+                raise
+
+        logger.critical("Max retries reached and no fallback file provided.")
+        raise RuntimeError("API request failed and no valid fallback available.")
     
     def _get_candle_history_key(self, symbol_id: str, interval: str) -> str:
         return "{symbol_id}-{interval}".format(

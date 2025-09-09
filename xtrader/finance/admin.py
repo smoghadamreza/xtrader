@@ -8,7 +8,7 @@ class StrategyAdmin(admin.ModelAdmin):
 
 
 class ExchangeAdmin(admin.ModelAdmin):
-    list_display = ("trader", "name", "public")
+    list_display = ("trader", "name", "public_key")
 
 
 class TradingViewAdmin(admin.ModelAdmin):

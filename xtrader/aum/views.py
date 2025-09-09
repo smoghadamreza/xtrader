@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from aum.models import Fund, FundInvestor
 from aum.service.fund import FundService
-from xtrader.aum.exception import (
+from aum.exception import (
     FundInvestorNotFound, FundNotFound, InvalidAction,
     InsufficientDepositInFund, InsufficientUnitsFromInvestor,
     InvestorAlreadyExists, NameIsTooLong

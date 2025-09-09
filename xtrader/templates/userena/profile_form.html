@@ -9,10 +9,10 @@
 
 <form action="" enctype="multipart/form-data" method="post">
   <ul id="box-nav">
-    <li class="first"><a href="{% url 'accounts:userena_profile_detail' user.username %}"><span>پروفایل</span></a></li>
-    <li class="selected"><a href="{% url 'accounts:userena_profile_edit' user.username %}">بروزرسانی پروفایل</a></li>
-    <li><a href="{% url 'accounts:userena_password_change' user.username %}">تغییر گذرواژه</a></li>
-    <li class="last"><a href="{% url 'accounts:userena_email_change' user.username %}">تغییر ایمیل</a></li>
+    <li class="first"><a href="{% url 'accounts:userena-profile-detail' user.username %}"><span>پروفایل</span></a></li>
+    <li class="selected"><a href="{% url 'accounts:userena-profile-edit' user.username %}">بروزرسانی پروفایل</a></li>
+    <li><a href="{% url 'accounts:userena-password-change' user.username %}">تغییر گذرواژه</a></li>
+    <li class="last"><a href="{% url 'accounts:userena-email-change' user.username %}">تغییر ایمیل</a></li>
   </ul>
   {% csrf_token %}
   <fieldset>

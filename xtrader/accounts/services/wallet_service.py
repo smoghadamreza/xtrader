@@ -53,6 +53,7 @@ class WalletService:
         if self._should_regenerate_wallet_address():
             address = self.create_address()
             self.wallet.address = address
+            self.wallet.updated_at = timezone.now()
             self.wallet.save(update_fields=["address"])
         return WalletSnapshot.from_wallet(wallet=self.wallet)
 
@@ -105,7 +106,7 @@ class WalletService:
 
     def _should_regenerate_wallet_address(self) -> bool:
         """Check if address is older than 70 days."""
-        return (timezone.now() - self.wallet.last_change).days > 70
+        return (timezone.now() - self.wallet.updated_at).days > 70
 
 
     def _request_new_address(self) -> WalletAddressCreationResponse| None:

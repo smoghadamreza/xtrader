@@ -11,48 +11,10 @@
       {% if user.username == profile.user.username %}
         <ul id="box-nav">
           {% block profile_navigation_items %}
-<!--            <li class="first"><a href="{% url 'accounts:userena_profile_detail' user.username %}"><span>پروفایل</span></a></li>-->
-<!--            <li class="selected"><a href="{% url 'accounts:userena_profile_edit' user.username %}">بروزرسانی پروفایل</a></li>-->
-<!--            <li><a href="{% url 'accounts:userena_password_change' user.username %}">تغییر گذرواژه</a></li>-->
-<!--            <li class="last"><a href="{% url 'accounts:userena_email_change' user.username %}">تغییر ایمیل</a></li>-->
           {% endblock %}
         </ul>
       {% endif %}
     {% endblock %}
-
-<!--    <div id="details">-->
-<!--      {% block profile_details %}-->
-<!--&lt;!&ndash;        <img class="mugshot" src="{{ profile.get_mugshot_url }}" alt="{% trans "Your mugshot" %}" />&ndash;&gt;-->
-<!--        <dl>-->
-<!--          {% block profile_definition_list %}-->
-<!--            {% if profile.user.get_full_name %}-->
-<!--              <dt>نام</dt>-->
-<!--              <dd>{{ profile.user.get_full_name }}</dd>-->
-<!--            {% endif %}-->
-<!--            {% if profile.user.email and not hide_email %}-->
-<!--              <dt>ایمیل</dt>-->
-<!--              <dd>{{ profile.user.email }}</dd>-->
-<!--            {% endif %}-->
-<!--            {% if profile.age %}-->
-<!--              <dt>سن</dt>-->
-<!--              <dd>{{ profile.age }}</dd>-->
-<!--            {% endif %}-->
-<!--            {% if profile.website %}-->
-<!--              <dt>وب سایت</dt>-->
-<!--              <dd>{{ profile.website|urlize }}</dd>-->
-<!--            {% endif %}-->
-<!--            {% if profile.location %}-->
-<!--              <dt>{% trans "Location" %}</dt>-->
-<!--              <dd>{{ profile.location }}</dd>-->
-<!--            {% endif %}-->
-<!--            {% if profile.about_me %}-->
-<!--              <dt>{% trans "About me" %}</dt>-->
-<!--              <dd>{{ profile.about_me }}</dd>-->
-<!--            {% endif %}-->
-<!--          {% endblock %}-->
-<!--        </dl>-->
-<!--      {% endblock %}-->
-<!--    </div>-->
       <br>
       <br>
       <br>

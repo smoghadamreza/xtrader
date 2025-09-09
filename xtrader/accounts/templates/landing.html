@@ -64,13 +64,13 @@
             <br><br>
             <p class="forgot-password forgot-password__link">
                 <a style="color: #4a90e2;position: relative;top: -0.9em; right: -2.2rem;" class="link"
-                    href='{% url "accounts:userena_password_reset" %}'>
+                    href='{% url "accounts:userena-password-reset" %}'>
                     رمز عبور خود را فراموش کردید؟
                 </a>
             </p> <br>
             <p class="forgot-password forgot-password__link">
                 <a style="color: #4a90e2;position: relative;top: -0.9em; right: -2.2rem;" class="link"
-                    href='{% url "accounts:userena_sign_up" %}'>ثبت نام نکرده اید؟</a>
+                    href='{% url "accounts:userena-sign-up" %}'>ثبت نام نکرده اید؟</a>
             </p>
             {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
             <br>

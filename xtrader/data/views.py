@@ -3,7 +3,7 @@ from typing import cast
 from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse, HttpRequest
 
-from xtrader.data.services.stock_watch_service import StockWatchService
+from data.services.stock_watch_service import StockWatchService
 from utils.consts import XtraderResponseKeys
 
 

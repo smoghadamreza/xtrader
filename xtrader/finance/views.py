@@ -32,7 +32,7 @@ from finance.services.exchange.exception import NoConnectedExchangeException
 from finance.services.exchange.binance.service import binance_market_service
 from finance.services.exchange.constants.binance import BinanceRequestKeys
 from finance.models import Exchange
-from finance.oms import xtrader_exchange_service
+from finance.services import xtrader_exchange_service
 
 
 all_functions = dict(inspect.getmembers(data_handling, inspect.isfunction))

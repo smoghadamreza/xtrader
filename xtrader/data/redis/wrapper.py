@@ -33,16 +33,23 @@ class RedisWrapper:
             return -1
         result = cast(int, self._redis.hset(name=namespace, key=key, value=value_str))
         return result
-    
+
     def hsetex(
             self, namespace: str, key: str, value: JSONType,
-            ttl: Optional[int],  # in seconds
+            ttl: Optional[int],
         ) -> int:
+        if ttl is None:
+            return self.hset(
+                namespace=namespace, 
+                key=key, 
+                value=value
+            )
         value_str, success = self._dump_value(value=value)
         if not success:
             return -1
-        result = cast(int, self._redis.hsetex(name=namespace, key=key, value=value_str, ex=ttl))
-        return result
+
+        # DragonflyDB-specific command
+        return self._redis.execute_command("HSETEX", namespace, ttl, key, value_str)
 
     def hget(self, namespace: str, key: str) -> dict:
         value = cast(bytes, self._redis.hget(name=namespace, key=key))

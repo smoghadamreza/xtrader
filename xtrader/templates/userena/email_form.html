@@ -6,13 +6,13 @@
 {% block content %}
     <form action="" method="post">
         <ul id="box-nav">
-            <li class="first"><a class="link" href="{% url 'accounts:userena_profile_detail' user.username %}"><span>پروفایل </span></a>
+            <li class="first"><a class="link" href="{% url 'accounts:userena-profile-detail' user.username %}"><span>پروفایل </span></a>
             </li>
-            <li><a class="link" href="{% url 'accounts:userena_profile_edit' user.username %}">بروز رسانی پروفایل</a>
+            <li><a class="link" href="{% url 'accounts:userena-profile-edit' user.username %}">بروز رسانی پروفایل</a>
             </li>
-            <li><a class="link" href="{% url 'accounts:userena_password_change' user.username %}">تغییر گذر واژه</a>
+            <li><a class="link" href="{% url 'accounts:userena-password-change' user.username %}">تغییر گذر واژه</a>
             </li>
-            <li class="last selected"><a class="link" href="{% url 'accounts:userena_email_change' user.username %}">تغییر
+            <li class="last selected"><a class="link" href="{% url 'accounts:userena-email-change' user.username %}">تغییر
                 ایمیل </a></li>
         </ul>
         {% csrf_token %}

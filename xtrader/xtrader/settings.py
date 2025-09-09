@@ -36,7 +36,7 @@ ALLOWED_HOSTS.extend(
 )
 # Settings used by Userena
 LOGIN_REDIRECT_URL = "/accounts/%(username)s/"
-LOGIN_URL = "accounts:userena_sign_in"
+LOGIN_URL = "accounts:userena-sign-in"
 LOGOUT_URL = "/accounts/sign-out/"
 AUTH_PROFILE_MODULE = "accounts.Profile"
 USERENA_DISABLE_PROFILE_LIST = True

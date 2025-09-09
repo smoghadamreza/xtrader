@@ -4,7 +4,7 @@
 {% blocktrans with site.name as site %} ممنون بابت ثبت نام در {{ site }}.{% endblocktrans %}
 
 برای فعال کردن حساب خود روی لینک زیر کلیک کنید:
-https://{{ site.domain }}{% url 'accounts:userena_activate' activation_key=activation_key %}
+https://{{ site.domain }}{% url 'accounts:userena-activate' activation_key=activation_key %}
 {#{{ protocol }}#}
 {% trans "به سایت ما خوش آمدید" %}
 

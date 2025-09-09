@@ -26,9 +26,9 @@
     </fieldset>
     <br>
     <input class="ui button" type="submit" value="ورود" />
-    <a class="ui button" href="{% url " accounts:userena_sign_up" %}"> ثبت نام </a>
+    <a class="ui button" href="{% url "accounts:userena-sign-up" %}"> ثبت نام </a>
     <br>
-    <p class="forgot-password"><a class="link" href="{% url " accounts:userena_password_reset" %}">رمز خود را فراموش
+    <p class="forgot-password"><a class="link" href="{% url "accounts:userena-password-reset" %}">رمز خود را فراموش
             کردید؟</a></p>
     {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
 </form>

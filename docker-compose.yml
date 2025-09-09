@@ -23,6 +23,8 @@ services:
       - REDIS_URL=redis://redis:6379/0 # internal container communication
       - PYTHONUNBUFFERED=1
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - HTTP_PROXY=http://172.23.160.1:10808
+      - HTTPS_PROXY=http://172.23.160.1:10808
     depends_on:
       db:
         condition: service_healthy
@@ -51,7 +53,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.33.1
     container_name: xtrader-redis
     ports:
       - "6380:6379" # Map host port 6380 to container port 6379

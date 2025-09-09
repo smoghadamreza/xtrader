@@ -15,7 +15,7 @@ RUN apt-get update && \
     build-essential \
     python3-dev \
     libffi-dev \
-    libpq-dev \ 
+    libpq-dev \
     libssl-dev \
     libxml2 \
     libxml2-dev \
@@ -25,11 +25,13 @@ RUN apt-get update && \
     postgresql-client \
     wget \
     vim \
-    redis-tools  \
+    redis-tools \
     graphviz \
-    less && \
+    less \
+    netcat-openbsd && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
 
 # Install Miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
