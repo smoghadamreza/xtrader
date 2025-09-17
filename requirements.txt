@@ -86,3 +86,6 @@ isort==6.0.1
 black==25.1.0
 docformatter==1.7.7
 ruff==0.12.1
+# unit test libraries
+pytest==8.4.2
+pytest-django==4.11.1

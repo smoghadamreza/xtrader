@@ -7,5 +7,5 @@
 
 {% block content %}
 <p>لینک فعال سازی شما منقضی شده است .</p>
-<p><a href="{% url 'accounts:userena-activate-retry' activation_key %}">دوباره لینک فعال سازی رو درخواست کنید .</a></p>
+<p><a href="{% url 'accounts:userena-retry-activation' activation_key %}">دوباره لینک فعال سازی رو درخواست کنید .</a></p>
 {% endblock %}

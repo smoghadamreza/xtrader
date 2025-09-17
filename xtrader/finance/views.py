@@ -33,6 +33,7 @@ from finance.services.exchange.binance.service import binance_market_service
 from finance.services.exchange.constants.binance import BinanceRequestKeys
 from finance.models import Exchange
 from finance.services import xtrader_exchange_service
+from finance.templates import FinanceTemplates
 
 
 all_functions = dict(inspect.getmembers(data_handling, inspect.isfunction))
@@ -67,7 +68,7 @@ def add_new_watch_list(request):
     if watchlist_count >= watchlist_limit:
         return JsonResponse(
             {
-                "redirect": "/profile-setup/?s=packages",
+                "redirect": "/profile-settings/?s=packages",
                 "m": "برای ساخت واچ‌لیست جدید نیاز به ارتقا اشتراک دارید",
                 "s": 302,
             }
@@ -215,17 +216,17 @@ def market_watch(request):
     )
     if not profile.expire or profile.expire >= datetime.today().date():
         return render(
-            request, "payment.html", {"subscribes": 0, **get_user(request)}
+            request, FinanceTemplates.PAYMENT, {"subscribes": 0, **get_user(request)}
         )
 
-    return render(request, "marketwatch.html", get_user(request))
+    return render(request, FinanceTemplates.MARKET_WATCH, get_user(request))
 
 
 @login_required
 def display(request):
     return render(
         request,
-        "back.html",
+        FinanceTemplates.BACK_TEST,
         {"symbol_id": "BTCUSDT", **get_user(request=request)},
     )
 
@@ -267,7 +268,7 @@ def filter_market(request):
         "former": paginator.num_pages - 1,
         "former2": paginator.num_pages - 2,
     }
-    a = render(request, "marketwatchTable.html", {"stocks": stocks, **d})
+    a = render(request, FinanceTemplates.MARKET_WATCH_TABLE, {"stocks": stocks, **d})
     return a
 
 
@@ -289,7 +290,7 @@ def back_test(request):
 
 
 def about_us(request):
-    return render(request, "aboutus.html", {"username": request.user.username})
+    return render(request, FinanceTemplates.ABOUT_US, {"username": request.user.username})
 
 
 @transaction.atomic
@@ -298,7 +299,7 @@ def index(request):
     referred_by = Profile.objects.filter(referral_code=referral_code).first()
     if referral_code and referred_by:
         request.session["ref_id"] = referred_by.pk
-    return render(request, "newindex.html")
+    return render(request, FinanceTemplates.INDEX)
 
 
 @login_required
@@ -317,7 +318,7 @@ def spot(request, symbol_id: str):
         symbol_info = binance_market_service.get_symbol_info(symbol_id=symbol_id)
     except Exception:
         return render(
-            request, "error.html", {"message": "getting symbol info failed."}
+            request, FinanceTemplates.ERROR, {"message": "getting symbol info failed."}
         )
 
     stock_watch_dict = {
@@ -325,7 +326,7 @@ def spot(request, symbol_id: str):
         "title": symbol_info.base_asset,
         **get_user(request),
     }
-    return render(request, "stockwatch1.html", stock_watch_dict)
+    return render(request, FinanceTemplates.STOCK_WATCH, stock_watch_dict)
 
 
 def get_user(request):
@@ -341,9 +342,9 @@ def get_user(request):
     return {"name": name, "img_url": url}
 
 
-def profile_setup(request):
+def profile_settings(request):
     extra_context = get_user(request)
-    return render(request, "setup.html", extra_context)
+    return render(request, FinanceTemplates.SETTINGS, extra_context)
 
 
 def ssl(request):
@@ -401,7 +402,7 @@ def cancel_order(request: HttpRequest, exchange_service: BaseExchangeService):
 def test_volume(request):
     return render(
         request,
-        "test_volume.html",
+        FinanceTemplates.TEST_VOLUME,
         {"SymbolId": "IRO1IKCO0001", **get_user(request=request)},
     )
 
@@ -414,11 +415,11 @@ def run_martingale_strategy(request: HttpRequest):
     )
 
     result = trade_strategy_service.run_strategy()
-    return render(request, "volumetest.html", result)
+    return render(request, FinanceTemplates.MARTIN_GALE_STRATEGY_RESULTS, result)
 
 
 def test_api(request: HttpRequest):
-    return render(request, "testAPI.html", {"SymbolId": "IRO1IKCO0001"})
+    return render(request, FinanceTemplates.TEST_API, {"SymbolId": "IRO1IKCO0001"})
 
 
 def get_exchanges(request: HttpRequest):

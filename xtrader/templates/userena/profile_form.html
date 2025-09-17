@@ -11,7 +11,7 @@
   <ul id="box-nav">
     <li class="first"><a href="{% url 'accounts:userena-profile-detail' user.username %}"><span>پروفایل</span></a></li>
     <li class="selected"><a href="{% url 'accounts:userena-profile-edit' user.username %}">بروزرسانی پروفایل</a></li>
-    <li><a href="{% url 'accounts:userena-password-change' user.username %}">تغییر گذرواژه</a></li>
+    <li><a href="{% url 'accounts:userena-password-reset' user.username %}">تغییر گذرواژه</a></li>
     <li class="last"><a href="{% url 'accounts:userena-email-change' user.username %}">تغییر ایمیل</a></li>
   </ul>
   {% csrf_token %}

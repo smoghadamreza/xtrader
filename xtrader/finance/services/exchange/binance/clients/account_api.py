@@ -22,8 +22,10 @@ class AccountAPIClient(AuthenticatedAPIClient):
         ALL_ORDERS = AuthenticatedAPIClient.V3_ENDPOINT + "/allOrders"
         OPEN_ORDERS = AuthenticatedAPIClient.V3_ENDPOINT + "/openOrders"
 
-        DEPOSITS = AuthenticatedAPIClient.V1_ENDPOINT + "/capital/deposit/hisrec"  # replaced by the deprected /wapi/v3/depositHistory.html
-        WITHDRAWALS = AuthenticatedAPIClient.V1_ENDPOINT + "/capital/withdraw/history"  # replaced by the deprecated /wapi/v3/withdrawHistory.html
+        # replaced by the deprected /wapi/v3/depositHistory
+        DEPOSITS = AuthenticatedAPIClient.V1_ENDPOINT + "/capital/deposit/hisrec"
+        # replaced by the deprecated /wapi/v3/withdrawHistory
+        WITHDRAWALS = AuthenticatedAPIClient.V1_ENDPOINT + "/capital/withdraw/history"
         SNAPSHOT = AuthenticatedAPIClient.V1_ENDPOINT + "/accountSnapshot"
 
     def get_portfolio(self) -> List[AssetBalance]:

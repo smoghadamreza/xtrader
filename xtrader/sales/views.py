@@ -44,5 +44,6 @@ def subscribe(request):
     return JsonResponse(result)
 
 
+# TODO: The template does not exist.
 def packages_view(request):
     return render(request, "packages.html")

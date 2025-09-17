@@ -60,7 +60,7 @@ def add_strategy_to_db(
                 strategy_id = new_strategy.pk
             else:
                 return {
-                    "redirect": "/profile-setup/?s=packages",
+                    "redirect": "/profile-settings/?s=packages",
                     "s": 302,
                     "m": "برای ساخت استراتژی جدید به نیاز به ارتقا اشتراک دارید.",
                 }

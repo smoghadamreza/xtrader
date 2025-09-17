@@ -65,12 +65,11 @@ urlpatterns = [
     re_path(r"^portfolio", views.portfolio, name="portfolio"),
     re_path(r"^orders", views.get_orders, name="orders"),
     # Setup profile
-    re_path(r"^profile-setup/$", views.profile_setup, name="profile-setup"),
+    re_path(r"^profile-settings/$", views.profile_settings, name="profile-settings"),
     re_path(r"^save-exchange", views.save_exchange, name="add-exchange"),
     re_path(r"^remove-exchange", views.remove_exchange, name="remove-exchange"),
     re_path(r"^get-exchanges", views.get_exchanges, name="get-exchange"),
     re_path(r"^cancel-order", views.cancel_order, name="cancel-order"),
-    re_path(r"^account-status", views.account_status, name="account-status"),
     re_path(r"^martingale-strategy", views.run_martingale_strategy, name="martingale-strategy"),
     re_path(r"^test-volume", views.test_volume, name="test-volume"),
     re_path(r"^test-api", views.test_api, name="test-api"),

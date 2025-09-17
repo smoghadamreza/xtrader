@@ -674,7 +674,7 @@ function portfo() {
         },
         error: function (e) {
             let portfolio_div = document.getElementById('pportfo');
-            portfolio_div.innerHTML = '<h1><a href="/profile-setup/"><div style="font-family: IRANSans">ابتدا اکسچنج خود را متصل کنید</div></a></h1>';
+            portfolio_div.innerHTML = '<h1><a href="/profile-settings/"><div style="font-family: IRANSans">ابتدا اکسچنج خود را متصل کنید</div></a></h1>';
         }
     })
 }
@@ -746,7 +746,7 @@ function orders() {
         },
         error: function (err) {
             let orders_div = document.getElementById('orders_place');
-            orders_div.innerHTML = '<h1><a href="/profile-setup/"><div style="font-family: IRANSans">ابتدا اکسچنج خود را متصل کنید</div></a></h1>';
+            orders_div.innerHTML = '<h1><a href="/profile-settings/"><div style="font-family: IRANSans">ابتدا اکسچنج خود را متصل کنید</div></a></h1>';
         }
     });
     // getAccountStatus();

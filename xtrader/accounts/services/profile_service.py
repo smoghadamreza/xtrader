@@ -1,17 +1,17 @@
 from datetime import timedelta
 import random
 import string
-from typing import cast, List
+from typing import cast, List, Tuple
 
 from django.contrib.auth.models import User
 from django.utils import timezone
-
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from userena.utils import get_user_profile
 from accounts.models import Profile
 from accounts.services.exceptions import NoProfileFoundForUser
 
 from utils.unix_millis import UnixMillis
-
-from .mail_service import MailService
 
 
 class ProfileService:
@@ -33,6 +33,17 @@ class ProfileService:
         )
         return ''.join(random.choice(char_set) for _ in range(code_length))
     
+    @classmethod
+    def get_user_and_profile(cls, username: str) -> Tuple[User, Profile]:
+        """Helper method to fetch user and their profile."""
+        user = get_object_or_404(
+            klass=get_user_model(), 
+            username__iexact=username
+        )
+        user = cast(User, user)
+        profile = cast(Profile, get_user_profile(user=user))
+        return user, profile
+
     def get_telegram_activation_code(self) -> str:
         if self.has_telegram_id():
             return ""

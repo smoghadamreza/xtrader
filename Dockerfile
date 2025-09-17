@@ -27,8 +27,8 @@ RUN apt-get update && \
     vim \
     redis-tools \
     graphviz \
-    less \
-    netcat-openbsd && \
+    libpq-dev \
+    less && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

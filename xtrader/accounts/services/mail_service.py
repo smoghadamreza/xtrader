@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from accounts.templates import AccountsTemplates
 
 
 class MailService:
@@ -13,7 +14,7 @@ class MailService:
         for email in emails:
             try:
                 html_message = render_to_string(
-                    "mail_template.html", {"context": "values"}
+                    AccountsTemplates.MAIL_TEMPLATE, {"context": "values"}
                 )
                 plain_message = strip_tags(html_message)
 

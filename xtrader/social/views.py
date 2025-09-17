@@ -21,6 +21,7 @@ from finance.services import xtrader_exchange_service
 from social.service import ProTraderService
 from social.exception import NoProTraderFound
 from finance.services.copy_trade.service import CopyTradeService
+from social.templates import SocialTemplates
 
 
 
@@ -166,7 +167,7 @@ def promote(request: HttpRequest):
 
 
 def trader(request):
-    return render(request, "traderProfile.html", get_user(request=request))
+    return render(request, SocialTemplates.TRADE_PROFILE, get_user(request=request))
 
 
 def get_profile(request, pro_id):
@@ -201,11 +202,11 @@ def get_profile(request, pro_id):
 
 @login_required
 def copy_trading(request):
-    return render(request, "copytrading.html", get_user(request=request))
+    return render(request, SocialTemplates.COPY_TRADING, get_user(request=request))
 
 
 def league(request):
-    return render(request, "leagueLanding.html", get_user(request=request))
+    return render(request, SocialTemplates.LEAGUE_LANDING, get_user(request=request))
 
 
 @login_required

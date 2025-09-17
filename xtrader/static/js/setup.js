@@ -553,7 +553,7 @@ function promote() {
         success: function (result) {
             if (result.s === 302) {
                 alert(result.m);
-                window.location = '/profile-setup/?s=' + result.href;
+                window.location = '/profile-settings/?s=' + result.href;
             }
             else if (result.s === 200) {
                 alert(result.m);

@@ -1,11 +1,7 @@
 import json
 import threading
-from typing import cast, Dict
-import urllib.parse as urlparse
-import warnings
 from typing import cast
-from urllib.parse import parse_qs
-
+import warnings
 from django.contrib import messages
 from django.contrib.auth import (
     REDIRECT_FIELD_NAME,
@@ -42,7 +38,8 @@ from django.contrib.auth.models import User
 from utils.consts import XtraderResponseKeys, XtraderRequestKeys
 from userena.utils import get_profile_model, get_user_profile, signin_redirect
 from accounts.services import (
-    WalletService, DepositService, ProfileService, MailService
+    WalletService, DepositService, ProfileService, MailService,
+    UserActivationService, AccountStatusService, NotificationService
 )
 from accounts.services.exceptions import (
     NoProfileFoundForUser, NoWalletFoundForUser
@@ -56,8 +53,6 @@ from accounts.forms import (
 from accounts.models import Profile
 from accounts.services.data import DepositCreationParams
 from finance import notification
-from finance.models import Exchange
-from social.models import Follow
 from .consts import ResponseMessage, TelegramMessage, EmailSubject
 
 
@@ -224,81 +219,19 @@ def activate(
     request,
     activation_key,
     template_name="userena/activate_fail.html",
-    retry_template_name="userena/activate_retry.html",
-    success_url=None,
     extra_context=None,
 ):
-    """Activate a user with an activation key.
-
-    The key is a SHA1 string. When the SHA1 is found with an
-    :class:`UserenaSignup`, the :class:`User` of that account will be
-    activated.  After a successful activation the view will redirect to
-    ``success_url``.  If the SHA1 is not found, the user will be shown the
-    ``template_name`` template displaying a fail message.
-    If the SHA1 is found but expired, ``retry_template_name``
-    is used instead, so the user can proceed
-    to :func:`activate_retry` to get a new activation key.
-
-    :param activation_key:
-        String of a SHA1 string of 40 characters long. A SHA1 is always 160bit
-        long, with 4 bits per character this makes it --160/4-- 40 characters
-        long.
-
-    :param template_name:
-        String containing the template name that is used when the
-        ``activation_key`` is invalid and the activation fails. Defaults to
-        ``userena/activate_fail.html``.
-
-    :param retry_template_name:
-        String containing the template name that is used when the
-        ``activation_key`` is expired. Defaults to
-        ``userena/activate_retry.html``.
-
-    :param success_url:
-        String containing the URL where the user should be redirected to after
-        a successful activation. Will replace ``%(username)s`` with string
-        formatting if supplied. If ``success_url`` is left empty, will direct
-        to ``userena_profile_detail`` view.
-
-    :param extra_context:
-        Dictionary containing variables which could be added to the template
-        context. Default to an empty dictionary.
-    """
-    try:
-        userena_manager = cast(UserenaManager, UserenaSignup.objects)
-        if (
-            not userena_manager.check_expired_activation(activation_key)
-            or not userena_settings.USERENA_ACTIVATION_RETRY
-        ):
-            user = userena_manager.activate_user(activation_key)
-            if user:
-                # Sign the user in.
-                auth_user = authenticate(
-                    identification=user.email, check_password=False
-                )
-                login(request, auth_user)
-
-                if userena_settings.USERENA_USE_MESSAGES:
-                    messages.success(
-                        request,
-                        _(
-                            "Your account has been activated"
-                            " and you have been signed in."
-                        ),
-                        fail_silently=True,
-                    )
-
-                return JsonResponse({})
-            else:
-                if not extra_context:
-                    extra_context = dict()
-                return JsonResponse({"msg": "invalid link"}, status=400)
-        else:
-            if not extra_context:
-                extra_context = dict()
-            extra_context["activation_key"] = activation_key
-            return JsonResponse({"msg": "link expired, you should retry"})
-    except UserenaSignup.DoesNotExist:
+    """Activate a user with an activation key."""
+    # Use the UserActivationService
+    user, error_message = UserActivationService.activate_user(activation_key, request)
+    
+    if user:
+        return JsonResponse({})
+    elif error_message == "invalid link":
+        return JsonResponse({"msg": "invalid link"}, status=400)
+    elif error_message == "link expired, you should retry":
+        return JsonResponse({"msg": "link expired, you should retry"})
+    else:  # activation failed
         if not extra_context:
             extra_context = dict()
         return ExtraContextTemplateView.as_view(
@@ -356,7 +289,6 @@ def activate_pending(
 def activate_retry(
     request,
     activation_key,
-    template_name="userena/activate_retry_success.html",
     extra_context=None,
 ):
     """Reissue a new ``activation_key`` for the user with the expired
@@ -392,9 +324,7 @@ def activate_retry(
                 return JsonResponse({})
     except UserenaSignup.DoesNotExist:
         pass
-    return JsonResponse(
-        {"msg": "activation link has not expired!"}, status=400
-    )
+    return JsonResponse({"msg": "activation link has not expired!"}, status=400)
 
 
 @secure_required
@@ -1329,14 +1259,8 @@ def new_deposit(request: HttpRequest):
     )
     if created:
         t = threading.Thread(
-            target=notification.send_telegram_message,
-            args=(
-                TelegramMessage.DEPOSIT_REPORT_TEMPLATE.format(
-                    init_amount=params.init_amount,
-                    final_amount=params.final_amount
-                ),
-                121366977
-            )
+            target=NotificationService.send_deposit_notification,
+            args=(params.init_amount, params.final_amount)
         )
         t.start()
     return JsonResponse({XtraderResponseKeys.M: created})
@@ -1391,24 +1315,6 @@ def get_deposits(request: HttpRequest):
 @login_required
 def account_status(request: HttpRequest):
     user = cast(User, request.user)
-    status: Dict[str, bool|str] = {
-        XtraderResponseKeys.FOLLOWING: False,
-        XtraderResponseKeys.EXCHANGE: False,
-        XtraderResponseKeys.TELEGRAM: False,
-    }
-    following = Follow.objects.filter(follower=user).first()
-    if following:
-        status[XtraderResponseKeys.FOLLOWING] = True
-        status[XtraderResponseKeys.PRO_TRADER] = following.pro_trader.brand
-    if Exchange.objects.filter(trader=user).exists():
-        status[XtraderResponseKeys.EXCHANGE] = True
-    profile = Profile.objects.filter(user=user).first()
-    if profile and profile.telegram_id:
-        status[XtraderResponseKeys.TELEGRAM] = True
+    status = AccountStatusService.get_account_status(user)
     return JsonResponse(status)
 
-# TODO: This view is currently unused but its logic seems useful to keep.
-def notify_users(_: HttpRequest):
-    emails = ProfileService._get_all_valid_emails()
-    failed = MailService.mail_users(EmailSubject.WELCOME, emails)
-    print("failed:", failed)

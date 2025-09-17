@@ -18,12 +18,13 @@ from aum.exception import (
 from utils.consts import (
     XtraderRequestKeys, XtraderResponseKeys, XtraderRequestValues
 )
+from aum.templates import AUMTemplates
 from .consts import ResponseMessages, ResponseData
 
 
 @login_required
 def management(request):
-    return render(request, "fund_management.html")
+    return render(request, AUMTemplates.FUND_MANAGEMENT)
 
 @csrf_exempt
 @require_POST

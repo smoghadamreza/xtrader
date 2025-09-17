@@ -134,7 +134,7 @@ class Follow(models.Model):
                             result = {
                                 "c": 302,
                                 "msg": "موجودی شما کافی نیست",
-                                "href": "/profile-setup/?s=wallet",
+                                "href": "/profile-settings/?s=wallet",
                             }
                     else:
                         result = {"c": 403, "msg": "تریدر یافت نشد"}

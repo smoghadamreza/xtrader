@@ -36,18 +36,21 @@ ALLOWED_HOSTS.extend(
 )
 # Settings used by Userena
 LOGIN_REDIRECT_URL = "/accounts/%(username)s/"
-LOGIN_URL = "accounts:userena-sign-in"
-LOGOUT_URL = "/accounts/sign-out/"
+SIGN_IN_URL = "accounts:userena-sign-in"
+SIGNOUT_URL = "/accounts/sign-out/"
 AUTH_PROFILE_MODULE = "accounts.Profile"
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_MUGSHOT_SIZE = 140
 
 
 USERENA_REDIRECT_ON_SIGNOUT = getattr(
-    settings, "USERENA_REDIRECT_ON_SIGNOUT", "/accounts/signin"
+    settings, "USERENA_REDIRECT_ON_SIGNOUT", SIGN_IN_URL
 )
 USERENA_SIGNIN_REDIRECT_URL = getattr(
     settings, "USERENA_SIGNIN_REDIRECT_URL", "/robots"
+)
+USERENA_SIGN_IN_AFTER_SIGNUP = getattr(
+    settings, "USERENA_SIGN_IN_AFTER_SIGNUP", True
 )
 INSTALLED_APPS = [
     "django.contrib.admin",
