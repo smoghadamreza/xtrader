@@ -17,7 +17,7 @@ urlpatterns = [
     re_path(r"^new-deposit/$", wallet_views.new_deposit, name="new-deposit"),
     re_path(r"^get-wallet/$", wallet_views.get_wallet_snapshot, name="get-wallet"),
     re_path(
-        r"^check-deposits/$", wallet_views.check_deposits, name="check-deposits"
+        r"^sync-deposits/$", wallet_views.sync_deposits, name="sync-deposits"
     ),
     re_path(r"^get-deposits/$", wallet_views.get_deposits, name="get-deposits"),
     re_path(r"^sign-up/$", authentication_views.sign_up, name="userena-sign-up"),
@@ -48,31 +48,14 @@ urlpatterns = [
         name="userena-activation-pending",
     ),
     re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/sign-up/completed/$",
-        authentication_views.sign_up_completed,
-        name="userena-sign-up-completed",
-    ),
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/email-change-completed/$",
-        authentication_views.email_change_completed,
-        name="userena-email-change-completed",
-    ),
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/email-change-verification-needed/$",
-        authentication_views.email_change_verification_needed,
-        name="userena-email-change-verification-needed",
-    ),
-    re_path(
-        r"^password/reset/$",
+        r"^(?P<username>[\@\.\w-]+)/password/reset/$",
         auth_views.PasswordResetView.as_view(
             template_name=AccountsTemplates.USERENA_FORGOT_PASSWORD_FORM,
             email_template_name=TextTemplates.USERENA_EMAIL_PASSWORD_CHANGE_MESSAGE_TXT,
             extra_context={
-                "without_usernames": userena_settings.USERENA_WITHOUT_USERNAMES
+                "without_usernames": userena_settings.USERENA_WITHOUT_USERNAMES,
             },
-            success_url=reverse_lazy(
-                "accounts:userena-password-reset-done"
-            ),
+            success_url=reverse_lazy("accounts:userena-password-reset-done"),
         ),
         name="userena-password-reset",
     ),
@@ -100,11 +83,24 @@ urlpatterns = [
     ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/email-change/$",
-        userena_views.email_change,
+        profile_views.change_email,
         name="userena-email-change",
     ),
-
-
+    re_path(
+        r"^(?P<username>[\@\.\+\w-]+)/sign-up/completed/$",
+        profile_views.sign_up_completed,
+        name="userena-sign-up-completed",
+    ),
+    re_path(
+        r"^(?P<username>[\@\.\+\w-]+)/email-change-completed/$",
+        profile_views.email_change_completed,
+        name="userena-email-change-completed",
+    ),
+    re_path(
+        r"^(?P<username>[\@\.\+\w-]+)/email-change-verification-needed/$",
+        profile_views.email_change_verification_needed,
+        name="userena-email-change-verification-needed",
+    ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/disabled/$",
         profile_views.account_is_disabled,
@@ -119,6 +115,9 @@ urlpatterns = [
         r"^(?P<username>(?!(sign-out|sign-up|sign-in)/)[\@\.\+\w-]+)/$",
         profile_views.profile_detail,
         name="userena-profile-detail",
+    ),
+    re_path(
+        r"^telegram-webhook", profile_views.telegram_webhook, name="telegram-webhook"
     ),
     re_path(r"^telegram-status/$", profile_views.telegram_status, name="telegram-status"),
     re_path(r"^account-status", profile_views.profile_status, name="account-status"),

@@ -11,7 +11,7 @@ from finance.services.exchange.data import AssetBalance, Candlestick
 from finance.services.exchange.constants.binance import BinanceRequestKeys, BinanceRequestValues
 from utils.consts import Symbol
 from finance.services.copy_trade.service import NetAssetValueCalculator
-from aum.exception import (
+from aum.exceptions import (
     FundNotFound, FundInvestorNotFound, InvalidAction,
     InsufficientDepositInFund, InsufficientUnitsFromInvestor,
     NoSnapshotFound

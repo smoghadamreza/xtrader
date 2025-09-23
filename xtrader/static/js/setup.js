@@ -274,7 +274,7 @@ function getWallet() {
 
 function updateWallet() {
     $.ajax({
-        url: '/accounts/check-deposits',
+        url: '/accounts/sync-deposits',
         success: function (result) {
             if (result.status === 200) {
                 if (result.newDeposit) {
@@ -339,7 +339,7 @@ function addNewWatchList() {
     let watchListName = document.getElementById('watchListName').value;
     if (watchListName) {
         $.ajax({
-            url: '/add-new-watchlist',
+            url: '/watchlists/add',
             method: 'POST',
             data: { 'name': watchListName },
             success: function (result) {
@@ -362,7 +362,7 @@ function addNewWatchList() {
     }
 }
 function getWatchLists(watchListId, action) {
-    let url = '/get-watchlists'
+    let url = '/watchlists'
     if (watchListId !== undefined) {
         url += '?id=' + watchListId;
         if (action) {
@@ -553,7 +553,7 @@ function promote() {
         success: function (result) {
             if (result.s === 302) {
                 alert(result.m);
-                window.location = '/profile-settings/?s=' + result.href;
+                window.location = '/settings/?s=' + result.href;
             }
             else if (result.s === 200) {
                 alert(result.m);

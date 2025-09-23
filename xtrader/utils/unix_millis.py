@@ -10,6 +10,10 @@ class UnixMillis:
         return int(dt.replace(tzinfo=timezone.utc).timestamp() * 1000)
     
     @classmethod
+    def from_datetime_to_timestamp(cls, datetime: datetime) -> int:
+        int(datetime.replace(tzinfo=timezone.utc).timestamp())
+    
+    @classmethod
     def from_ms_to_s(cls, ms: int) -> int:
         return ms // 1000
 

@@ -9,7 +9,6 @@ WORKDIR /xtrader
 ENV PYTHONUNBUFFERED 1
 ENV PATH="/opt/conda/bin:/scripts:/py/bin:$PATH"
 
-# Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
@@ -26,6 +25,7 @@ RUN apt-get update && \
     wget \
     vim \
     redis-tools \
+    netcat-openbsd \
     graphviz \
     libpq-dev \
     less && \

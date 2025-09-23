@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Exchange, Strategy, TradingView, Watchlist, WatchlistSymbol
+from .models import Exchange, Strategy, TradingViewIntegration, Watchlist, WatchlistSymbol
 
 
 class StrategyAdmin(admin.ModelAdmin):
@@ -11,7 +11,7 @@ class ExchangeAdmin(admin.ModelAdmin):
     list_display = ("trader", "name", "public_key")
 
 
-class TradingViewAdmin(admin.ModelAdmin):
+class TradingViewIntegrationAdmin(admin.ModelAdmin):
     list_display = ("trader", "webhook", "trading", "notification")
 
 
@@ -25,6 +25,6 @@ class WatchlistSymbolsAdmin(admin.ModelAdmin):
 
 admin.site.register(Strategy, StrategyAdmin)
 admin.site.register(Exchange, ExchangeAdmin)
-admin.site.register(TradingView, TradingViewAdmin)
+admin.site.register(TradingViewIntegration, TradingViewIntegrationAdmin)
 admin.site.register(Watchlist, WatchlistAdmin)
 admin.site.register(WatchlistSymbol, WatchlistSymbolsAdmin)

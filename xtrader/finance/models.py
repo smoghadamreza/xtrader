@@ -6,7 +6,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from accounts.models import Profile
+from accounts.exceptions import NoProfileFoundForUser
 from data.models import StockWatch
+from .exceptions import (
+    NoConnectedExchangeException,
+    NoConnectedTelegramException
+)
 
 
 class Watchlist(models.Model):
@@ -46,7 +51,7 @@ class Strategy(models.Model):
     trader = models.ForeignKey(
         User,
         related_name="trader",
-        null=True,
+        null=False,
         blank=True,
         on_delete=models.CASCADE,
     )
@@ -125,41 +130,59 @@ class Exchange(models.Model):
         return f"{self.trader} - {self.name} ({self.type})"
 
 
-class TradingView(models.Model):
-    trader = models.ForeignKey(
-        User, null=True, blank=True, on_delete=models.CASCADE
+class TradingViewIntegration(models.Model):
+    user = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        help_text="The user who owns this TradingView integration."
     )
-    webhook = models.CharField(max_length=80, null=True, blank=True)
-    trading = models.BooleanField(default=False)
-    notification = models.BooleanField(default=False)
+    webhook_token = models.CharField(
+        max_length=80,
+        unique=True,
+        null=True,
+        blank=True,
+        help_text="Unique token for validating TradingView webhook requests."
+    )
+    auto_trading_enabled = models.BooleanField(
+        default=False,
+        help_text="Whether this user allows incoming TradingView alerts to trigger automated trades."
+    )
+    telegram_notifications_enabled = models.BooleanField(
+        default=False,
+        help_text="Whether trade alerts and results are forwarded to the user’s Telegram account."
+    )
+    
+    def update_settings(
+        self,
+        auto_trading_enabled: bool = False,
+        telegram_notifications_enabled: bool = False
+    ) -> None:
+        """
+        Updates auto-trading and Telegram notification settings for this integration.
+        Raises exceptions if prerequisites (exchange, profile, telegram) are missing.
+        """
+        try:
+            profile = Profile.objects.get(user=self.user)
+            if telegram_notifications_enabled and not profile.telegram_id:
+                raise NoConnectedTelegramException()
 
-    @staticmethod
-    def create_webhook():
-        webhook = Profile.code_generator(12)
-        if not TradingView.objects.filter(webhook=webhook):
-            return webhook
+            exchange = Exchange.objects.get(trader=self.user)
+            if (
+                auto_trading_enabled and
+                (not exchange.private_key or not exchange.public_key)
+            ):
+                raise NoConnectedExchangeException()
 
-    def activate(self, trading=False, notification=False):
-        error = ""
-        if trading:
-            ex = Exchange.objects.filter(trader=self.trader).first()
-            if ex and ex.private_key and ex.public_key:
-                self.trading = trading
-            else:
-                error = (
-                    "برای فعال کردن ترید، ابتدا باید اکسچنج خود را متصل نمایید"
-                )
-        else:
-            self.trading = trading
-        if not error:
-            if notification:
-                profile = Profile.objects.filter(user=self.trader).first()
-                if profile and profile.telegram_id:
-                    self.notification = notification
-                else:
-                    error = ".برای فعال کردن تلگرام، ابتدا باید تلگرام خود را متصل نمایید"
-            else:
-                self.notification = notification
-        if not error:
-            self.save()
-        return error
+        except Exchange.DoesNotExist:
+            if auto_trading_enabled:
+                raise NoConnectedExchangeException()
+        except Profile.DoesNotExist:
+            raise NoProfileFoundForUser()
+
+        self.auto_trading_enabled = auto_trading_enabled
+        self.telegram_notifications_enabled = telegram_notifications_enabled
+
+        self.save(update_fields=["auto_trading_enabled", "telegram_notifications_enabled"])
+

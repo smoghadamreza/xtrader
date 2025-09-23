@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from utils.unix_millis import UnixMillis
-from aum.exception import NameIsTooLong, InvestorAlreadyExists
+from aum.exceptions import NameIsTooLong, InvestorAlreadyExists
 
 class Fund(models.Model):
     manager = models.ForeignKey(

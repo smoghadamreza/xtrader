@@ -1,4 +1,4 @@
-from finance.models import Exchange, TradingView
+from finance.models import Exchange, TradingViewIntegration
 from django.contrib.auth.models import User
 from .factory import ExchangeServiceFactory
 
@@ -11,7 +11,7 @@ class XtraderExchangeService:
         if not exchange.exists():
             return False
         
-        trading_vieww = TradingView.objects.filter(trader=trader)
+        trading_vieww = TradingViewIntegration.objects.filter(trader=trader)
         if trading_vieww.exists():
             return False
         

@@ -65,7 +65,7 @@ class AuthenticationViews:
                 if request.user.is_authenticated:
                     logout(request)
 
-                if (userena_settings.USERENA_SIGN_IN_AFTER_SIGNUP and 
+                if (userena_settings.USERENA_SIGNIN_AFTER_SIGNUP and 
                     not userena_settings.USERENA_ACTIVATION_REQUIRED):
                     user = authenticate(
                         identification=user.email, check_password=False

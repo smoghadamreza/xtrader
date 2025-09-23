@@ -9,9 +9,11 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from userena.utils import get_user_profile
 from accounts.models import Profile
-from accounts.services.exceptions import NoProfileFoundForUser
+from accounts.exceptions import NoProfileFoundForUser
 
+from utils.consts import TelegramMessage, XtraderRequestValues
 from utils.unix_millis import UnixMillis
+from utils.misc import generate_secure_token
 
 
 class ProfileService:
@@ -25,13 +27,6 @@ class ProfileService:
     @property
     def profile(self) -> Profile:
         return self._profile
-
-    @classmethod
-    def _generate_code(cls, code_length: int = 6) -> str:
-        char_set = (
-            string.ascii_lowercase + string.ascii_uppercase + string.digits
-        )
-        return ''.join(random.choice(char_set) for _ in range(code_length))
     
     @classmethod
     def get_user_and_profile(cls, username: str) -> Tuple[User, Profile]:
@@ -44,6 +39,39 @@ class ProfileService:
         profile = cast(Profile, get_user_profile(user=user))
         return user, profile
 
+    @staticmethod
+    def connect_via_telegram(user_id: int, activation_code: str) -> str:
+        """
+        Handle Telegram activation logic for a user.
+        Returns the reply message to be sent back.
+        """
+        # Default guide
+        reply = TelegramMessage.ACCOUNT_CONNECTION_GUIDE
+
+        # /start just returns guide
+        if activation_code == XtraderRequestValues.START:
+            return reply
+
+        try:
+            profile = Profile.objects.get(telegram_activation_code=activation_code)
+            now_timestamp = UnixMillis.from_datetime_to_timestamp(timezone.now())
+            activation_code_valid = (
+                profile.telegram_activation_timestamp and
+                now_timestamp < profile.telegram_activation_timestamp
+            )
+            if activation_code_valid:
+                return TelegramMessage.ACCOUNT_CONNECTED
+            return TelegramMessage.EXPIRED_ACTIVATION_CODE
+        except Profile.DoesNotExist:
+            pass
+
+        try:
+            profile = Profile.objects.get(telegram_id=str(user_id))
+            return TelegramMessage.ACCOUNT_IS_ALREADY_CONNECTED
+        except Profile.DoesNotExist:
+            return TelegramMessage.INVALID_ACTIVATION_CODE
+
+
     def get_telegram_activation_code(self) -> str:
         if self.has_telegram_id():
             return ""
@@ -55,7 +83,7 @@ class ProfileService:
         return bool(self._profile.telegram_id)
 
     def _generate_telegram_activation_code(self) -> None:
-        activation_code = self._generate_code()
+        activation_code = generate_secure_token()
         self._profile.telegram_activation_code = activation_code
         self._profile.telegram_activation_timestamp = UnixMillis.from_dt_to_ms(
             dt=timezone.now() + timedelta(minutes=5)

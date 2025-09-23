@@ -1,4 +1,11 @@
-class TemplateFiles:
+class TemplatesMeta(type):
+    def __getattribute__(cls, name):
+        value = super().__getattribute__(name)
+        if not name.startswith('__') and isinstance(value, str):
+            return value + ".html"
+        return value
+
+class TemplateFiles(metaclass=TemplatesMeta):
     ERROR = "error"
 
     # Userena Templates
@@ -44,11 +51,6 @@ class TemplateFiles:
     # Base Template
     BASE = "base"
 
-    def __getattribute__(self, name):
-        value = super().__getattribute__(name)
-        if not name.startswith('__') and isinstance(value, str):
-            return value + ".html"
-        return value
 
 class TextTemplates(TemplateFiles):
     """

@@ -13,9 +13,7 @@ from utils.consts import XtraderResponseKeys, XtraderRequestKeys
 from accounts.services import (
     WalletService, DepositService, NotificationService
 )
-from accounts.services.exceptions import (
-    NoProfileFoundForUser, NoWalletFoundForUser
-)
+from accounts.exceptions import NoWalletFoundForUser
 from accounts.services.data import DepositCreationParams
 from utils.consts import XtraderResponseMessages, XtraderResponseKeys
 
@@ -60,7 +58,7 @@ class WalletViews:
 
     @method_decorator(require_GET)
     @method_decorator(login_required)
-    def check_deposits(self, request: HttpRequest) -> JsonResponse:
+    def sync_deposits(self, request: HttpRequest) -> JsonResponse:
         """Check for new deposits for the user."""
         try:
             user = cast(User, request.user)

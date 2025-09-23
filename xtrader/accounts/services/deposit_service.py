@@ -3,7 +3,7 @@ from typing import Tuple, Optional, Dict, List
 from django.contrib.auth.models import User
 
 from accounts.models import Deposit, Wallet
-from .exceptions import NoDepositFoundForUser
+from accounts.exceptions import NoDepositFoundForUser
 from .data import DepositCreationParams, DepositRecord
 from .consts import ORPHAN_DEPOSIT_ERROR_MESSAGE
 

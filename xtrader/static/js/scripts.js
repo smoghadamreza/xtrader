@@ -2539,7 +2539,7 @@ function changeIsStrategySaved(saving_status) {
 
 
 function getWatchLists() {
-    let url = '/get-watchlists'
+    let url = '/watchlists'
     $.ajax({
         url: url,
         success: function (result) {

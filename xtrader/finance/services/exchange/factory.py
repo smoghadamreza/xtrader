@@ -1,9 +1,9 @@
 from django.http import HttpRequest
 
+from finance.exceptions import NoConnectedExchangeException
 from finance.models import Exchange, ExchangeType
 from .base import BaseExchangeService
 from .binance.service import BinanceService
-from .exception import NoConnectedExchangeException
 
 
 class ExchangeServiceFactory:

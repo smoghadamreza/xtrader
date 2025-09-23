@@ -1,3 +1,4 @@
+import logging
 from typing import cast
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -9,7 +10,7 @@ from django.shortcuts import redirect, render
 
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required_or_403
@@ -21,9 +22,13 @@ from accounts.forms import (
     EditProfileForm, ChangeEmailForm
 )
 from utils.consts import RequestType, XtraderRequestKeys, XtraderResponseMessages, XtraderResponseKeys
-from accounts.services import AccountStatusService, ProfileService
-from accounts.services.exceptions import NoProfileFoundForUser
+from accounts.services import AccountStatusService, ProfileService, TelegramService
+from accounts.exceptions import NoProfileFoundForUser
 from accounts.templates import AccountsTemplates
+from accounts.url_names import AccountsURLS
+from .data import TelegramWebhookRequest
+
+logger = logging.getLogger(__name__)
 
 
 class ProfileViews:
@@ -73,12 +78,12 @@ class ProfileViews:
                         message=XtraderResponseMessages.PROFILE_IS_UPDATED,
                         fail_silently=True,
                     )
-
-                redirect_to = reverse(
-                    "accounts:userena_profile_detail",
-                    kwargs={XtraderRequestKeys.USERNAME: username},
+                return redirect(
+                    to=reverse(
+                        AccountsURLS.PROFILE_DETAIL,
+                        kwargs={XtraderRequestKeys.USERNAME: username},
+                    )
                 )
-                return redirect(redirect_to)
 
         return render(
             request=request,
@@ -132,7 +137,7 @@ class ProfileViews:
 
     @method_decorator(secure_required)
     @method_decorator(csrf_exempt)
-    def email_change(self, request: HttpRequest, username: str):
+    def change_email(self, request: HttpRequest, username: str):
         """Change email address."""
         request_user = cast(User, request.user)
         user, profile = ProfileService.get_user_and_profile(username=username)
@@ -147,11 +152,12 @@ class ProfileViews:
             if form.is_valid():
                 form.save()
 
-                redirect_to = reverse(
-                    "accounts:userena_email_change_complete",
-                    kwargs={XtraderRequestKeys.USERNAME: user.username},
+                return redirect(
+                    to=reverse(
+                        AccountsURLS.EMAIL_CHANGE_COMPLETED,
+                        kwargs={XtraderRequestKeys.USERNAME: user.username},
+                    )
                 )
-                return redirect(redirect_to)
 
         return render(
             request=request,
@@ -162,6 +168,33 @@ class ProfileViews:
             }
         )
     
+    @method_decorator(csrf_exempt)
+    @method_decorator(require_POST)
+    def telegram_webhook(self, request: HttpRequest) -> JsonResponse:
+        """Webhook endpoint for Telegram bot messages."""
+        try:
+            webhook_data = TelegramWebhookRequest.from_request(request)
+
+            message = ProfileService.connect_via_telegram(
+                user_id=webhook_data.user_id,
+                activation_code=webhook_data.text,
+            )
+
+            result = TelegramService.send_message(
+                text=message,
+                user_id=webhook_data.user_id
+            )
+
+        except Exception as e:
+            logger.error("Telegram webhook error: %s", e, exc_info=True)
+            return JsonResponse(
+                {XtraderResponseKeys.MESSAGE: XtraderResponseMessages.SOMETHING_WENT_WRONG}
+            )
+
+        return JsonResponse(
+            {XtraderResponseKeys.MESSAGE: XtraderResponseMessages.ACTION_SUCCESS}
+        )
+
     def sign_up_completed(self, request: HttpRequest, username: str):
         context = self._simple_template_render_default_context(username=username)
         context.update({

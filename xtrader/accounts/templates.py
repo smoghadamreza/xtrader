@@ -4,8 +4,7 @@ class AccountsTemplates(TemplateFiles):
     """
     Manages template paths for the 'accounts' app.
     """
-    BASE = "accounts/"
-    LANDING = BASE + "landing"
-    MAIL_TEMPLATE = BASE + "mail_template"
-    SETTINGS = BASE + "settings"
-    USER_INFO = BASE + "user_info"
+    LANDING = "landing"
+    MAIL_TEMPLATE = "mail_template"
+    SETTINGS = "settings"
+    USER_INFO = "user_info"

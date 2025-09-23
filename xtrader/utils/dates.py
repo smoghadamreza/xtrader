@@ -2,7 +2,7 @@ import time
 from django.utils import timezone
 from datetime import datetime
 
-import xtrader.utils.jalali as jalali
+import utils.jalali as jalali
 import data.redis as redis
 from data.models import StockWatch
 

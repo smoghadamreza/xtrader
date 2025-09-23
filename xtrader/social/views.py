@@ -12,14 +12,15 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import Profile
-from finance import notification
+from accounts.services import TelegramService
 from finance.models import Exchange
-from finance.views import get_user
+from finance.views import get_user_context
 from social.models import Follow, ProTrader
-from finance.services.exchange.factory import ExchangeServiceFactory, NoConnectedExchangeException
+from finance.exceptions import NoConnectedExchangeException
+from finance.services.exchange.factory import ExchangeServiceFactory
 from finance.services import xtrader_exchange_service
 from social.service import ProTraderService
-from social.exception import NoProTraderFound
+from social.exceptions import NoProTraderFound
 from finance.services.copy_trade.service import CopyTradeService
 from social.templates import SocialTemplates
 
@@ -157,8 +158,8 @@ def promote(request: HttpRequest):
             "s": 200,
             "m": "حساب شما ارتقا پیدا کرد، پس از تایید نام نمایشی به شبکه اضافه می‌شوید",
         }
-        notification.send_telegram_message(
-            f'promotion request: {data["brand"]}',
+        TelegramService().send_message(
+            message=f'promotion request: {data["brand"]}',
             user_id=settings.ADMIN_TEL_ID,
         )
     else:
@@ -167,7 +168,7 @@ def promote(request: HttpRequest):
 
 
 def trader(request):
-    return render(request, SocialTemplates.TRADE_PROFILE, get_user(request=request))
+    return render(request, SocialTemplates.TRADE_PROFILE, get_user_context(request=request))
 
 
 def get_profile(request, pro_id):
@@ -202,11 +203,11 @@ def get_profile(request, pro_id):
 
 @login_required
 def copy_trading(request):
-    return render(request, SocialTemplates.COPY_TRADING, get_user(request=request))
+    return render(request, SocialTemplates.COPY_TRADING, get_user_context(request=request))
 
 
 def league(request):
-    return render(request, SocialTemplates.LEAGUE_LANDING, get_user(request=request))
+    return render(request, SocialTemplates.LEAGUE_LANDING, get_user_context(request=request))
 
 
 @login_required

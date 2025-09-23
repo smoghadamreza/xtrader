@@ -22,10 +22,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "LOCAL_DEBUG_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get("DEBUG", 1)))
+DEBUG = os.getenv("DEBUG", "false").lower() in ("true", "1")
+
+# Only enable proxy in debug mode
+if DEBUG:
+    proxy_url = "http://host.docker.internal:10808"
+    os.environ["http_proxy"] = proxy_url
+    os.environ["https_proxy"] = proxy_url
+
+    # Optional: keep requests library aware of no_proxy
+    os.environ.setdefault("no_proxy", "localhost,127.0.0.1")
+
+    print(f"[DEBUG] Proxy enabled for Django: {proxy_url}")
+
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 ALLOWED_HOSTS.extend(
@@ -49,9 +61,8 @@ USERENA_REDIRECT_ON_SIGNOUT = getattr(
 USERENA_SIGNIN_REDIRECT_URL = getattr(
     settings, "USERENA_SIGNIN_REDIRECT_URL", "/robots"
 )
-USERENA_SIGN_IN_AFTER_SIGNUP = getattr(
-    settings, "USERENA_SIGN_IN_AFTER_SIGNUP", True
-)
+# Defaults to False because there is an activation step.
+USERENA_SIGNIN_AFTER_SIGNUP = getattr(settings, "USERENA_SIGNIN_AFTER_SIGNUP", False)
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

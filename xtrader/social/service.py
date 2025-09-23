@@ -1,12 +1,11 @@
 from typing import List, Optional
 
+from finance.exceptions import NoConnectedExchangeException
 from finance.services.exchange.data import AccountSnapshot
 from finance.services.exchange.factory import ExchangeServiceFactory
-from finance.services.exchange.base import BaseExchangeService
 from django.contrib.auth.models import User
 from .models import ProTrader
-from finance.services.exchange.exception import NoConnectedExchangeException
-from .exception import NoProTraderFound, NoExchangeServiceForProTrader
+from .exceptions import NoProTraderFound, NoExchangeServiceForProTrader
 from utils.unix_millis import UnixMillis
 
 

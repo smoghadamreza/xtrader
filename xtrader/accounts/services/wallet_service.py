@@ -14,7 +14,6 @@ from .data import (
     DepositCreationParams
 )
 from .deposit_service import DepositService
-from .exceptions import NoWalletFoundForUser
 
 
 class WalletService:
