@@ -6,8 +6,8 @@ from django.http import HttpResponse
 
 from utils.consts import XtraderResponseKeys
 from finance.views.demo_views import (
-    test_volume,
-    test_api,
+    demo_test_volume,
+    demo_test_api,
     DEFAULT_SYMBOL_ID,
 )
 
@@ -33,7 +33,7 @@ class TestTestViews:
         request = self.rf.get("/")
         request.user = self.user
 
-        response = test_volume(request)
+        response = demo_test_volume(request)
 
         assert isinstance(response, HttpResponse)
         assert response.status_code == 200
@@ -50,7 +50,7 @@ class TestTestViews:
         request = self.rf.get("/")
         request.user = self.user
 
-        response = test_api(request)
+        response = demo_test_api(request)
 
         assert isinstance(response, HttpResponse)
         assert response.status_code == 200

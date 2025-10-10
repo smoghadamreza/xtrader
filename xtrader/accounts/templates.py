@@ -6,5 +6,5 @@ class AccountsTemplates(TemplateFiles):
     """
     LANDING = "landing"
     MAIL_TEMPLATE = "mail_template"
-    SETTINGS = "settings"
+    SETTINGS = "user_settings"
     USER_INFO = "user_info"

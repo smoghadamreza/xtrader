@@ -75,7 +75,7 @@ class TestFinanceViews:
         request = self.rf.get("/finance/portfolio")
         request.user = self.user
 
-        response = portfolio(request, exchange_service=mock_service)
+        response = portfolio(request)
         data = json.loads(response.content.decode())
         assert data[XtraderResponseKeys.ASSETS] == [{"asset": "BTC"}]
 
@@ -85,8 +85,8 @@ class TestFinanceViews:
         request = self.rf.get("/finance/portfolio")
         request.user = self.user
 
-        # manually calling decorator to simulate behavior
-        from finance.views import user_exchange_must_be_connected
+        # ✅ FIX: import from correct module
+        from finance.views.exchange_views import user_exchange_must_be_connected
 
         @user_exchange_must_be_connected
         def dummy_view(request, exchange_service):
@@ -109,7 +109,7 @@ class TestFinanceViews:
         request = self.rf.get("/finance/orders", data={BinanceRequestKeys.SYMBOL: "BTCUSDT"})
         request.user = self.user
 
-        response = get_orders(request, exchange_service=mock_service)
+        response = get_orders(request)
         data = json.loads(response.content.decode())
         assert data[XtraderResponseKeys.ORDERS] == [{"id": 1}]
 
@@ -126,7 +126,7 @@ class TestFinanceViews:
         request = self.rf.get("/finance/cancel", data=params)
         request.user = self.user
 
-        response = cancel_order(request, exchange_service=mock_service)
+        response = cancel_order(request)
         assert response.status_code == 200
         assert response.content.decode() == "OK"
 
@@ -140,7 +140,7 @@ class TestFinanceViews:
         request = self.rf.get("/finance/cancel", data=params)
         request.user = self.user
 
-        response = cancel_order(request, exchange_service=mock_service)
+        response = cancel_order(request)
         assert response.status_code == 400
         assert response.content.decode() == "e"
 

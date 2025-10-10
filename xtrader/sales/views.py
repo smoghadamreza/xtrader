@@ -42,8 +42,3 @@ def subscribe(request):
         return JsonResponse({"s": 403, "m": "پکیج موجود نیست"})
     result = Subscription.subscribe(request.user, pack)
     return JsonResponse(result)
-
-
-# TODO: The template does not exist.
-def packages_view(request):
-    return render(request, "packages.html")

@@ -1,0 +1,6 @@
+import copytrade_views
+import exchange_views
+import follow_views
+import pro_trader_views
+import profile_views
+import public_views

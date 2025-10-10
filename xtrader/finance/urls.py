@@ -76,6 +76,6 @@ urlpatterns = [
     re_path(r"^orders", exchange_views.get_orders, name="orders"),
     re_path(r"^cancel-order", exchange_views.cancel_order, name="cancel-order"),
 
-    re_path(r"^test-volume", demo_views.test_volume, name="test-volume"),
-    re_path(r"^test-api", demo_views.test_api, name="test-api"),
+    re_path(r"^test-volume", demo_views.demo_test_volume, name="test-volume"),
+    re_path(r"^test-api", demo_views.demo_test_api, name="test-api"),
 ]
