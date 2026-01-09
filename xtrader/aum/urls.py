@@ -3,14 +3,28 @@ from django.urls import re_path
 from aum import views
 
 urlpatterns = [
-    re_path(r'^$', views.management, name='management'),
-    re_path(r'^issueOrRedeemUnit', views.issue_redeem_unit, name='issueOrRedeemUnit'),
-    re_path(r'^redeemUnit', views.redeem_unit, name='redeemUnit'),
-    re_path(r'^addInvestor', views.add_investor, name='addInvestor'),
-    re_path(r'^transactionsHistory', views.transactions_history, name='transactions_history'),
-    re_path(r'^investors', views.investors, name='investors'),
-    re_path(r'^getFund', views.get_fund, name='getFund'),
-    re_path(r'^initFundPerformance', views.init_fund_performance, name='initFundPerformance'),
-    re_path(r'^fundPerformance', views.get_fund_performance, name='getFundPerformance'),
-    # re_path(r'^scan_market', views.scan_market, name='scan market'),
+    re_path(r"^$", views.management, name="management"),
+    re_path(
+        r"^issue-or-redeem-unit",
+        views.issue_redeem_unit,
+        name="issue-or-redeem-unit",
+    ),
+    re_path(r"^add-investor", views.add_investor, name="add-investor"),
+    re_path(
+        r"^transactions-history",
+        views.transactions_history,
+        name="transactions_history",
+    ),
+    re_path(r"^investors", views.investors, name="investors"),
+    re_path(r"^get-fund", views.get_fund, name="get-fund"),
+    re_path(
+        r"^init-fund-performance",
+        views.init_fund_performance,
+        name="init-fund-performance",
+    ),
+    re_path(
+        r"^fund-performance",
+        views.get_fund_performance,
+        name="get-fund-performance",
+    ),
 ]

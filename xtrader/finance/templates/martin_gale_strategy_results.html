@@ -1,0 +1,28 @@
+<div id="table">
+    <div class="divTableRow main-nav" style="background: #1c1f32">
+        <div class="divTableCell">عملیات</div>
+        <div class="divTableCell">قیمت</div>
+        <div class="divTableCell">حجم</div>
+        <div class="divTableCell">روز</div>
+        <div class="divTableCell">سود/ضرر محقق شده</div>
+    </div>
+    {% for record in history %}
+        <div class="divTableRow" style="background:{% cycle '#4d5068' '#1c1f32' %}">
+            <div class="divTableCell">{{ record.action }}</div>
+            <div class="divTableCell">{{ record.price }}</div>
+            <div class="divTableCell">{{ record.volume }}</div>
+            <div class="divTableCell">{{ record.day_index }}</div>
+            <div class="divTableCell">{{ record.realized_profit_loss }}</div>
+        </div>
+    {% endfor %}
+</div>
+<script>
+    var buyDates = {{ buy_dates | safe }},
+        chart = $('#container').highcharts();
+    function drawlines() {
+        buyDates.forEach(function (date) {
+            // Your Highcharts logic here to add buy markers
+            // Example: chart.xAxis[0].addPlotLine({ value: date });
+        })
+    }
+</script>

@@ -5,14 +5,14 @@
  *
  * License: www.highcharts.com/license
  */
-(function(factory) {
+(function (factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
     } else {
         factory(Highcharts);
     }
-}(function(Highcharts) {
-    (function(H) {
+}(function (Highcharts) {
+    (function (H) {
         /**
          * (c) 2010-2016 Torstein Honsi
          *
@@ -36,7 +36,7 @@
         /**
          * The ColorAxis object for inclusion in gradient legends
          */
-        ColorAxis = H.ColorAxis = function() {
+        ColorAxis = H.ColorAxis = function () {
             this.init.apply(this, arguments);
         };
         extend(ColorAxis.prototype, Axis.prototype);
@@ -65,7 +65,7 @@
                 tickLength: 5,
                 showInLegend: true
             },
-            init: function(chart, userOptions) {
+            init: function (chart, userOptions) {
                 var horiz = chart.options.legend.layout !== 'vertical',
                     options;
 
@@ -106,7 +106,7 @@
              * NOTE: Changes here should be copied
              * to the same function in drilldown.src.js and solid-gauge-src.js.
              */
-            tweenColors: function(from, to, pos) {
+            tweenColors: function (from, to, pos) {
                 // Check for has alpha, because rgba colors perform worse due to lack of
                 // support in WebKit.
                 var hasAlpha,
@@ -130,7 +130,7 @@
                 return ret;
             },
 
-            initDataClasses: function(userOptions) {
+            initDataClasses: function (userOptions) {
                 var axis = this,
                     chart = this.chart,
                     dataClasses,
@@ -141,7 +141,7 @@
                 this.dataClasses = dataClasses = [];
                 this.legendItems = [];
 
-                each(userOptions.dataClasses, function(dataClass, i) {
+                each(userOptions.dataClasses, function (dataClass, i) {
                     var colors;
 
                     dataClass = merge(dataClass);
@@ -167,12 +167,12 @@
                 });
             },
 
-            initStops: function(userOptions) {
+            initStops: function (userOptions) {
                 this.stops = userOptions.stops || [
                     [0, this.options.minColor],
                     [1, this.options.maxColor]
                 ];
-                each(this.stops, function(stop) {
+                each(this.stops, function (stop) {
                     stop.color = color(stop[1]);
                 });
             },
@@ -181,13 +181,13 @@
              * Extend the setOptions method to process extreme colors and color
              * stops.
              */
-            setOptions: function(userOptions) {
+            setOptions: function (userOptions) {
                 Axis.prototype.setOptions.call(this, userOptions);
 
                 this.options.crosshair = this.options.marker;
             },
 
-            setAxisSize: function() {
+            setAxisSize: function () {
                 var symbol = this.legendSymbol,
                     chart = this.chart,
                     legendOptions = chart.options.legend || {},
@@ -215,7 +215,7 @@
             /**
              * Translate from a value to a color
              */
-            toColor: function(value, point) {
+            toColor: function (value, point) {
                 var pos,
                     stops = this.stops,
                     from,
@@ -271,7 +271,7 @@
             /**
              * Override the getOffset method to add the whole axis groups inside the legend.
              */
-            getOffset: function() {
+            getOffset: function () {
                 var group = this.legendGroup,
                     sideOffset = this.chart.axisOffset[this.side];
 
@@ -299,7 +299,7 @@
             /**
              * Create the color gradient
              */
-            setLegendColor: function() {
+            setLegendColor: function () {
                 var grad,
                     horiz = this.horiz,
                     options = this.options,
@@ -325,7 +325,7 @@
             /**
              * The color axis appears inside the legend and has its own legend symbol
              */
-            drawLegendSymbol: function(legend, item) {
+            drawLegendSymbol: function (legend, item) {
                 var padding = legend.padding,
                     legendOptions = legend.options,
                     horiz = this.horiz,
@@ -356,7 +356,7 @@
             setState: noop,
             visible: true,
             setVisible: noop,
-            getSeriesExtremes: function() {
+            getSeriesExtremes: function () {
                 var series;
                 if (this.series.length) {
                     series = this.series[0];
@@ -364,7 +364,7 @@
                     this.dataMax = series.valueMax;
                 }
             },
-            drawCrosshair: function(e, point) {
+            drawCrosshair: function (e, point) {
                 var plotX = point && point.plotX,
                     plotY = point && point.plotY,
                     crossPos,
@@ -395,23 +395,23 @@
                     }
                 }
             },
-            getPlotLinePath: function(a, b, c, d, pos) {
+            getPlotLinePath: function (a, b, c, d, pos) {
                 return isNumber(pos) ? // crosshairs only // #3969 pos can be 0 !!
                     (this.horiz ? ['M', pos - 4, this.top - 6, 'L', pos + 4, this.top - 6, pos, this.top, 'Z'] : ['M', this.left, pos, 'L', this.left - 6, pos + 6, this.left - 6, pos - 6, 'Z']) :
                     Axis.prototype.getPlotLinePath.call(this, a, b, c, d);
             },
 
-            update: function(newOptions, redraw) {
+            update: function (newOptions, redraw) {
                 var chart = this.chart,
                     legend = chart.legend;
 
-                each(this.series, function(series) {
+                each(this.series, function (series) {
                     series.isDirtyData = true; // Needed for Axis.update when choropleth colors change
                 });
 
                 // When updating data classes, destroy old items and make sure new ones are created (#3207)
                 if (newOptions.dataClasses && legend.allItems) {
-                    each(legend.allItems, function(item) {
+                    each(legend.allItems, function (item) {
                         if (item.isDataClass) {
                             item.legendGroup.destroy();
                         }
@@ -433,7 +433,7 @@
             /**
              * Get the legend item symbols for data classes
              */
-            getDataClassLegendSymbols: function() {
+            getDataClassLegendSymbols: function () {
                 var axis = this,
                     chart = this.chart,
                     legendItems = this.legendItems,
@@ -443,7 +443,7 @@
                     name;
 
                 if (!legendItems.length) {
-                    each(this.dataClasses, function(dataClass, i) {
+                    each(this.dataClasses, function (dataClass, i) {
                         var vis = true,
                             from = dataClass.from,
                             to = dataClass.to;
@@ -473,10 +473,10 @@
                             visible: true,
                             setState: noop,
                             isDataClass: true,
-                            setVisible: function() {
+                            setVisible: function () {
                                 vis = this.visible = !vis;
-                                each(axis.series, function(series) {
-                                    each(series.points, function(point) {
+                                each(axis.series, function (series) {
+                                    each(series.points, function (point) {
                                         if (point.dataClass === i) {
                                             point.setVisible(vis);
                                         }
@@ -496,8 +496,8 @@
         /**
          * Handle animation of the color attributes directly
          */
-        each(['fill', 'stroke'], function(prop) {
-            H.Fx.prototype[prop + 'Setter'] = function() {
+        each(['fill', 'stroke'], function (prop) {
+            H.Fx.prototype[prop + 'Setter'] = function () {
                 this.elem.attr(prop, ColorAxis.prototype.tweenColors(color(this.start), color(this.end), this.pos));
             };
         });
@@ -505,7 +505,7 @@
         /**
          * Extend the chart getAxes method to also get the color axis
          */
-        wrap(Chart.prototype, 'getAxes', function(proceed) {
+        wrap(Chart.prototype, 'getAxes', function (proceed) {
 
             var options = this.options,
                 colorAxisOptions = options.colorAxis;
@@ -523,7 +523,7 @@
          * Wrap the legend getAllItems method to add the color axis. This also removes the
          * axis' own series to prevent them from showing up individually.
          */
-        wrap(Legend.prototype, 'getAllItems', function(proceed) {
+        wrap(Legend.prototype, 'getAllItems', function (proceed) {
             var allItems = [],
                 colorAxis = this.chart.colorAxis[0];
 
@@ -540,7 +540,7 @@
                 }
 
                 // Don't add the color axis' series
-                each(colorAxis.series, function(series) {
+                each(colorAxis.series, function (series) {
                     series.options.showInLegend = false;
                 });
             }
@@ -548,7 +548,7 @@
             return allItems.concat(proceed.call(this));
         });
 
-        wrap(Legend.prototype, 'colorizeItem', function(proceed, item, visible) {
+        wrap(Legend.prototype, 'colorizeItem', function (proceed, item, visible) {
             proceed.call(this, item, visible);
             if (visible && item.legendColor) {
                 item.legendSymbol.attr({
@@ -558,7 +558,7 @@
         });
 
     }(Highcharts));
-    (function(H) {
+    (function (H) {
         /**
          * (c) 2010-2016 Torstein Honsi
          *
@@ -577,12 +577,12 @@
             /**
              * Set the visibility of a single point
              */
-            setVisible: function(vis) {
+            setVisible: function (vis) {
                 var point = this,
                     method = vis ? 'show' : 'hide';
 
                 // Show and hide associated elements
-                each(['graphic', 'dataLabel'], function(key) {
+                each(['graphic', 'dataLabel'], function (key) {
                     if (point[key]) {
                         point[key][method]();
                     }
@@ -604,13 +604,13 @@
             /**
              * In choropleth maps, the color is a result of the value, so this needs translation too
              */
-            translateColors: function() {
+            translateColors: function () {
                 var series = this,
                     nullColor = this.options.nullColor,
                     colorAxis = this.colorAxis,
                     colorKey = this.colorKey;
 
-                each(this.data, function(point) {
+                each(this.data, function (point) {
                     var value = point[colorKey],
                         color;
 
@@ -626,7 +626,7 @@
             /**
              * Get the color attibutes to apply on the graphic
              */
-            colorAttribs: function(point) {
+            colorAttribs: function (point) {
                 var ret = {};
                 if (defined(point.color)) {
                     ret[this.colorProp || 'fill'] = point.color;
@@ -636,7 +636,7 @@
         };
 
     }(Highcharts));
-    (function(H) {
+    (function (H) {
         /**
          * (c) 2010-2016 Torstein Honsi
          *
@@ -660,7 +660,7 @@
             borderWidth: 0,
 
             dataLabels: {
-                formatter: function() { // #2945
+                formatter: function () { // #2945
                     return this.point.value;
                 },
                 inside: true,
@@ -693,7 +693,7 @@
             /**
              * Override the init method to add point ranges on both axes.
              */
-            init: function() {
+            init: function () {
                 var options;
                 seriesTypes.scatter.prototype.init.apply(this, arguments);
 
@@ -701,18 +701,18 @@
                 options.pointRange = pick(options.pointRange, options.colsize || 1); // #3758, prevent resetting in setData
                 this.yAxis.axisPointRange = options.rowsize || 1; // general point range
             },
-            translate: function() {
+            translate: function () {
                 var series = this,
                     options = series.options,
                     xAxis = series.xAxis,
                     yAxis = series.yAxis,
-                    between = function(x, a, b) {
+                    between = function (x, a, b) {
                         return Math.min(Math.max(a, x), b);
                     };
 
                 series.generatePoints();
 
-                each(series.points, function(point) {
+                each(series.points, function (point) {
                     var xPad = (options.colsize || 1) / 2,
                         yPad = (options.rowsize || 1) / 2,
                         x1 = between(Math.round(xAxis.len - xAxis.translate(point.x - xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
@@ -735,10 +735,10 @@
 
                 series.translateColors();
             },
-            drawPoints: function() {
+            drawPoints: function () {
                 seriesTypes.column.prototype.drawPoints.call(this);
 
-                each(this.points, function(point) {
+                each(this.points, function (point) {
                     point.graphic.attr(this.colorAttribs(point, point.state));
                 }, this);
             },
@@ -746,7 +746,7 @@
             getBox: noop,
             drawLegendSymbol: LegendSymbolMixin.drawRectangle,
             alignDataLabel: seriesTypes.column.prototype.alignDataLabel,
-            getExtremes: function() {
+            getExtremes: function () {
                 // Get the extremes from the value data
                 Series.prototype.getExtremes.call(this, this.valueData);
                 this.valueMin = this.dataMin;

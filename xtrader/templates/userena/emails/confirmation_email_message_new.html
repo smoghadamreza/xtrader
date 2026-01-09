@@ -1,0 +1,19 @@
+{% load i18n %}{% autoescape off %}
+<html>
+<body>
+    {% if not without_usernames %}<p>{{  user.username  }}عزیز</p>{% endif %}
+    <p>
+        {% site.name  %}درخواست شما برای تغییر ایمیل در سایت .
+    </p>
+    <p>
+       با کلیک کردن برروی لینک زیر ایمیل خود را تایید کنید <br>
+        {{ protocol }}://{{ site.domain }}{% url 'accounts:userena-email-confirm' confirmation_key %}
+    </p>
+    <p>
+        با تشکر از شما <br />
+        <br />
+        {{ site_name }}
+    </p>
+    </body>
+    </html>
+{% endautoescape %}

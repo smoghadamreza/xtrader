@@ -1,0 +1,13 @@
+{% load i18n %}{% autoescape off %}
+{% if not without_usernames %}{% blocktrans with user.username as username %}{{ username }} عزیز,{% endblocktrans %}
+{% endif %}
+{% blocktrans with site.name as site %} ممنون بابت ثبت نام در {{ site }}.{% endblocktrans %}
+
+برای فعال کردن حساب خود روی لینک زیر کلیک کنید:
+https://{{ site.domain }}{% url 'accounts:userena-activate' activation_key=activation_key %}
+{#{{ protocol }}#}
+{% trans "به سایت ما خوش آمدید" %}
+
+{% trans "ارادتمند شما" %},
+{{ site.name }}
+{% endautoescape %}

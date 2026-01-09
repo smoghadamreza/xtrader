@@ -7,7 +7,7 @@ var filter_ids = [];
 var choosen_filters = {};
 // $(document).ready(function () {
 //     $.ajax({
-//         url:'http://localhost:8000/getfilters',
+//         url:'http://localhost:8000/get-filters',
 //         success:function (givenfilters) {
 //             var filters_data = JSON.parse(givenfilters);
 //             insertfilters(filters_data);
@@ -29,7 +29,7 @@ function insertfilters(filters) {
             column_num = 4, tr, counter = 0;
         kind['filters'].forEach(function (filter) {
             filter['target'].forEach(function (target) {
-                if (counter == 0)  tr = document.createElement('tr');
+                if (counter == 0) tr = document.createElement('tr');
                 var name = Object.keys(target)[0];
                 tr = insertFilterName(tr, target[name]);
                 var select = document.createElement('select'),
@@ -57,7 +57,7 @@ function insertFilterName(tr, name) {
 
 function insertFilterOptions(tr, name, select, options) {
     var td = document.createElement('td'),
-        operators = {'__lt': 'کمتر از ', '__gt': 'بیشتر از '};
+        operators = { '__lt': 'کمتر از ', '__gt': 'بیشتر از ' };
     var option = document.createElement('option');
     option.innerHTML = 'همه';
     option.setAttribute('value', '');
@@ -100,7 +100,7 @@ function filter_market(filters, page) {
     waiting('wait');
     $.ajax({
         type: 'GET',
-        url: "/filtermarket?page=" + page,
+        url: "/filter-market?page=" + page,
         data: {
             filters: JSON.stringify(filters),
             sort_by: JSON.stringify(sort_by),
@@ -130,9 +130,9 @@ $(window).scroll(function () {
     }
 });
 
-function sortTable(n,tablekind) {
+function sortTable(n, tablekind) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById("table_"+tablekind);
+    table = document.getElementById("table_" + tablekind);
     switching = true;
     //Set the sorting direction to ascending:
     dir = "asc";
@@ -189,7 +189,7 @@ function sortTable(n,tablekind) {
 var sort_by;
 function recoloring(dir, n) {
     var table = document.getElementById("table"),
-        sort_dict = {'asc': '', 'desc': '-'},
+        sort_dict = { 'asc': '', 'desc': '-' },
         rows = table.getElementsByClassName('divTableRow');
     for (i = 1; i < rows.length; i++) {
         if (i % 2 == 1) {
@@ -215,7 +215,7 @@ function reset_filters() {
 
 function change_dir() {
     var obj = document.getElementById('filters-place'),
-        dict = {'rtl': 'ltr', 'ltr': 'rtl'},
+        dict = { 'rtl': 'ltr', 'ltr': 'rtl' },
         dir = obj.dir;
     obj.dir = dict[dir];
 
@@ -232,16 +232,16 @@ function show_table(tablekind) {
     console.log(tablekind);
     ['_stockwatch', '_ratio', '_balanceSheet', '_income'].forEach(function (idd) {
         document.getElementById(idd).style.background = '#1c1f32';
-        document.getElementById('table'+idd).style.display = 'none';
+        document.getElementById('table' + idd).style.display = 'none';
     });
     document.getElementById(tablekind).style.background = '#4d5068';
-    document.getElementById('table'+tablekind).style.display = 'block';
+    document.getElementById('table' + tablekind).style.display = 'block';
 }
 function quick_check(str) {
     if (!isNaN(str)) {
         var sign = '';
-        if (Number(str)<0) {
-            str = -1*Number(str);
+        if (Number(str) < 0) {
+            str = -1 * Number(str);
             sign = '-';
         }
         str = String(str);
@@ -249,20 +249,20 @@ function quick_check(str) {
             str2 = '',
             l = str.length;
         for (var i = 0; i < l; i++) {
-            if(str.substring(i,i+1) == '.'){
-                str2 = str.substring(i+1,l);
+            if (str.substring(i, i + 1) == '.') {
+                str2 = str.substring(i + 1, l);
                 str2 = '.' + str2;
                 break
-            }else{
-                str1 += str.substring(i, i+1);
+            } else {
+                str1 += str.substring(i, i + 1);
             }
         }
         var l = str.length;
-        if(l>6 & l<=9){
-            return str.substring(0,l-6)+'.'+str.substring(l-6,l-5)+' M'
+        if (l > 6 & l <= 9) {
+            return str.substring(0, l - 6) + '.' + str.substring(l - 6, l - 5) + ' M'
         }
-        if(l>9){
-            return quick_check(str.substring(0,l-9)) +'.'+str.substring(l-9,l-8)+' B'
+        if (l > 9) {
+            return quick_check(str.substring(0, l - 9)) + '.' + str.substring(l - 9, l - 8) + ' B'
         }
         return sign + numberSeparator(str1) + str2;
     } else {

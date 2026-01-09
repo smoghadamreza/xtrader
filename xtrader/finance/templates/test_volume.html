@@ -29,7 +29,7 @@
     var symbol_id = "{{SymbolId}}";
     $(function () {
         isStrategySaved = false;
-        load_data('/data/get-data/' + symbol_id);
+        load_data('/data/candles-history/' + symbol_id);
         Highcharts.setOptions({
             lang: {
                 months: ['فروردين', 'ارديبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
@@ -361,7 +361,7 @@
                 var value = result;
                 // console.log(value);
                 symbol_id = value.symbol_id;
-                load_data('/data/get-data/' + symbol_id);
+                load_data('/data/candles-history/' + symbol_id);
                 // console.log(this);
             },
             apiSettings: {
@@ -391,8 +391,6 @@
                             // symbol_id=self.SymbolId,//symbol id
                             // kind='kind', // price
                             // category=self.ExchangeName,
-                            // symbol_name=self.InstrumentName,//title
-                            // name=self.InstrumentName,//discription
                             // description='description',
                             // title='title',
                             title: item.symbol_name,
@@ -418,7 +416,7 @@
         var data = { 'index': date, 'stoploss': Number($('#sl').val()), 'takeprofit': Number($('#tp').val()), 'symbol_id': symbol_id };
         $.ajax({
             type: 'GET',
-            url: "/volume",
+            url: "/manage-volume",
             data: {
                 param: JSON.stringify(data),
             },

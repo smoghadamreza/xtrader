@@ -1,58 +1,58 @@
 from django.contrib import admin
-from .models import *
+
+from .models import BalanceSheet, Income, MarketWatch, Ratio, StockWatch
 
 
 class stockwatch_admin(admin.ModelAdmin):
     list_display = (
-        'InstrumentName',
-        'CompanyName',
-        'ExchangeName',
-        'LastTradeDate',
-        'InstrumentStateTitle',
-        'SymbolId',
+        "instrument_name",
+        "company_name",
+        "exchange_name",
+        "last_trade_date",
+        "instrument_state_title",
+        "symbol_id",
     )
 
 
 class balance_sheet_admin(admin.ModelAdmin):
     list_display = (
-        'InstrumentName',
-        'cash',
-        'net_receivables',
-        'accounts_payable',
-        'equity',
-        'SymbolId'
+        "instrument_name",
+        "cash",
+        "net_receivables",
+        "accounts_payable",
+        "equity",
+        "symbol_id",
     )
 
 
 class income_admin(admin.ModelAdmin):
     list_display = (
-        'InstrumentName',
-        'total_income',
-        'gross_profit',
-        'net_income',
-        'SymbolId',
+        "instrument_name",
+        "total_income",
+        "gross_profit",
+        "net_income",
+        "symbol_id",
     )
 
 
 class ratio_admin(admin.ModelAdmin):
     list_display = (
-        'InstrumentName',
-        'current_ratio',
-        'quick_ratio',
-        'cash_ratio',
-        'SymbolId',
+        "instrument_name",
+        "current_ratio",
+        "quick_ratio",
+        "cash_ratio",
+        "symbol_id",
     )
 
 
 class marketwatch_admin(admin.ModelAdmin):
     list_display = (
-        'get_CompanyName',
-        'get_instrument_name',
-        'get_SymbolId',
+        "get_company_name",
+        "get_instrument_name",
+        "get_symbol_id",
     )
 
 
-# Register your models here.
 admin.site.register(StockWatch, stockwatch_admin)
 admin.site.register(Ratio, ratio_admin)
 admin.site.register(Income, income_admin)

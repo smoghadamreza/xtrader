@@ -1,0 +1,736 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}تنظیمات{% endblock %}
+{% block headContent %}
+{% csrf_token %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/setup.css' %}?v=1" />
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="/static/js/jquery.dataTables.js"></script>
+<style>
+    @import url(https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css);
+    @import url(https://fonts.googleapis.com/css?family=Raleway:400,500,800);
+    @import url(https://fonts.googleapis.com/css?family=Montserrat:800);
+
+    .snip1214 {
+        < !-- font-family: 'Raleway', Arial, sans-serif, 'IranSans';
+        -->font-family: 'IranSans';
+        color: #000000;
+        text-align: center;
+        font-size: 16px;
+        width: 100%;
+        max-width: 1000px;
+        margin: 40px 10px;
+    }
+
+    .snip1214 .plan {
+        margin: 0;
+        width: 25%;
+        position: relative;
+        float: left;
+        background-color: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .snip1214 * {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .snip1214 header {
+        position: relative;
+    }
+
+    .snip1214 .plan-title {
+        position: relative;
+        top: 0;
+        font-weight: 800;
+        padding: 5px 15px;
+        margin: 0 auto;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        margin: 0;
+        display: inline-block;
+        background-color: #222f3d;
+        color: #ffffff;
+        text-transform: uppercase;
+    }
+
+    .snip1214 .plan-cost {
+        padding: 0px 10px 20px;
+    }
+
+    .snip1214 .plan-price {
+        < !-- font-family: 'Montserrat', Arial, sans-serif;
+        -->font-weight: 800;
+        font-size: 2.4em;
+        color: #34495e;
+    }
+
+    .snip1214 .plan-type {
+        opacity: 0.6;
+    }
+
+    .snip1214 .plan-features {
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        list-style: outside none none;
+        font-size: 0.8em;
+    }
+
+    .snip1214 .plan-features li {
+        border-top: 1px solid #d2d7e2;
+        padding: 10px 5%;
+    }
+
+    .snip1214 .plan-features li:nth-child(even) {
+        background: rgba(0, 0, 0, 0.08);
+    }
+
+    .snip1214 .plan-features i {
+        margin-right: 8px;
+        opacity: 0.4;
+    }
+
+    .snip1214 .plan-select {
+        border-top: 1px solid #d2d7e2;
+        padding: 10px 10px 0;
+    }
+
+    .snip1214 .plan-select a {
+        background-color: #222f3d;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 0.5em 1em;
+        -webkit-transform: translateY(50%);
+        transform: translateY(50%);
+        font-weight: 800;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+
+    .snip1214 .plan-select a:hover {
+        background-color: #46627f;
+    }
+
+    .snip1214 .featured {
+        margin-top: -10px;
+        background-color: #34495e;
+        color: #ffffff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        z-index: 1;
+    }
+
+    .snip1214 .featured .plan-title,
+    .snip1214 .featured .plan-price {
+        color: #ffffff;
+    }
+
+    .snip1214 .featured .plan-cost {
+        padding: 10px 10px 20px;
+    }
+
+    .snip1214 .featured .plan-features li {
+        border-top: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .snip1214 .featured .plan-select {
+        padding: 20px 10px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    @media only screen and (max-width: 767px) {
+        .snip1214 .plan {
+            width: 50%;
+        }
+
+        .snip1214 .plan-title,
+        .snip1214 .plan-select a {
+            -webkit-transform: translateY(0);
+            transform: translateY(0);
+        }
+
+        .snip1214 .plan-cost,
+        .snip1214 .featured .plan-cost {
+            padding: 20px 10px 20px;
+        }
+
+        .snip1214 .plan-select,
+        .snip1214 .featured .plan-select {
+            padding: 10px 10px 10px;
+        }
+
+        .snip1214 .featured {
+            margin-top: 0;
+        }
+    }
+
+    @media only screen and (max-width: 440px) {
+        .snip1214 .plan {
+            width: 100%;
+        }
+    }
+</style>
+<style>
+    h2 {
+        font-family: IranSans;
+    }
+
+    .odd {
+        background-color: #4d5068 !important;
+    }
+
+    .even {
+        background-color: #292d48 !important;
+    }
+</style>
+
+<script src="{% static 'js/setup.js' %}?v=3"></script>
+{% endblock headContent %}
+
+{% load i18n %}
+{% block bodyContent %}
+<div dir="rtl" style="height: 100%;overflow: auto;">
+    <br>
+    <div style="font-size: 20px;">
+        تنظیمات حساب
+    </div>
+    <div class="ui right aligned segment">
+        <p style="display: inline">تنظیمات</p>
+        <select onchange="toggleSetup(this.value)" id="settingMenu">
+            <option value="exchange">اکسچنج</option>
+            <option value="telegram">تلگرام</option>
+            <option value="tradingView">تریدینگ ویو</option>
+            <option value="watchlist">واچ لیست</option>
+            <option value="packages">خرید اشتراک</option>
+            <option value="wallet">کیف پول</option>
+            <option value="promote">ارتقا حساب</option>
+        </select>
+    </div>
+
+
+    <div>
+        <div class="ui segments">
+            <div class="ui right aligned segment" id="exchange" dir="rtl" style="display:block;">
+                <p class="about">اتصال رمزثروت به اکسچنج: </p>
+                <br>
+                <br>
+                <div>
+                    <table>
+                        <tr>
+                            <td>اکسچنج:</td>
+                            <td>
+                                <select id="exchangeName" class="long-select" style="width: 100%">
+                                    <option value="binance"> (بایننس) Binance</option>
+                                </select>
+                            </td>
+                            <td>
+                                <a href="https://www.aparat.com/v/3vnO9">
+                                    <button class="positive ui button">ویدیو آموزش اتصال به بایننس</button>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>کلید عمومی:</td>
+                            <td>
+                                <input id="publicKey" placeholder="API Key" style="width: 300%" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>کلید خصوصی:</td>
+                            <td>
+                                <input id="secretKey" placeholder="Secret Key" password style="width: 300%" required>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <br>
+                    <button class="positive ui button" id="saveExchange" style="float: left;"
+                        onclick="saveExchange()">ذخیره کردن
+                    </button>
+                    <button class="negative ui button" id="removeExchange"
+                        style="display:none;float: left; font-family: IranSans" onclick="removeExchange()">پاک کردن
+                    </button>
+                    <br>
+                    <br>
+                    <br>
+                </div>
+            </div>
+            <div class="ui right aligned segment" id="tradingView" dir="rtl" style="display:none;">
+                <p class="about">اتصال رمزثروت به تریدینگ‌ ویو: </p>
+                <br>
+                <br>
+                <div>
+                    <table style="width: 70%">
+                        <tr>
+                            <td style="width: 15%">لینک وب هوک:</td>
+                            <td>
+                                <input id="webhook" style="width: 100%;" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>اتصال به:</td>
+                            <td>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" id="webhookNotification">
+                                    <label style="color:white">تلگرام</label>
+                                </div>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" id="webhookTrading">
+                                    <label style="color:white">ترید</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>فرمت پیام:</td>
+                            <td>
+                                <input value="Exchange Market Action Symbol Volume Price" style="width: 100%" required
+                                    disabled>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>راهنما:</td>
+                            <td style="text-align: justify;text-justify: inter-word;">
+                                برای مثال اگر می‌خواهید پس از دریافت آلارم تریدینگ ویو برای شما
+                                خرید 0.1 بیت‌کوین به قیمت 20000 دلار در اکسچنج بایننس، بازار اسپات
+                                انجام شود باید در قسمت پیام هشدار تریدینگ‌ ویو بنویسید:
+                                <br>
+                                binance spot buy btcusdt 0.1 20000
+                                <br>
+                                همچنین اگر از قیمت بازار در لحظه‌ دریافت هشدار اطلاعی ندارید، یا می‌خواهید سفارش به هر
+                                قیمتی انجام شود
+                                می‌توانید بجای نوشتن قیمت از حرف m استفاده کنید که به معنی ارسال سفارش مارکت می‌باشد:
+                                <br>
+                                binance spot buy btcusdt 0.1 m
+                                <br>
+                                یعنی: خرید 0.1 بیت‌کوین به قیمت بازار در اکسچنج بایننس، بازار اسپات
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <br>
+                    <button class="positive ui button" style="float: left;" onclick="webhookSave()">ذخیره کردن
+                    </button>
+                    <br>
+                    <br>
+                    <br>
+                </div>
+            </div>
+            <div class="ui right aligned segment" id="telegram" dir="rtl" style="display:none;">
+                <p class="about">اتصال رمزثروت به تلگرام: </p>
+                <br>
+                <br>
+                <div>
+                    <table>
+                        <tr>
+                            <td style="width: 10%">وضعیت:</td>
+                            <td id="telegramStatus">
+                                حساب شما به تلگرام متصل نیست
+                            </td>
+                        </tr>
+                        <tr id="TelegramActivationCode">
+                            <td>کد فعالسازی:</td>
+                            <td>
+                                <input id="TelegramActivationCodePlace" placeholder="کد فعالسازی" required disabled>
+                            </td>
+                        </tr>
+                        <tr id="TelegramActivationGuide">
+                            <td>راهنما:</td>
+                            <td>
+                                برای اتصال حساب به تلگرام، کد فعالسازی را به ربات تلگرام با آیدی
+                                <br>
+                                <a href="https://t.me/XTreasuryBOT">XTreasuryBOT</a>
+                                <br>
+                                ارسال کنید.
+                            </td>
+                        </tr>
+                        <tr id="TelegramActivationGuide2">
+                            <td>مزایا:</td>
+                            <td>
+                                با اتصال تلگرام، پس از بسته شدن کندل (در تایم فریم استراتژی)، نتیجه اسکن بازار بر اساس
+                                استراتژی خودتان، برای شما در تلگرام ارسال می‌شود.
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <br>
+                    <button class="positive ui button" id="telegramCheckButton" style="float: left;"
+                        onclick="getTelegramStatus()">بررسی اتصال
+                    </button>
+                    <br>
+                    <br>
+                    <br>
+                </div>
+            </div>
+            <div class="ui right aligned segment" id="watchlist" dir="rtl" style="display:none;">
+                <table style="width: 70%">
+                    <tr>
+                        <td style="width: 20%">ساخت واچ لیست:</td>
+                        <td>
+                            <input placeholder="نام واچ لیست" style="width: 15rem" id="watchListName">
+                            <button class="positive ui button" style="width: 8rem" onclick="addNewWatchList()">اضافه
+                                کردن
+                            </button>
+                            <!--                            <span>خطا</span>-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 15%">انتخاب واچ لیست:</td>
+                        <td>
+                            <select id="watchListNames" style="width: 15rem;" onchange="getWatchLists(this.value)">
+                                <option>پیش فرض</option>
+                            </select>
+                            <button class="negative ui button" style="width: 8rem" onclick="removeWatchlist()">
+                                پاک کردن
+                            </button>
+                            <!--                            <span>خطا</span>-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>اضافه کردن نماد:</td>
+                        <td style="">
+                            <div style="direction: ltr; width: 15rem">
+                                <div class="ui search" id="watchlistsearch">
+                                    <div class="ui icon input">
+                                        <input class="prompt" type="text" placeholder="جستجو نماد" style="width: 15rem">
+                                        <i class="search icon"></i>
+                                    </div>
+                                    <div class="results"></div>
+                                </div>
+                            </div>
+                            <span id="watchlistMsgs"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <br>
+                            نمادها:
+                        </td>
+                        <td style="text-align: justify;text-justify: inter-word;">
+                            <br>
+                            <div id="watchListSymbols">
+                                <!--                                <button class="ui labeled icon mini button">-->
+                                <!--                                    <i class="remove icon" style="background-color:red"></i>-->
+                                <!--                                    Pause-->
+                                <!--                                </button>-->
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="ui right aligned segment" id="wallet" dir="rtl" style="display:none;">
+                <div class="about">آدرس کیف پول شما جهت واریز تتر (تنها در شبکه trc20)</div>
+                <br>
+                <br>
+                <div>مبالغ واریز شده تنها برای استفاده از خدمات سایت می‌باشد و قابل برداشت نیست</div>
+                <br>
+                <div>
+                    <br>
+                    <div id="">
+                        <table style="width: 70%">
+                            <tr>
+                                <td style="width: 15%">حداقل واریز:</td>
+                                <td>
+                                    10 تتر، واریز مقادیر کمتر در نظر گرفته نمی‌شود.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 15%">آدرس جهت واریز:</td>
+                                <td>
+                                    <input id="walletAddress" style="width: 100%;" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>موجودی شما:</td>
+                                <td>
+                                    <span id="walletBalance">0.0</span> تتر
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>درآمد از سایت:</td>
+                                <td>
+                                    <span id="walletIncome">0.0</span> تتر
+                                </td>
+                            </tr>
+                        </table>
+                        <!--                        <button class="positive ui button"-->
+                        <!--                                style="float: left; font-family: IranSans"-->
+                        <!--                                onclick="updateWallet()">بروز رسانی-->
+                        <!--                        </button>-->
+                        <br>
+                        <br>
+                        <br>
+                        جدول تراکنش‌ها:
+                        <div id="depositsContainer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui right aligned segment" id="packages" dir="rtl" style="display:none;">
+                <table>
+                    <tr>
+                        <td>موجودی کیف پول:</td>
+                        <td>
+                            <input id="walletBalance2" value="2.5" style="direction: ltr" disabled>
+                        </td>
+                        <td>
+                            <a href="/settings/?s=wallet">
+                                <button class="positive ui button">افزایش موجودی</button>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>سطح اشتراک:</td>
+                        <td>
+                            <input id="myPack" value="" style="" disabled>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>اعتبار اشتراک:</td>
+                        <td>
+                            <input id="myPackEx" style="color:rgb(0, 202, 157);background-color: #1c1f32" value=""
+                                disabled>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>gasFee (usdt):</td>
+                        <td>
+                            <input id="myGasFee" value="" style="" disabled>
+                        </td>
+                    </tr>
+                    <!--                        <tr>-->
+                    <!--                            <td>راهنما:</td>-->
+                    <!--                            <td>-->
+                    <!--                            </td>-->
+                    <!--                        </tr>-->
+                </table>
+                <br>
+                <span>
+                    GasFee مبلغی‌ است که در هر بار اسکن بازار به ازای هر نماد و فیلتر از موجودی کیف پول شما کم می‌شود.
+                </span>
+                <div class="snip1214 row" id="packageItems">
+                    <!--                    <div class="plan col">-->
+                    <!--                        <h3 class="plan-title">-->
+                    <!--                            مبتدی-->
+                    <!--                        </h3>-->
+                    <!--                        <div class="plan-cost"><span class="plan-price">$19</span><span-->
+                    <!--                                class="plan-type">/ Monthly</span>-->
+                    <!--                        </div>-->
+                    <!--                        <ul class="plan-features">-->
+                    <!--                            <li><i class="ion-checkmark"> </i>5GB Linux Web Space</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>5 MySQL Databases</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Unlimited Email</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>250Gb Monthly Transfer</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>24/7 Tech Support</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Daily Backups</li>-->
+                    <!--                        </ul>-->
+                    <!--                        <div class="plan-select"><a href="">Select Plan</a></div>-->
+                    <!--                    </div>-->
+                    <!--                    <div class="plan col">-->
+                    <!--                        <h3 class="plan-title">-->
+                    <!--                            Basic-->
+                    <!--                        </h3>-->
+                    <!--                        <div class="plan-cost"><span class="plan-price">$29</span><span-->
+                    <!--                                class="plan-type">/ Monthly</span>-->
+                    <!--                        </div>-->
+                    <!--                        <ul class="plan-features">-->
+                    <!--                            <li><i class="ion-checkmark"> </i>10GB Linux Web Space</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>10 MySQL Databases</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Unlimited Email</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>500Gb Monthly Transfer</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>24/7 Tech Support</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Daily Backups</li>-->
+                    <!--                        </ul>-->
+                    <!--                        <div class="plan-select"><a href="">Select Plan</a></div>-->
+                    <!--                    </div>-->
+                    <!--                    <div class="plan featured col">-->
+                    <!--                        <h3 class="plan-title">-->
+                    <!--                            Professional-->
+                    <!--                        </h3>-->
+                    <!--                        <div class="plan-cost"><span class="plan-price">$49</span><span-->
+                    <!--                                class="plan-type">/ Monthly</span>-->
+                    <!--                        </div>-->
+                    <!--                        <ul class="plan-features">-->
+                    <!--                            <li><i class="ion-checkmark"> </i>25GB Linux Web Space</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>25 MySQL Databases</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Unlimited Email</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>2000Gb Monthly Transfer</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>24/7 Tech Support</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Daily Backups</li>-->
+                    <!--                        </ul>-->
+                    <!--                        <div class="plan-select"><a href="">Select Plan</a></div>-->
+                    <!--                    </div>-->
+                    <!--                    <div class="plan col">-->
+                    <!--                        <h3 class="plan-title">-->
+                    <!--                            Ultra-->
+                    <!--                        </h3>-->
+                    <!--                        <div class="plan-cost"><span class="plan-price">$99</span><span-->
+                    <!--                                class="plan-type">/ Monthly</span>-->
+                    <!--                        </div>-->
+                    <!--                        <ul class="plan-features">-->
+                    <!--                            <li><i class="ion-checkmark"> </i>100GB Linux Web Space</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Unlimited MySQL Databases</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Unlimited Email</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>10000Gb Monthly Transfer</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>24/7 Tech Support</li>-->
+                    <!--                            <li><i class="ion-checkmark"> </i>Daily Backups</li>-->
+                    <!--                        </ul>-->
+                    <!--                        <div class="plan-select"><a href="">Select Plan</a></div>-->
+                    <!--                    </div>-->
+                </div>
+            </div>
+            <div class="ui right aligned segment" id="promote" dir="rtl" style="display:none;">
+                با ارتقا حساب خود به سطح ترید حرفه‌ای، حساب شما به لیست تریدرهای حرفه‌ای در شبکه ترید رمزثروت اضافه
+                می‌شود،
+                <br>
+                <br>
+                سایر کاربران با پرداخت حق اشتراکی که مشخص می‌کنید، می‌توانند شما را دنبال کنند
+                که در اینصورت معاملات شما در بایننس برای آنها کپی می‌شود.
+                <br>
+                <br>
+                <br>
+                <h1>مراحل ارتقا حساب:</h1>
+                <div class="ui bulleted list">
+                    <div class="">
+                        مطالعه، پذیرش و اجرا تعهدات و شرایط،
+                    </div>
+                    <br>
+                    <div class="">
+                        انتخاب نام نمایشی متعارف که در شبکه ترید برای معرفی شما استفاده می‌شود،
+                    </div>
+                    <br>
+                    <div class="">
+                        (حداقل یک تتر) مشخص کردن حق اشتراک ماهانه بر حسب تتر.
+                    </div>
+                </div>
+
+                <br>
+                <br>
+                <h1>پیشنیاز:</h1>
+                <div class="ui bulleted list">
+                    <div class="">
+                        داشتن حداقل ۳۰ روز سابقه ترید در بایننس و اتصال بایننس به رمزثروت،
+                    </div>
+                    <br>
+                    <div class="">
+                        اتصال تلگرام به رمزثروت.
+                    </div>
+                </div>
+
+
+
+
+                <br>
+                <br>
+                <h1>تعهدات شما:</h1>
+                <div class="ui bulleted list">
+                    <div class="">
+                        به هیچ وجه، به هیچ شخصی، هیچ وعده، قول یا تضمینی برای کسب سود اعم از تضمینی، ثابت یا متغیر
+                        نخواهم داد.
+                    </div>
+                    <br>
+                    <div class="">
+                        در صورت ترغیب دیگران به دنبال کردن من در رمزثروت به آنها درباره ریسک‌های موجود در بازار، وجود
+                        احتمال ضرر و نوسانات بالای بازار رمزارزها هشدار خواهم داد.
+                    </div>
+                    <br>
+                    <div class="">
+                        با هدف جلوگیری از تضاد منافع با دنبال کنندگان و افزایش حداکثری تمرکز بر معاملات، تنها در اکسچنج
+                        بایننس و تنها در بازار اسپات فعالیت خواهم کرد.
+                    </div>
+                    <br>
+                    <div class="">
+                        از این پس تمام سفارشات خود را از صفحه ترید رمزثروت برای بایننس ارسال می‌کنم تا سفارشات من، برای
+                        دنبال کنندگان کپی شود.
+                    </div>
+                    <br>
+                    <div class="">
+                        از این پس همیشه از سفارش لیمت و جفت‌ارزهای به مقصد تتر استفاده می‌کنم.
+                    </div>
+                    <br>
+                    <div class="">
+                        در صورت ارتقا حساب به هیچ وجه خود و یا عملکرد خویش در بازار را مورد تایید رمزثروت معرفی نخواهم
+                        کرد.
+                    </div>
+                    <br>
+                    <div class="">
+                        در صورت تصمیم به عدم ادامه فعالیت تصمیم خود را دو ماه جلوتر به رمزثروت اطلاع خواهم داد.
+                    </div>
+                    <br>
+                    <div class="">
+                        در صورت مشاهده نقض تعهدات، رمزثروت می‌تواند بصورت یک جانبه و بدون اخطار قبلی حساب من را مسدود و
+                        از شبکه خارج کند.
+                    </div>
+                    <br>
+                </div>
+
+                <br>
+                <br>
+                <h1>شرایط:</h1>
+                <div class="ui bulleted list">
+                    <div class="">
+                        رمزثروت به میزان ۴۰ درصد از اشتراک ماهانه را بعنوان کارمزد شبکه ترید لحاظ می‌کند که این میزان
+                        بدون اطلاع قبلی قابل تغییر است،
+                    </div>
+                    <br>
+                    <div class="">
+                        برداشت درآمد از سایت تنها با تتر می‌باشد و رمزثروت مبلغ هر اشتراک را بعد از یک‌ماه پرداخت خواهد
+                        کرد،
+                    </div>
+                    <br>
+                    <div class="">
+                        شرایط و بخش تعهدات در هر زمان و بدون اطلاع قبلی قابل تغییر است.
+                    </div>
+                    <br>
+                </div>
+
+
+                <table>
+                    <tr>
+                        <td>نام نمایشی:</td>
+                        <td>
+                            <input id="brand" placeholder="نام شما جهت نمایش" style="direction: ltr">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>اشتراک ماهانه:</td>
+                        <td>
+                            <input id="subscriptionFee" value="10" type="number">
+                        </td>
+                        <!--                        <td>-->
+                        <!--                        </td>-->
+                    </tr>
+                    <tr>
+                        <td>درخواست</td>
+                        <td>
+                            <button class="positive ui button" style="width: 98%" onclick="promote()">ارتقا
+                                حساب</button>
+                        </td>
+                        <td style="padding-right: .2rem">
+                            به معنی پذیرش همه تعهدات و شرایط می‌باشد.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br><br><br><br>
+<div id="modal" class="modal" style="display: none;z-index:20" dir="rtl">
+    <div class="ui icon floating message" style="background-color:#00ca9d">
+        <i class="notched circle loading icon"></i>
+        <div class="content">
+            <div class="header" style="font-family: IRANSans">
+                لطفا صبر کنید.
+            </div>
+            <p> رمزثروت در حال محاسبه است.</p>
+        </div>
+    </div>
+</div>
+
+{% endblock bodyContent %}

@@ -1,0 +1,31 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block title %}ورود{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    <fieldset>
+        <legend>ورود</legend>
+        {{ form.non_field_errors }}
+        {% for field in form %}
+        {{ field.errors }}
+        {% if field.name == 'remember_me' %}
+        {% else %}
+        <p>
+            {{ field.label_tag }}
+            {{ field }}
+        </p>
+        {% endif %}
+        {% endfor %}
+    </fieldset>
+    <br>
+    <input class="ui button" type="submit" value="ورود" />
+    <a class="ui button" href="{% url "accounts:userena-sign-up" %}"> ثبت نام </a>
+    <br>
+    <p class="forgot-password"><a class="link" href="{% url "accounts:userena-password-reset" %}">رمز خود را فراموش
+            کردید؟</a></p>
+    {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+</form>
+{% endblock %}

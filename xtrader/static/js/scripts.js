@@ -76,7 +76,7 @@ window.Date = JDate;
 function loadChartsReady() {
     //    isStrategySaved = false;
     changeIsStrategySaved(false);
-    load_data('/data/get-data/' + symbol_id);
+    load_data('/data/candles-history/' + symbol_id);
     // Highcharts.setOptions({
     //     lang: {
     //         months: ['فروردين', 'ارديبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
@@ -982,7 +982,7 @@ function save_filters(pointer) {
     if (!isStrategySaved && strategy_name) {
         $.ajax({
             type: 'POST',
-            url: "/save_strategy",
+            url: "/save-strategy",
             data: {
                 param: JSON.stringify(strategy),
 
@@ -1066,7 +1066,7 @@ function load_strategy_names() {
     delete_all(['indicators'], false);
     $.ajax({
         type: 'GET',
-        url: "/get_strategy_names",
+        url: "/get-strategy-names",
         success: function (result) {
             let strategyNames = '';
             result.strategies.forEach(function (strategy) {
@@ -1101,14 +1101,14 @@ function getSelectedStrategyName(selectedStrategyId) {
 }
 function load_strategy() {
     let selectedStrategyId = getSelectedStrategyId();
-    console.log("load strategy", selectedStrategyId, currentStrategyId);
+    console.log("load-strategy", selectedStrategyId, currentStrategyId);
     waiting('wait');
     //    selectedStrategyId = parseInt(selectedStrategyId);
     if (selectedStrategyId > 0) {
         console.log('here');
         $.ajax({
             type: 'GET',
-            url: "/load_strategy",
+            url: "/load-strategy",
             data: {
                 id: selectedStrategyId,
             },
@@ -1163,7 +1163,7 @@ function scan() {
         waiting('wait');
         $.ajax({
             type: 'GET',
-            url: "/scan_market",
+            url: "/scan-market",
             data: {
                 strategyId: getSelectedStrategyId(),
                 //                interval: userTimeFrame,
@@ -1231,7 +1231,7 @@ function show_scan_result(result) {
                 a.addEventListener('click', function () {
                     //                    delete_all(['indicators'], false);
                     symbol_id = symbol_url;
-                    load_data('/data/get-data/' + symbol_id);
+                    load_data('/data/candles-history/' + symbol_id);
                     //                    load_strategy();
                 });
                 if (signal === 'buy') a.setAttribute('style', 'color: #00CA9D; cursor:pointer;');
@@ -1282,7 +1282,7 @@ function show_scan_result1(result) {
                 item.addEventListener('click', function () {
                     delete_all(['indicators'], false);
                     symbol_id = symbol_url;
-                    load_data('/data/get-data/' + symbol_id);
+                    load_data('/data/candles-history/' + symbol_id);
                 });
 
                 var content = document.createElement('div');
@@ -1842,7 +1842,7 @@ function calculate_indicators(strategy, saving_status) {
     waiting('wait');
     $.ajax({
         type: 'GET',
-        url: "/calculate_filter/" + userTimeFrame,
+        url: "/calculate-filter/" + userTimeFrame,
         data: {
             param: JSON.stringify(strategy),
             //            interval: userTimeFrame;
@@ -2445,7 +2445,7 @@ $(document).ready(function () {
                 // console.log(value);
                 symbol_id = value.symbol_id;
                 var backtest_state = document.getElementById('table_place').style.display;
-                load_data('/data/get-data/' + symbol_id);
+                load_data('/data/candles-history/' + symbol_id);
                 if (backtest_state === 'block') {
                     delete_all(['back test']);
                 }
@@ -2480,13 +2480,7 @@ $(document).ready(function () {
                     }
                     // add result to category
                     response.results[category].results.push({
-                        // symbol_id=self.SymbolId,//symbol id
-                        // kind='kind', // price
-                        // category=self.ExchangeName,
-                        // symbol_name=self.InstrumentName,//title
-                        // name=self.InstrumentName,//discription
-                        // description='description',
-                        // title='title',
+
                         title: item.symbol_name,
                         description: item.name,
                         price: item.kind,
@@ -2519,7 +2513,7 @@ function changeTimeFrame(new_timeFrame) {
     isBacktested = false;
     isScaned = false;
     console.log("timeframe changed, isStrategySaved", isStrategySaved);
-    load_data('/data/get-data/' + symbol_id);
+    load_data('/data/candles-history/' + symbol_id);
 }
 function setTimeFrame(chosen_interval) {
     intervals.forEach(function (interval) {
@@ -2545,7 +2539,7 @@ function changeIsStrategySaved(saving_status) {
 
 
 function getWatchLists() {
-    let url = '/getWatchLists'
+    let url = '/watchlists'
     $.ajax({
         url: url,
         success: function (result) {

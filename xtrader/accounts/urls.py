@@ -1,180 +1,129 @@
-#from accounts import auth_views
 from django.contrib.auth import views as auth_views
 from django.urls import re_path, reverse_lazy
 from userena import settings as userena_settings
+
+from utils.templates import TextTemplates
+from accounts.templates import AccountsTemplates
 import accounts.views as userena_views
-from accounts.compat import auth_views_compat_quirks, password_reset_uid_kwarg
-
-
-def merged_dict(dict_a, dict_b):
-    """Merges two dicts and returns output. It's purpose is to ease use of
-    ``auth_views_compat_quirks``
-    """
-    dict_a.update(dict_b)
-    return dict_a
+from accounts.views import (
+    authentication_views,
+    profile_views,
+    wallet_views,
+    ProfileListView,
+)
 
 
 urlpatterns = [
-    re_path(r'^getTelegram/$',
-        userena_views.get_telegram,
-        name='getTelegram'),
-    re_path(r'^newDeposit/$',
-        userena_views.new_deposit,
-        name='newDeposit'),
-    re_path(r'^getWallet/$',
-        userena_views.get_wallet,
-        name='getWallet'),
-    re_path(r'^checkDeposits/$',
-        userena_views.check_deposits,
-        name='checkDeposits'),
-    re_path(r'^getDeposits/$',
-        userena_views.get_deposits,
-        name='getDeposits'),
-    re_path(r'^signup/$',
-        userena_views.signupsample,
-        name='userena_signup'),
-
-    re_path(r'^settings/$',
-        userena_views.settings,
-        name='settings'),
-
-    # Signup, signin and signout
-    re_path(r"^signup/$", userena_views.signup, name="userena_signup"),
-    re_path(r"^signin/$", userena_views.signin, name="userena_signin"),
+    re_path(r"^new-deposit/$", wallet_views.new_deposit, name="new-deposit"),
+    re_path(r"^get-wallet/$", wallet_views.get_wallet_snapshot, name="get-wallet"),
     re_path(
-        r"^signout/$",
-        userena_views.signout,
-        name="userena_signout",
+        r"^sync-deposits/$", wallet_views.sync_deposits, name="sync-deposits"
     ),
-    # Reset password
+    re_path(r"^get-deposits/$", wallet_views.get_deposits, name="get-deposits"),
+    re_path(r"^sign-up/$", authentication_views.sign_up, name="userena-sign-up"),
+    re_path(r"^sign-in/$", authentication_views.sign_in, name="userena-sign-in"),
     re_path(
-        r"^password/reset/$",
-        auth_views.PasswordResetView.as_view(
-            template_name="userena/password_reset_form.html",
-            email_template_name="userena/emails/password_reset_message.txt",
-            extra_context={
-                "without_usernames": userena_settings.USERENA_WITHOUT_USERNAMES
-            },
-            success_url=reverse_lazy("accounts:userena_password_reset_done"),  # Added namespace
-        ),
-        name="userena_password_reset",
-    ),
-    re_path(
-        r"^password/reset/done/$",
-        auth_views.PasswordResetDoneView.as_view(
-            template_name="userena/password_reset_done.html"
-        ),
-        name="userena_password_reset_done",
-    ),
-    re_path(
-        r"^password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$",
-        auth_views.PasswordResetConfirmView.as_view(
-            template_name="userena/password_reset_confirm_form.html",
-            success_url=reverse_lazy("userena_password_reset_complete"),
-        ),
-        name="userena_password_reset_confirm",
-    ),
-    re_path(
-        r"^password/reset/confirm/complete/$",
-        auth_views.PasswordResetCompleteView.as_view(
-            template_name="userena/password_reset_complete.html"
-        ),
-        name="userena_password_reset_complete",
-    ),
-    # Signup
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/signup/complete/$",
-        userena_views.direct_to_user_template,
-        {
-            "template_name": "userena/signup_complete.html",
-            "extra_context": {
-                "userena_activation_required": (
-                    userena_settings.USERENA_ACTIVATION_REQUIRED
-                ),
-                "userena_activation_days": userena_settings.USERENA_ACTIVATION_DAYS,
-            },
-        },
-        name="userena_signup_complete",
-    ),
-    # Activate
-    re_path(
-        r"^activate/(?P<activation_key>\w+)/$",
-        userena_views.activate,
-        name="userena_activate",
-    ),
-    # Retry activation
-    re_path(
-        r"^activate/retry/(?P<activation_key>\w+)/$",
-        userena_views.activate_retry,
-        name="userena_activate_retry",
-    ),
-    # Activate pending
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/pending/$",
-        userena_views.activate_pending,
-        name="userena_activate_pending",
-    ),
-    # Change email and confirm it
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/email/$",
-        userena_views.email_change,
-        name="userena_email_change",
-    ),
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/email/complete/$",
-        userena_views.direct_to_user_template,
-        {"template_name": "userena/email_change_complete.html"},
-        name="userena_email_change_complete",
-    ),
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/confirm-email/complete/$",
-        userena_views.direct_to_user_template,
-        {"template_name": "userena/email_confirm_complete.html"},
-        name="userena_email_confirm_complete",
+        r"^sign-out/$",
+        authentication_views.sign_out,
+        name="userena-sign-out",
     ),
     re_path(
         r"^confirm-email/(?P<confirmation_key>\w+)/$",
-        userena_views.email_confirm,
-        name="userena_email_confirm",
+        authentication_views.email_confirm,
+        name="userena-email-confirm",
     ),
-    # Disabled account
+        re_path(
+        r"^activate/(?P<activation_key>\w+)/$",
+        authentication_views.activate,
+        name="userena-activate",
+    ),
+    re_path(
+        r"^activate/retry/(?P<activation_key>\w+)/$",
+        authentication_views.activate_retry,
+        name="userena-retry-activation",
+    ),
+    re_path(
+        r"^(?P<username>[\@\.\+\w-]+)/pending/$",
+        authentication_views.activate_pending,
+        name="userena-activation-pending",
+    ),
+    re_path(
+        r"^(?P<username>[\@\.\w-]+)/password/reset/$",
+        auth_views.PasswordResetView.as_view(
+            template_name=AccountsTemplates.USERENA_FORGOT_PASSWORD_FORM,
+            email_template_name=TextTemplates.USERENA_EMAIL_PASSWORD_CHANGE_MESSAGE_TXT,
+            extra_context={
+                "without_usernames": userena_settings.USERENA_WITHOUT_USERNAMES,
+            },
+            success_url=reverse_lazy("accounts:userena-password-reset-done"),
+        ),
+        name="userena-password-reset",
+    ),
+    re_path(
+        r"^password/reset-confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$",
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name=AccountsTemplates.USERENA_PASSWORD_CHANGE_CONFIRMATION_FORM,
+            success_url=reverse_lazy("userena-password-reset-complete"),
+        ),
+        name="userena-password-reset-confirm",
+    ),
+    re_path(
+        r"^password/reset-done/$",
+        auth_views.PasswordResetDoneView.as_view(
+            template_name=AccountsTemplates.USERENA_PASSWORD_CHANGE_VERIFICATION
+        ),
+        name="userena-password-reset-done",
+    ),
+    re_path(
+        r"^password/reset-completed/$",
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name=AccountsTemplates.USERENA_PASSWORD_CHANGE_COMPLETED
+        ),
+        name="userena-password-reset-completed",
+    ),
+    re_path(
+        r"^(?P<username>[\@\.\+\w-]+)/email-change/$",
+        profile_views.change_email,
+        name="userena-email-change",
+    ),
+    re_path(
+        r"^(?P<username>[\@\.\+\w-]+)/sign-up/completed/$",
+        profile_views.sign_up_completed,
+        name="userena-sign-up-completed",
+    ),
+    re_path(
+        r"^(?P<username>[\@\.\+\w-]+)/email-change-completed/$",
+        profile_views.email_change_completed,
+        name="userena-email-change-completed",
+    ),
+    re_path(
+        r"^(?P<username>[\@\.\+\w-]+)/email-change-verification-needed/$",
+        profile_views.email_change_verification_needed,
+        name="userena-email-change-verification-needed",
+    ),
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/disabled/$",
-        userena_views.disabled_account,
-        name="userena_disabled",
+        profile_views.account_is_disabled,
+        name="userena-account-disabled",
     ),
-    # Change password
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/password/$",
-        userena_views.password_change,
-        name="userena_password_change",
-    ),
-    re_path(
-        r"^(?P<username>[\@\.\+\w-]+)/password/complete/$",
-        userena_views.direct_to_user_template,
-        {"template_name": "userena/password_complete.html"},
-        name="userena_password_change_complete",
-    ),
-    # Edit profile
     re_path(
         r"^(?P<username>[\@\.\+\w-]+)/edit/$",
-        userena_views.profile_edit,
-        name="userena_profile_edit",
-    ),
-    # View profiles
-    re_path(
-        r"^(?P<username>(?!(signout|signup|signin)/)[\@\.\+\w-]+)/$",
-        userena_views.profile_detail,
-        name="userena_profile_detail",
+        profile_views.edit_profile,
+        name="userena-profile-edit",
     ),
     re_path(
-        r"^page/(?P<page>[0-9]+)/$",
-        userena_views.ProfileListView.as_view(),
-        name="userena_profile_list_paginated",
+        r"^(?P<username>(?!(sign-out|sign-up|sign-in)/)[\@\.\+\w-]+)/$",
+        profile_views.profile_detail,
+        name="userena-profile-detail",
     ),
     re_path(
-        r"^$",
-        userena_views.ProfileListView.as_view(),
-        name="userena_profile_list",
+        r"^telegram-webhook", profile_views.telegram_webhook, name="telegram-webhook"
+    ),
+    re_path(r"^telegram-status/$", profile_views.telegram_status, name="telegram-status"),
+    re_path(r"^account-status", profile_views.profile_status, name="account-status"),
+    re_path(
+        r"^(?:page/(?P<page>[0-9]+)/)?$",
+        ProfileListView.as_view(),
+        name="userena-profile-list",
     ),
 ]

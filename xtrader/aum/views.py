@@ -1,128 +1,152 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from aum.models import FundInvestor, Fund
+from typing import cast
 import json
+from django.http import HttpRequest
+from django.contrib.auth.models import User
+from django.views.decorators.http import require_POST, require_GET
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
+from aum.models import Fund, FundInvestor
+from aum.service.fund import FundService
+from aum.exceptions import (
+    FundInvestorNotFound, FundNotFound, InvalidAction,
+    InsufficientDepositInFund, InsufficientUnitsFromInvestor,
+    InvestorAlreadyExists, NameIsTooLong
+)
+from utils.consts import (
+    XtraderRequestKeys, XtraderResponseKeys, XtraderRequestValues
+)
+from aum.templates import AUMTemplates
+from .consts import ResponseMessages, ResponseData
 
 
-@login_required(login_url='accounts:userena_signin')
+@login_required
 def management(request):
-    return render(request, 'fundManagement.html')
-
+    return render(request, AUMTemplates.FUND_MANAGEMENT)
 
 @csrf_exempt
-@login_required(login_url='accounts:userena_signin')
-def issue_redeem_unit(request):
-    if request.method == 'POST':
+@require_POST
+@login_required
+def issue_redeem_unit(request: HttpRequest):
+    message = ""
+    c = None
+    try:
         params = json.loads(request.body.decode())
-        fund = Fund.objects.filter(manager=request.user).first()
-        investor = FundInvestor.objects.filter(fund=fund, id=params['investor_id']).first()
-        if fund and investor:
-            result = fund.issue_redeem(investor, params)
-            investor.save()
-            fund.save()
-        else:
-            result = {'msg': 'شناسه سرمایه‌گذار اشتباه است'}
-        return JsonResponse(result)
-    else:
-        return JsonResponse({'msg': 'bad request'}, status=403)
 
+        fund_manager = cast(User, request.user)
+        fund_service = FundService(fund_manager=fund_manager)
+        fund_service.issue_redeem_unit(
+            investor_id=params[XtraderRequestKeys.INVESTOR_ID],
+            action=params[XtraderRequestKeys.ACTION],
+            unit_amount=params[XtraderRequestKeys.AMOUNT]
+        )
+        c = 200
+    except FundNotFound:
+        message = ResponseMessages.FUND_NOT_FOUND
+    except FundInvestorNotFound:
+        message = ResponseMessages.FUND_INVESTOR_INVALID_ID
+    except InvalidAction:
+        message = ResponseMessages.INVALID_ACTION
+    except InsufficientDepositInFund:
+        message = ResponseMessages.INSUFFICIENT_DEPOSIT_IN_FUND
+    except InsufficientUnitsFromInvestor:
+        message = ResponseMessages.INSUFFICIENT_UNITS_FROM_INVESTOR
+
+    return JsonResponse(
+        {
+            XtraderResponseKeys.MESSAGE: message,
+            XtraderResponseKeys.C: c
+        }
+    )
 
 @csrf_exempt
-@login_required(login_url='accounts:userena_signin')
-def redeem_unit(request):
-    if request.method == 'POST':
-        return JsonResponse({'msg': 'ok'})
-    else:
-        return JsonResponse({'msg': 'bad request'}, status=403)
+@require_POST
+@login_required
+def add_investor(request: HttpRequest):
+    data = json.loads(request.body.decode())
+    try:
+        fund = Fund.objects.get(manager=request.user)
+        investor = FundInvestor.create_investor(
+            fund=fund,
+            first_name=data[XtraderRequestKeys.FIRST_NAME],
+            last_name=data[XtraderRequestKeys.LAST_NAME],
+            national_code=data[XtraderRequestKeys.NATIONAL_CODE]
+        )
+        return JsonResponse(
+        {
+            XtraderResponseKeys.MESSAGE: ResponseMessages.CREATED,
+            XtraderResponseKeys.ID: investor.pk
+        }, status=201
+        )
+    except Fund.DoesNotExist:
+        message = ResponseMessages.FUND_NOT_FOUND
+    except NameIsTooLong:
+        message = ResponseMessages.NAME_IS_TOO_LONG
+    except InvestorAlreadyExists:
+        message = ResponseMessages.ALREADY_EXISTS
+    return JsonResponse({XtraderResponseKeys.MESSAGE: message}, status=400)
+
+@require_GET
+@login_required
+def investors(request: HttpRequest):
+    try:
+        fund_manager = cast(User, request.user)
+        service = FundService(fund_manager=fund_manager)
+        return JsonResponse({XtraderResponseKeys.DATA: service.get_investors_info()})
+    except FundNotFound:
+        return JsonResponse({XtraderResponseKeys.MESSAGE: ResponseMessages.FUND_NOT_FOUND})
+
+@require_GET
+@login_required
+def get_fund(request: HttpRequest):
+    fund_manager = cast(User, request.user)
+    try:
+        fund_service = FundService(fund_manager=fund_manager)
+        fund_info = fund_service.get_fund_info()
+        return JsonResponse(fund_info)
+    except FundNotFound:
+        return JsonResponse({})
+
+@require_GET
+@login_required
+def transactions_history(request: HttpRequest):
+    fund_manager = cast(User, request.user)
+    fund_service = FundService(fund_manager=fund_manager)
+    transactions = fund_service.sync_and_fetch_transactions()
+    return JsonResponse({XtraderResponseKeys.DATA: [t.time for t in transactions]})
+
+@require_GET
+@login_required
+def init_fund_performance(request: HttpRequest):
+    pass_value = request.GET.get(XtraderRequestKeys.PASS, "")
+    if pass_value != XtraderRequestValues.XTREASURY:
+        return JsonResponse({
+            XtraderResponseKeys.MESSAGE:
+            ResponseMessages.NOT_AUTHORIZED
+        }, status=401
+        )
+    try:
+        fund_manager = cast(User, request.user)
+        fund_service = FundService(fund_manager=fund_manager)
+        created = fund_service.init_fund_performance()
+        data = ResponseData.CREATED if created else ResponseData.ALREADY_EXISTS
+    except FundNotFound:
+        data = []
+    return JsonResponse({XtraderResponseKeys.DATA: data})
 
 
-@csrf_exempt
-@login_required(login_url='accounts:userena_signin')
-def add_investor(request):
-    if request.method == 'POST':
-        params = json.loads(request.body.decode())
-        national_code = params['nationalCode']
-        fund = Fund.objects.filter(manager=request.user).first()
-        if FundInvestor.objects.filter(nationalCode=national_code, fund=fund).first():
-            result = {'msg': 'investor already exists!'}
-        elif len(params['first_name']) > 20 or len(params['last_name']) > 20:
-            result = {'msg': 'firstName or lastName must be less than 20 characters!'}
-        else:
-            params['fund'] = fund
-            investor = FundInvestor(**params)
-            investor.save()
-            result = {'c': 200, 'msg': 'investor already exists!'}
-        return JsonResponse(result)
-    else:
-        return JsonResponse({'msg': 'bad request'}, status=403)
-
-
-@login_required(login_url='accounts:userena_signin')
-def investors(request):
-    if request.method == 'GET':
-        fund = Fund.objects.filter(manager=request.user).first()
-        investors = FundInvestor.objects.filter(fund=fund)
-        result = []
-        for investor in investors:
-            result.append({
-                'id': investor.id,
-                'name': '{} {}'.format(investor.first_name, investor.last_name),
-                'units': investor.units,
-                'national_code': investor.nationalCode,
-            })
-        return JsonResponse({'data': result})
-    else:
-        return JsonResponse({'msg': 'bad request'}, status=403)
-
-
-@login_required(login_url='accounts:userena_signin')
-def get_fund(request):
-    if request.method == 'GET':
-        fund = Fund.objects.filter(manager=request.user).first()
-        if fund:
-            result = fund.get_fund_info()
-        else:
-            result = {}
-        return JsonResponse(result)
-    else:
-        return JsonResponse({'msg': 'bad request'}, status=403)
-
-
-@login_required(login_url='accounts:userena_signin')
-def transactions_history(request):
-    if request.method == 'GET':
-        fund = Fund.objects.filter(manager=request.user).first()
-        result = []
-        if fund:
-            result = fund.get_transactions()
-        return JsonResponse({'data': result})
-    else:
-        return JsonResponse({'msg': 'bad request'}, status=403)
-
-
-@login_required(login_url='accounts:userena_signin')
-def init_fund_performance(request):
-    if request.method == 'GET':
-        if not request.GET.get('pass', '') == 'XTreasury':
-            return JsonResponse({'msg': 'not authorize'}, status=401)
-        fund = Fund.objects.filter(manager=request.user).first()
-        result = []
-        if fund:
-            result = fund.init_fund_performance()
-        return JsonResponse({'data': result})
-    else:
-        return JsonResponse({'msg': 'bad request'}, status=403)
-
-@login_required(login_url='accounts:userena_signin')
-def get_fund_performance(request):
-    if request.method == 'GET':
-        fund = Fund.objects.filter(manager=request.user).first()
-        result = []
-        if fund:
-            mode = request.GET.get('mode', 'all')
-            result = fund.get_fund_performance(mode=mode)
-        return JsonResponse(result, safe=False)
-    else:
-        return JsonResponse({'msg': 'bad request'}, status=403)
+@require_GET
+@login_required
+def get_fund_performance(request: HttpRequest):
+    try:
+        fund_manager = cast(User, request.user)
+        fund_service = FundService(fund_manager=fund_manager)
+        mode = request.GET.get(
+            XtraderRequestKeys.MODE, XtraderRequestValues.ALL
+        )
+        result = fund_service.get_fund_performance(mode=mode)
+    except FundNotFound:
+        return JsonResponse([], safe=False)
+    return JsonResponse({XtraderResponseKeys.DATA: result}, safe=False)

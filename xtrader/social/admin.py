@@ -1,6 +1,6 @@
 from django.contrib import admin
-from social.models import Protrader, Follow
 
-# Register your models here.
-admin.site.register(Protrader)
+from social.models import Follow, ProTrader
+
+admin.site.register(ProTrader)
 admin.site.register(Follow)

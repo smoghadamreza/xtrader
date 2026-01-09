@@ -1,0 +1,26 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block content_title %}<h2>{% blocktrans with user.username as username %}Account &raquo; {{ username }}{% endblocktrans %}</h2>{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        <ul id="box-nav">
+            <li class="first"><a class="link" href="{% url 'accounts:userena-profile-detail' user.username %}"><span>پروفایل </span></a>
+            </li>
+            <li><a class="link" href="{% url 'accounts:userena-profile-edit' user.username %}">بروز رسانی پروفایل</a>
+            </li>
+            <li><a class="link" href="{% url 'accounts:userena-password-reset' user.username %}">تغییر گذر واژه</a>
+            </li>
+            <li class="last selected"><a class="link" href="{% url 'accounts:userena-email-change' user.username %}">تغییر
+                ایمیل </a></li>
+        </ul>
+        {% csrf_token %}
+        <fieldset>
+            <legend>تغییر آدرس ایمیل</legend>
+            {{ form.as_p }}
+        </fieldset>
+        <br>
+        <input class="ui button" type="submit" value="تغییر ایمیل"/>
+    </form>
+{% endblock %}

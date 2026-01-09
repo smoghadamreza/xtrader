@@ -1,0 +1,33 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block title %}{{profile.user.username}}پروفایل {% endblock %}
+{% block content_title %}<h2>{{ profile.user.username }} {% if profile.user.get_full_name %}({{ profile.user.get_full_name }}){% endif %}</h2>{% endblock %}
+
+{% block content %}
+  <div class="white-box">
+    {% block profile_navigation %}
+      {% comment %}Dirty hack. Will use django-guardian in the future.{% endcomment %}
+      {% if user.username == profile.user.username %}
+        <ul id="box-nav">
+          {% block profile_navigation_items %}
+          {% endblock %}
+        </ul>
+      {% endif %}
+    {% endblock %}
+      <br>
+      <br>
+      <br>
+
+    <div style="font-size: 30">
+      کاربر گرامی حساب شما فعال شد.
+      <br>
+      <br>
+      به XTreasury خوش آمدید
+    </div>
+    <script>
+    function f(){window.location = '/spot'}
+      setInterval(f, 3000);
+    </script>
+  </div>
+{% endblock %}

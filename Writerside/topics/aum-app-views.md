@@ -18,7 +18,7 @@ This function renders the fund management page template for authenticated users.
 
 #### Behavior {id=behavior_1}
 - Requires user authentication via decorator
-- Renders the `fundManagement.html` template
+- Renders the `fund_management.html` template
 - Returns standard [HttpResponse](https://docs.djangoproject.com/en/5.1/ref/request-response/#httpresponse-objects) with rendered template
 
 ### `issue_redeem_unit`
@@ -85,7 +85,7 @@ This function handles adding new investors to a fund by authenticated managers.
 #### Input Parameters {id=input_param_4}
 - `request`: The incoming <include from="repeatable-texts.topic" element-id="http-request"/>  object
   - Expects JSON payload in POST body containing:
-    - `nationalCode`: Investor's national identification code
+    - `national_code`: Investor's national identification code
     - `first_name`: Investor's first name (max 20 chars)
     - `last_name`: Investor's last name (max 20 chars)
     - Other investor parameters

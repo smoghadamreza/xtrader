@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}پروفایل{% endblock %}
+{% block headContent %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/copytrading.css' %}" />
+<script src="{% static 'js/protrader.js' %}?v=1"></script>
+<script src="{% static 'js/base.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="/static/js/jquery.dataTables.js"></script>
+
+
+{% endblock headContent %}
+
+{% load i18n %}
+{% block bodyContent %}
+<div class="ui segments" style="; height: 600px; overflow:auto;">
+    <div class="ui right aligned segment" dir="rtl" style="display:block;">
+        <h1 class="about">مشخصات تریدر: </h1>
+        <br>
+        <br>
+        <div>
+            <div class="four column row">
+                <div class="column customColumnsX">
+                    نام:
+                    <input id="traderBrand"
+                        style="background-color: rgb(28, 31, 50); width: 10rem; color: rgb(0, 202, 157);" disabled="">
+                </div>
+                <div class="column customColumnsX">
+                    اشتراک ماهانه (تتر):
+                    <input id="subsFee" style="background-color: rgb(28, 31, 50); width: 5rem; color: rgb(0, 202, 157);"
+                        disabled="">
+                </div>
+                <div class="column customColumnsX">
+                    وضعیت:
+                    <input id="status" style="background-color: rgb(28, 31, 50); width: 10rem; color: rgb(0, 202, 157);"
+                        disabled="">
+                </div>
+                <div class="column customColumnsX">
+                    <button class="positive ui button" id="follow" style="" onclick="showRiskModal(1)">دنبال کردن
+                    </button>
+                    <button class="negative ui button" id="unfollow" style="display:none"
+                        onclick="showRiskModal(0)">دنبال نکردن
+                    </button>
+                    <a href="/social/copy-trading">
+                        <button class="positive ui button">مشاهده همه
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="ui right aligned segment" dir="rtl" style="display:block">
+        <div id="container" style=" min-width: 310px;min-height: 600px; width: 100%"></div>
+    </div>
+</div>
+<br>
+<div class="ui basic modal" id="followRisk" style="direction: rtl">
+    <div class="ui icon header" style="font-family: IRANSans">
+        <i class="wpforms icon"></i>
+        بیانیه ریسک
+    </div>
+    <div class="content" style="text-align: right;">
+        با دنبال کردن ایشان، از این پس همه‌ی سفارشات ارسالی ایشان در بازار اسپات بایننس برای شما کپی‌ می‌شود.
+        <br>
+        <br>
+        <h1>ریسک‌های کپی تریدینگ:</h1>
+        <ul>
+            <li>بازار رمزارزها نوسانات بالایی دارد و هیچ تضمینی برای کسب سود ثابت (تضمینی) یا حتی حفظ اصل سرمایه وجود
+                ندارد،</li>
+            <li>رمزثروت هیچ‌گونه ارزیابی از عملکرد تریدر انجام نداده است و ایشان مورد تایید یا توصیه رمزثروت نیستند،
+            </li>
+            <li>رمزثروت ضامن حسن نیت و حسن انجام سفارشات توسط ایشان نیست،</li>
+            <li>رمزثروت مسولیتی در برابر قطعی‌های اینترنت، تفاوت در ارزش دارایی که عملیات کپی کردن سفارشات را مختل
+                می‌سازد (مانند کپی کردن سفارشاتی با ارزش کمتر از ۱۰ تتر)، دخل و تصرف شخص شما یا تریدر در سبد خود که باعث
+                اختلاف با تریدر می‌شود و در نهایت حصول بازدهی یکسان با تریدر ندارد،</li>
+            <li>مبلغ اشتراک ماهانه، به هیچ عنوان (حتی در صورت انصراف از دنبال کردن) قابل بازگشت نیست.</li>
+        </ul>
+        <br>
+        آیا ریسک‌های موجود برای دنبال کردن ایشان را می‌پذیرید؟
+    </div>
+    <div class="actions">
+        <div class="ui green ok inverted button" onclick="copytrade(1)">
+            <i class="checkmark icon"></i>
+            می‌پذیرم و حق اشتراک را پرداخت می‌کنم
+        </div>
+        <div class="ui red basic cancel inverted button">
+            <i class="remove icon"></i>
+            نمی‌پذیرم
+        </div>
+    </div>
+</div>
+<div class="ui basic modal" id="unfollowRisk" style="direction: rtl">
+    <div class="ui icon header" style="font-family: IRANSans">
+        <i class="wpforms icon"></i>
+        یادآوری
+    </div>
+    <div class="content" style="text-align: right;">
+        لطفا برای دنبال نکردن تریدر شرایط زیر را در نظر بگیرید
+        <br>
+        <br>
+        <!--        <h1>ریسک‌های کپی تریدینگ:</h1>-->
+        <ul>
+            <li>
+                مبلغ پرداخت شده بابت دنبال کردن تریدر بازگشت داده نمی‌شود،
+            </li>
+            <li>در صورتی که بخواهید همین تریدر یا تریدر دیگری را دنبال کنید مجددا نیاز به پرداخت اشتراک می‌باشد.</li>
+        </ul>
+        <!--        <br>-->
+        <!--        آیا ریسک‌های موجود برای دنبال کردن ایشان را می‌پذیرید؟-->
+    </div>
+    <div class="actions">
+        <div class="ui green ok inverted button" onclick="copytrade(0)">
+            <i class="checkmark icon"></i>
+            مشکلی نیست، تریدر را دنبال نمی‌کنم
+        </div>
+        <div class="ui red basic cancel inverted button">
+            <i class="remove icon"></i>
+            پشیمان شدم
+        </div>
+    </div>
+</div>
+
+{% endblock bodyContent %}
